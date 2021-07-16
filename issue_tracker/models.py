@@ -6,6 +6,9 @@ class Project(models.Model):
     name=models.TextField(null=True)
     members=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True)
 
+    def __str__(self):
+        return self.name
+
 class IssueTag(models.Model):
     tag_name=models.CharField(max_length=40)
 
@@ -37,7 +40,7 @@ class Issue(models.Model):
     ]
     creator=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True ,related_name='creator_issue_set')
     user_assigned=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True ,related_name='user_assigned_issue_set')
-    project=models.ForeignKey(Project,on_delete=models.SET_NULL,null=True,blank= True)
+    project=models.ForeignKey(Project,on_delete=models.CASCADE,null=False,blank= False)
     priority=models.CharField(
         max_length=20,
         choices=PRIORITY_CHOICES,
@@ -58,7 +61,7 @@ class Issue(models.Model):
 
     description=models.TextField(null=True)
     create_date=models.DateTimeField(auto_now_add=True)
-    update_date=models.DateTimeField()
+    update_date=models.DateTimeField(null=True)
     tags=models.ForeignKey(IssueTag,on_delete=models.SET_NULL,null=True,blank= True)
     
     
