@@ -64,7 +64,7 @@ class Issue(models.Model):
     description=models.TextField(null=True)
     create_date=models.DateTimeField(auto_now_add=True)
     update_date=models.DateTimeField(null=True ,blank=True)
-    tags=models.ForeignKey(IssueTag,on_delete=models.SET_NULL,null=True,blank= True)
+    tags=models.ManyToManyField(IssueTag,null=True,blank= True)
     
     def __str__(self):
-        return title
+        return self.title
