@@ -1,6 +1,9 @@
 issue_tracker_project/secrets.py
 myenv
+db.sqlite3
 **/.log
 **/.pot
 **/.pyc
 **/__pycache__
+
+
