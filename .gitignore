@@ -1,0 +1,6 @@
+issue_tracker_project/secrets.py
+myenv
+**/.log
+**/.pot
+**/.pyc
+**/__pycache__
