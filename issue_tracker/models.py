@@ -5,16 +5,52 @@ from django.contrib.auth.models import User
 class Project(models.Model):
     name=models.TextField(null=True)
     members=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True)
+
 class IssueTag(models.Model):
     tag_name=models.CharField(max_length=40)
 
 class Issue(models.Model):
+    PRIORITY_CHOICES = [
+        (NONE, 'None'),
+        (LOW, 'Low'),
+        (MEDIUM, 'Medium'),
+        (HIGH, 'High'),
+        
+    ]
+    STATUS_CHOICES = [
+        (NEW, 'New'),
+        (OPEN, 'Open'),
+        (IN_PROGRESS, 'In progress'),
+        (RESOLVED, 'Resolved'),
+        (MORE_INFO,'More info needed')
+        
+    ]
+    TYPE_CHOICES = [
+        (BUG, 'Bug/Error'),
+        (FEATURE, 'Feature'),
+        (COMMENT, 'Comment'),
+        
+    ]
     creator=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True)
     project=models.ForeignKey(Project,on_delete=models.SET_NULL,null=True,blank= True)
-    priority=
+    priority=models.CharField(
+        choices=PRIORITY_CHOICES,
+        default=NONE,
+    )
+    
+    status=models.CharField(
+        choices=STATUS_CHOICES,
+        default=NEW,
+    )
+
+    type=models.CharField(
+        choices=TYPE_CHOICES,
+        default=BUG,
+    )
+
     description=models.TextField(null=True)
     create_date=models.DateTimeField(auto_now_add=True)
     update_date=models.DateTimeField()
     tags=models.ForeignKey(IssueTag,on_delete=models.SET_NULL,null=True,blank= True)
     user_assigned=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True)
-    type=
+    
