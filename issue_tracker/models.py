@@ -10,47 +10,55 @@ class IssueTag(models.Model):
     tag_name=models.CharField(max_length=40)
 
 class Issue(models.Model):
+    
+
+
     PRIORITY_CHOICES = [
-        (NONE, 'None'),
-        (LOW, 'Low'),
-        (MEDIUM, 'Medium'),
-        (HIGH, 'High'),
+        ('NONE', 'None'),
+        ('LOW', 'Low'),
+        ('MEDIUM', 'Medium'),
+        ('HIGH', 'High'),
         
     ]
     STATUS_CHOICES = [
-        (NEW, 'New'),
-        (OPEN, 'Open'),
-        (IN_PROGRESS, 'In progress'),
-        (RESOLVED, 'Resolved'),
-        (MORE_INFO,'More info needed')
+        ('NEW', 'New'),
+        ('OPEN', 'Open'),
+        ('IN_PROGRESS', 'In progress'),
+        ('RESOLVED', 'Resolved'),
+        ('CLOSED', 'Closed'),
+        ('MORE_INFO','More info needed')
         
     ]
     TYPE_CHOICES = [
-        (BUG, 'Bug/Error'),
-        (FEATURE, 'Feature'),
-        (COMMENT, 'Comment'),
+        ('BUG', 'Bug/Error'),
+        ('FEATURE', 'Feature'),
+        ('COMMENT', 'Comment'),
         
     ]
-    creator=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True)
+    creator=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True ,related_name='creator_issue_set')
+    user_assigned=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True ,related_name='user_assigned_issue_set')
     project=models.ForeignKey(Project,on_delete=models.SET_NULL,null=True,blank= True)
     priority=models.CharField(
+        max_length=20,
         choices=PRIORITY_CHOICES,
-        default=NONE,
+        default='NONE',
     )
     
     status=models.CharField(
+        max_length=20,
         choices=STATUS_CHOICES,
-        default=NEW,
+        default='NEW',
     )
 
     type=models.CharField(
+        max_length=20,
         choices=TYPE_CHOICES,
-        default=BUG,
+        default='BUG',
     )
 
     description=models.TextField(null=True)
     create_date=models.DateTimeField(auto_now_add=True)
     update_date=models.DateTimeField()
     tags=models.ForeignKey(IssueTag,on_delete=models.SET_NULL,null=True,blank= True)
-    user_assigned=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True)
+    
     
