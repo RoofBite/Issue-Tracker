@@ -38,7 +38,7 @@ class Issue(models.Model):
         ('COMMENT', 'Comment'),
         
     ]
-    title=models.CharField(max_length=50,null=False, blank=False)
+    title=models.CharField(max_length=80,null=False, blank=False)
 
     creator=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True ,related_name='creator_issue_set')
     user_assigned=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True ,related_name='user_assigned_issue_set')

@@ -8,10 +8,12 @@
           </ol>
       </nav>
       <h1 class="h2">Dashboard</h1>
-      
-      <div class="table table-responsive text-center">
-        <caption>Issues assigned to me</caption>
-        <table class="table table-light table-hover table-responsive table-bordered"  style="font-size: 12px; font-weight: bold; font-weight: 550; ">
+      <div class="card">
+        <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Issues assigned to me</h5>
+        <div class="card-body">
+      <div class="table table-responsive text">
+        
+        <table class="table table-hover table-responsive"  style="font-size: 12px; font-weight: bold; font-weight: 550; ">
         
         <thead>
           <tr>
@@ -26,37 +28,25 @@
             <th class=""scope="col">Options</th>
           </tr>
         </thead>
+
         <tbody class="table table-striped">
+          {% for issue in issues %}
           <tr>
-            <td>Wystąpił taki proble co to trudny do rozwiąznia jest i tego Wystąpił taki proble</td>
-            <td>Manhtan Roof</td>
-            <td class="d-none">John Johnatan</td>
-            <td>Medium</td>
-            <td>Comment</td>
-            <td>More info needed</td>
-            <td>01-12-2021 9:40 AM</td>
-            <td>09-12-2021 19:49 PM</td>
+            <td>{{issue.title}}</td>
+            <td>{{issue.project}}</td>
+            <td class="d-none">{{issue.user_assinged}}</td>
+            <td>{{issue.priority}}</td>
+            <td>{{issue.type}}</td>
+            <td>{{issue.status}}</td>
+            <td>{{issue.create_date}}</td>
+            <td>{{issue.update_date}}</td>
             <td>Detail</td>
           </tr>
-          <tr>
-            <td>Title</td>
-            <td>Project</td>
-            <td>User assigned</td>
-            <td>Priority</td>
-            <td>Type</td>
-            <td>Status</td>
-            <td>Created</td>
-            <td>Updated</td>
-            <td>Options</td>
-          </tr>>
-          <tr>
-            <th scope="row">3</th>
-            <td>Larry</td>
-            <td>the Bird</td>
-            <td>@twitter</td>
-          </tr>
+          {% endfor %}
         </tbody>
       </table>
+      </div>
+        </div>
       </div>
       <div class="row my-4">
           <div class="col-12 col-md-6 col-lg-3 mb-4 mb-lg-0">
