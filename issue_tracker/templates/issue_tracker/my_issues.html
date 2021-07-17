@@ -7,7 +7,7 @@
               <li class="breadcrumb-item active" aria-current="page">Overview</li>
           </ol>
       </nav>
-      <h1 class="h2">Dashboard</h1>
+      <h1 class="h2">Dashboard  </h1>
       <div class="card">
         <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Issues assigned to me</h5>
         <div class="card-body">
@@ -30,11 +30,12 @@
         </thead>
 
         <tbody class="table table-striped">
-          {% for issue in issues %}
+          {% for issue in my_issues %}
+          
           <tr>
             <td>{{issue.title}}</td>
             <td>{{issue.project}}</td>
-            <td class="d-none">{{issue.user_assinged}}</td>
+            <td class="d-none">{{issue.user_assigned}}</td>
             <td>{{issue.priority}}</td>
             <td>{{issue.type}}</td>
             <td>{{issue.status}}</td>
@@ -48,6 +49,50 @@
       </div>
         </div>
       </div>
+
+
+      <div class="card">
+        <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Issues in my projects</h5>
+        <div class="card-body">
+      <div class="table table-responsive text">
+        
+        <table class="table table-hover table-responsive"  style="font-size: 12px; font-weight: bold; font-weight: 550; ">
+        
+        <thead>
+          <tr>
+            <th class="" scope="col">Title</th>
+            <th class="" scope="col">Project</th>
+            <th class="" scope="col">User assigned</th>
+            <th class="" scope="col">Priority</th>
+            <th class=""scope="col">Type</th>
+            <th class=""scope="col">Status</th>
+            <th class=""scope="col">Created</th>
+            <th class=""scope="col">Updated</th>
+            <th class=""scope="col">Options</th>
+          </tr>
+        </thead>
+
+        <tbody class="table table-striped">
+          {% for issue in my_project_issues %}
+          <tr>
+            <td>{{issue.title}}</td>
+            <td>{{issue.project}}</td>
+            <td class="">{{issue.user_assigned}}</td>
+            <td>{{issue.priority}}</td>
+            <td>{{issue.type}}</td>
+            <td>{{issue.status}}</td>
+            <td>{{issue.create_date}}</td>
+            <td>{{issue.update_date}}</td>
+            <td>Detail</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      </div>
+        </div>
+      </div>
+
+
       <div class="row my-4">
           <div class="col-12 col-md-6 col-lg-3 mb-4 mb-lg-0">
               <div class="card">
