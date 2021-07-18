@@ -11,8 +11,12 @@
       <div class="card">
         <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Report issue</h5>
         <div class="card-body">
-        
-       {{ form.as_p }}
+        <form method="POST" action="">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-success">Confirm</button>
+        </form>
+       
       </div>
         </div>
     
