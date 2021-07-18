@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from .models import *
 from django.db.models import Q
 from .models import *
@@ -9,8 +9,17 @@ def main(request):
     return render(request,'issue_tracker/index.html')
 
 def add_issue(request):
-    
-    return render(request,'issue_tracker/add_issue.html')
+    if request.method == "POST":
+        form = IssueForm(request.POST)
+        if form.is_valid():
+            form.save()
+            
+            return redirect('issue_tracker:main')
+    else:    
+        # Initialize empty form
+        form = IssueForm()
+    context={'form':form}
+    return render(request,'issue_tracker/add_issue.html',context)
 
 def my_issues(request):
     # Later I will add login and will chack if user is logged in and if has access to issue
