@@ -7,7 +7,7 @@ class IssueForm(ModelForm):
 
     #If I would like to use all fileds I could use fields = __all__
 
-        fields = ['title','creator', 'user_assigned','option_three','priority', 'project','status','description']
+        fields = ['title','creator', 'user_assigned','priority', 'project','status','description']
 
 class IssueTagForm(ModelForm):
     class Meta:
@@ -15,4 +15,4 @@ class IssueTagForm(ModelForm):
 
     #If I would like to use all fileds I could use fields = __all__
 
-        fields = __all__
+        fields ='__all__'

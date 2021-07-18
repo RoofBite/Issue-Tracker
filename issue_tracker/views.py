@@ -1,12 +1,15 @@
 from django.shortcuts import render
 from .models import *
 from django.db.models import Q
+from .models import *
+from .forms import IssueForm, IssueTagForm
 # Create your views here.
 
 def main(request):
     return render(request,'issue_tracker/index.html')
 
 def add_issue(request):
+    
     return render(request,'issue_tracker/add_issue.html')
 
 def my_issues(request):
