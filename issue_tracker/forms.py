@@ -1,7 +1,15 @@
+from django.http import request
 from .models import *
 from django.forms import ModelForm
 
 class IssueForm(ModelForm):
+
+    def __init__(self, *args, **kwargs):
+        self.request=kwargs.pop('request')
+
+        super(IssueForm,self).__init__(*args, **kwargs)
+        self.fields['project'].queryset=Project.objects.filter(member=self.request.user) 
+
     class Meta:
         model= Issue
 
@@ -9,6 +17,8 @@ class IssueForm(ModelForm):
 
         fields = ['title','creator', 'user_assigned','priority', 'project','status','description']
 
+    
+    
 class IssueTagForm(ModelForm):
     class Meta:
         model= IssueTag
