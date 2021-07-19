@@ -40,7 +40,7 @@ class Issue(models.Model):
     ]
     title=models.CharField(max_length=80,null=False, blank=False)
 
-    creator=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True ,related_name='creator_issue_set')
+    creator=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= False ,related_name='creator_issue_set')
     user_assigned=models.ForeignKey(User,on_delete=models.SET_NULL,null=True,blank= True ,related_name='user_assigned_issue_set')
     project=models.ForeignKey(Project,on_delete=models.CASCADE,null=False,blank= False)
     priority=models.CharField(

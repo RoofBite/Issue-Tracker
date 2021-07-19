@@ -19,8 +19,6 @@ class Add_issue(CreateView):
 
     def get_form_kwargs(self):
         
-        """ Passes the request object to the form class.
-         This is necessary to only display members that belong to a given user"""
 
         kwargs = super(Add_issue, self).get_form_kwargs()
         kwargs['request'] = self.request
