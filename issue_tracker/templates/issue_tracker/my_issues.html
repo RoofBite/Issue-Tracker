@@ -18,14 +18,33 @@
   </ol>
 </nav>
 
+
+
+<container class="card">
+  <div class="card card-header">
+    
+    <div class="row">
+      <div class="col col-10"></div>
+      
+    <div class="col col-6">
+      
+        <div class="text-center mt-2 ">Issues assigned to me: </div>
+    </div>
+    <div class="col col-6">
+       <form class="d-flex">
+        <input class="form-control mt-1 mb-1 me-2"  name="search_query1" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success mt-1 mb-1 me-2" type="submit">Search</button>
+      </form>
+    </div>  
+    </div>
+
+
+  </div>
 <main
   class="container px-4"
   style="cursor: pointer"
   onclick="location.href = 'https:/google.pl' "
 >
-
-<container class="card">
-  <div class="card card-header">Issues assigned to me:</div>
 {% for issue in page_obj1 %}
   <article class="card mb-3 issue-card">
     <div class="card-body">
@@ -107,14 +126,33 @@
 
 <div class= 'col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
   
+
+
+<container class="card">
+  <div class="card card-header">
+    
+    <div class="row">
+      <div class="col col-10"></div>
+      
+    <div class="col col-6">
+      
+        <div class="text-center mt-2 ">Issues in my projects </div>
+    </div>
+    <div class="col col-6">
+       <form class="d-flex">
+        <input class="form-control mt-1 mb-1 me-2"  type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success mt-1 mb-1 me-2" type="submit">Search</button>
+      </form>
+    </div>  
+    </div>
+
+
+  </div>
 <main
   class="container px-4"
   style="cursor: pointer"
   onclick="location.href = 'https:/google.pl' "
->
-
-<container class="card">
-  <div class="card card-header">Issues in my project:</div>
+>  
 {% for issue2 in page_obj2 %}
   <article class="card mb-3 issue-card">
     <div class="card-body">
