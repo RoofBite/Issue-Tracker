@@ -15,10 +15,9 @@ class Add_issue(CreateView):
     model = Issue
     form_class = IssueForm
     template_name = 'issue_tracker/add_issue.html'
-    success_url = reverse_lazy('issue_tracker/main')
+    success_url = reverse_lazy('issue_tracker:main')
 
     def get_form_kwargs(self):
-        
 
         kwargs = super(Add_issue, self).get_form_kwargs()
         kwargs['request'] = self.request
@@ -48,7 +47,7 @@ def my_issues(request):
     if request.method=='GET':
         
         my_projects=Project.objects.filter(member=request.user)
-        my_project_issues=Issue.objects.filter(project__in=my_projects)
+        my_project_issues=Issue.objects.filter(project__in=my_projects).order_by('-create_date')
         
         my_issues=my_project_issues.filter(user_assigned=request.user)
         
