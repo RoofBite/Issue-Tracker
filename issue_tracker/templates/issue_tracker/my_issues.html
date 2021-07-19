@@ -26,7 +26,7 @@
 
 <container class="card">
   <div class="card card-header">Issues assigned to me:</div>
-{% for issue in my_issues %}
+{% for issue in page_obj1 %}
   <article class="card mb-3 issue-card">
     <div class="card-body">
       <h5 class="card-title">{{issue.title}}</h5>
@@ -87,8 +87,20 @@
       </div>
     </div>
   </article>
-{% endfor %}
-<div class="card card-footer">Pages: 1/2</div>
+  {% endfor %}
+<div class="card card-footer text-center">Page {{page_obj1.number}}/{{page_obj1.paginator.num_pages}}</div>
+<div class="d-flex justify-content-center">
+{% if page_obj1.has_previous %}
+  
+            
+            <a class="btn flex-fill" href="?page1={{ page_obj1.previous_page_number }}&page2={{page_obj2.number}}">&laquo; Previous  &nbsp;  </a>
+  {% endif %}  
+  {% if page_obj1.has_next %}
+  
+            <a class="btn flex-fill" href="?page1={{ page_obj1.next_page_number }}&page2={{page_obj2.number}}">Next &raquo;</a>
+            
+  {% endif %}
+</div>  
 </container>
 </main>
 </div>
@@ -103,15 +115,15 @@
 
 <container class="card">
   <div class="card card-header">Issues in my project:</div>
-{% for issue in my_project_issues %}
+{% for issue2 in page_obj2 %}
   <article class="card mb-3 issue-card">
     <div class="card-body">
-      <h5 class="card-title">{{issue.title}}</h5>
+      <h5 class="card-title">{{issue2.title}}</h5>
       <h6 class="card-subtitle text-muted">
-        <a href="">{{issue.project}}</a> / <a href=""class="">{{issue.user_assigned}}</a> -
-        <b> {{issue.update_date}}</b>
+        <a href="">{{issue2.project}}</a> / <a href=""class="">{{issue2.user_assigned}}</a> -
+        <b> {{issue2.update_date}}</b>
         <i>
-          <small class="text-muted">{{issue.create_date.date}} {{issue.create_date|date:"H:i"}}</small>
+          <small class="text-muted">{{issue2.create_date.date}} {{issue2.create_date|date:"H:i"}}</small>
         </i>
       </h6>
 
@@ -144,7 +156,7 @@
               d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"
             />
           </svg>
-          {{issue.priority}}</span
+          {{issue2.priority}}</span
         >
         <span class="badge bg-primary">
           <svg
@@ -159,13 +171,27 @@
               d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707zm2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708zm5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708zm2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"
             />
           </svg>
-          {{issue.status}}</span
+          {{issue2.status}}</span
         >
       </div>
     </div>
   </article>
 {% endfor %}
-<div class="card card-footer">Pages: 1/2</div>
+<div class="card card-footer text-center">Page {{page_obj2.number}}/{{page_obj2.paginator.num_pages}} </div>
+
+  <div class="d-flex justify-content-center">
+  {% if page_obj2.has_previous %}
+  
+            
+            <a class="btn flex-fill" href="?page1={{page_obj1.number}}&page2={{ page_obj2.previous_page_number }}">&laquo; Previous  &nbsp;  </a>
+  {% endif %}  
+  {% if page_obj2.has_next %}
+  
+            <a class="btn flex-fill" href="?page1={{page_obj1.number}}&page2={{ page_obj2.next_page_number }}">Next &raquo;</a>
+            
+  {% endif %}
+
+</div>
 </container>
 </main>
 </div>
