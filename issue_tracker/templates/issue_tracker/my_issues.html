@@ -110,13 +110,11 @@
 <div class="card card-footer text-center">Page {{page_obj1.number}}/{{page_obj1.paginator.num_pages}}</div>
 <div class="d-flex justify-content-center">
 {% if page_obj1.has_previous %}
-  
-            
-            <a class="btn flex-fill" href="?page1={{ page_obj1.previous_page_number }}&page2={{page_obj2.number}}">&laquo; Previous  &nbsp;  </a>
+            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}page1={{ page_obj1.previous_page_number }}&page2={{page_obj2.number}}">&laquo; Previous  &nbsp;  </a>
   {% endif %}  
   {% if page_obj1.has_next %}
   
-            <a class="btn flex-fill" href="?page1={{ page_obj1.next_page_number }}&page2={{page_obj2.number}}">Next &raquo;</a>
+            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}page1={{ page_obj1.next_page_number }}&page2={{page_obj2.number}}">Next &raquo;</a>
             
   {% endif %}
 </div>  
@@ -140,7 +138,7 @@
     </div>
     <div class="col col-6">
        <form class="d-flex">
-        <input class="form-control mt-1 mb-1 me-2"  type="search" placeholder="Search" aria-label="Search">
+        <input class="form-control mt-1 mb-1 me-2" name="search_query2" type="search" placeholder="Search" aria-label="Search">
         <button class="btn btn-outline-success mt-1 mb-1 me-2" type="submit">Search</button>
       </form>
     </div>  
@@ -179,7 +177,7 @@
               d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
             />
           </svg>
-          {{issue.type}}
+          {{issue2.type}}
         </span>
         <span class="badge bg-secondary">
           <svg
@@ -219,13 +217,13 @@
 
   <div class="d-flex justify-content-center">
   {% if page_obj2.has_previous %}
-  
-            
-            <a class="btn flex-fill" href="?page1={{page_obj1.number}}&page2={{ page_obj2.previous_page_number }}">&laquo; Previous  &nbsp;  </a>
+
+            <a class="btn flex-fill" href="?{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{page_obj1.number}}&page2={{ page_obj2.previous_page_number }}">&laquo; Previous  &nbsp;  </a>
   {% endif %}  
+  
   {% if page_obj2.has_next %}
   
-            <a class="btn flex-fill" href="?page1={{page_obj1.number}}&page2={{ page_obj2.next_page_number }}">Next &raquo;</a>
+            <a class="btn flex-fill" href="?{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{page_obj1.number}}&page2={{ page_obj2.next_page_number }}">Next &raquo;</a>
             
   {% endif %}
 
@@ -233,238 +231,5 @@
 </container>
 </main>
 </div>
-<!-- 
-  <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
-      <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active" aria-current="page">Overview</li>
-          </ol>
-      </nav>
-      <h1 class="h2">Dashboard  </h1>
-      <div class="card">
-        <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Issues assigned to me</h5>
-        <div class="card-body">
-      <div class="table table-responsive text">
-        
-        <table class="table table-hover table-responsive"  style="font-size: 12px; font-weight: bold; font-weight: 550; ">
-        
-        <thead>
-          <tr>
-            <th class="" scope="col">Title</th>
-            <th class="" scope="col">Project</th>
-            <th class="d-none" scope="col">User assigned</th>
-            <th class="" scope="col">Priority</th>
-            <th class=""scope="col">Type</th>
-            <th class=""scope="col">Status</th>
-            <th class=""scope="col">Created</th>
-            <th class=""scope="col">Updated</th>
-            <th class=""scope="col">Options</th>
-          </tr>
-        </thead>
 
-        <tbody class="table table-striped">
-          {% for issue in my_issues %}
-          
-          <tr>
-            <td>{{issue.title}}</td>
-            <td>{{issue.project}}</td>
-            <td class="d-none">{{issue.user_assigned}}</td>
-            <td>{{issue.priority}}</td>
-            <td>{{issue.type}}</td>
-            <td>{{issue.status}}</td>
-            <td>{{issue.create_date}}</td>
-            <td>{{issue.update_date}}</td>
-            <td>Detail</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      </div>
-        </div>
-      </div>
-
-
-      <div class="card">
-        <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Issues in my projects</h5>
-        <div class="card-body">
-      <div class="table table-responsive text">
-        
-        <table class="table table-hover table-responsive"  style="font-size: 12px; font-weight: bold; font-weight: 550; ">
-        
-        <thead>
-          <tr>
-            <th class="" scope="col">Title</th>
-            <th class="" scope="col">Project</th>
-            <th class="" scope="col">User assigned</th>
-            <th class="" scope="col">Priority</th>
-            <th class=""scope="col">Type</th>
-            <th class=""scope="col">Status</th>
-            <th class=""scope="col">Created</th>
-            <th class=""scope="col">Updated</th>
-            <th class=""scope="col">Options</th>
-          </tr>
-        </thead>
-
-        <tbody class="table table-striped">
-          {% for issue in my_project_issues %}
-          <tr>
-            <td>{{issue.title}}</td>
-            <td>{{issue.project}}</td>
-            <td class="">{{issue.user_assigned}}</td>
-            <td>{{issue.priority}}</td>
-            <td>{{issue.type}}</td>
-            <td>{{issue.status}}</td>
-            <td>{{issue.create_date}}</td>
-            <td>{{issue.update_date}}</td>
-            <td>Detail</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-      </div>
-        </div>
-      </div>
-
-
-      <div class="row my-4">
-          <div class="col-12 col-md-6 col-lg-3 mb-4 mb-lg-0">
-              <div class="card">
-                  <h5 class="card-header">Customers</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">345k</h5>
-                    <p class="card-text">Feb 1 - Apr 1, United States</p>
-                    <p class="card-text text-success">18.2% increase since last month</p>
-                  </div>
-                </div>
-          </div>
-          <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
-              <div class="card">
-                  <h5 class="card-header">Revenue</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">$2.4k</h5>
-                    <p class="card-text">Feb 1 - Apr 1, United States</p>
-                    <p class="card-text text-success">4.6% increase since last month</p>
-                  </div>
-                </div>
-          </div>
-          <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
-              <div class="card">
-                  <h5 class="card-header">Purchases</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">43</h5>
-                    <p class="card-text">Feb 1 - Apr 1, United States</p>
-                    <p class="card-text text-danger">2.6% decrease since last month</p>
-                  </div>
-                </div>
-          </div>
-          <div class="col-12 col-md-6 mb-4 mb-lg-0 col-lg-3">
-              <div class="card">
-                  <h5 class="card-header">Traffic</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">64k</h5>
-                    <p class="card-text">Feb 1 - Apr 1, United States</p>
-                    <p class="card-text text-success">2.5% increase since last month</p>
-                  </div>
-              </div>
-          </div>
-      </div>
-      <div class="row">
-          <div class="col-12 col-xl-8 mb-4 mb-lg-0">
-              <div class="card">
-                  <h5 class="card-header">Latest transactions</h5>
-                  <div class="card-body">
-                      <div class="table-responsive">
-                          <table class="table">
-                              <thead>
-                                <tr>
-                                  <th scope="col">Order</th>
-                                  <th scope="col">Product</th>
-                                  <th scope="col">Customer</th>
-                                  <th scope="col">Total</th>
-                                  <th scope="col">Date</th>
-                                  <th scope="col"></th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                <tr>
-                                  <th scope="row">17371705</th>
-                                  <td>Volt Premium Bootstrap 5 Dashboard</td>
-                                  <td>johndoe@gmail.com</td>
-                                  <td>€61.11</td>
-                                  <td>Aug 31 2020</td>
-                                  <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">17370540</th>
-                                  <td>Pixel Pro Premium Bootstrap UI Kit</td>
-                                  <td>jacob.monroe@company.com</td>
-                                  <td>$153.11</td>
-                                  <td>Aug 28 2020</td>
-                                  <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">17371705</th>
-                                  <td>Volt Premium Bootstrap 5 Dashboard</td>
-                                  <td>johndoe@gmail.com</td>
-                                  <td>€61.11</td>
-                                  <td>Aug 31 2020</td>
-                                  <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">17370540</th>
-                                  <td>Pixel Pro Premium Bootstrap UI Kit</td>
-                                  <td>jacob.monroe@company.com</td>
-                                  <td>$153.11</td>
-                                  <td>Aug 28 2020</td>
-                                  <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">17371705</th>
-                                  <td>Volt Premium Bootstrap 5 Dashboard</td>
-                                  <td>johndoe@gmail.com</td>
-                                  <td>€61.11</td>
-                                  <td>Aug 31 2020</td>
-                                  <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                </tr>
-                                <tr>
-                                  <th scope="row">17370540</th>
-                                  <td>Pixel Pro Premium Bootstrap UI Kit</td>
-                                  <td>jacob.monroe@company.com</td>
-                                  <td>$153.11</td>
-                                  <td>Aug 28 2020</td>
-                                  <td><a href="#" class="btn btn-sm btn-primary">View</a></td>
-                                </tr>
-                              </tbody>
-                            </table>
-                      </div>
-                      <a href="#" class="btn btn-block btn-light">View all</a>
-                  </div>
-              </div>
-          </div>
-          <div class="col-12 col-xl-4">
-              <div class="card">
-                  <h5 class="card-header">Traffic last 6 months</h5>
-                  <div class="card-body">
-                      <div id="traffic-chart"></div>
-                  </div>
-              </div>
-          </div>
-      </div>
-      <footer class="pt-5 d-flex justify-content-between">
-          <span>Copyright © 2019-2020 <a href="https://themesberg.com">Themesberg</a></span>
-          <ul class="nav m-0">
-              <li class="nav-item">
-                <a class="nav-link text-secondary" aria-current="page" href="#">Privacy Policy</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-secondary" href="#">Terms and conditions</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-secondary" href="#">Contact</a>
-              </li>
-            </ul>
-      </footer>
-  </main>
--->
 {% endblock %} 
