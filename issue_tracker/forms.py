@@ -8,7 +8,7 @@ class IssueForm(ModelForm):
         self.request=kwargs.pop('request')
 
         super(IssueForm,self).__init__(*args, **kwargs)
-        self.fields['project'].queryset=Project.objects.filter(member=self.request.user)
+        self.fields['project'].queryset=Project.objects.filter(member=self.request.user).prefetch_related('member')
         self.fields['creator'].queryset=User.objects.filter(id=self.request.user.id) 
 
     class Meta:

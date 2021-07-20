@@ -42,11 +42,11 @@
   </div>
 <main
   class="container px-4"
-  style="cursor: pointer"
-  onclick="location.href = 'https:/google.pl' "
+  
 >
 {% for issue in page_obj1 %}
-  <article class="card mb-3 issue-card">
+  <article class="card mb-3 issue-card" style="cursor: pointer"
+  onclick="location.href = 'https:/google.pl' ">
     <div class="card-body">
       <h5 class="card-title">{{issue.title}}</h5>
       <h6 class="card-subtitle text-muted">
@@ -110,11 +110,11 @@
 <div class="card card-footer text-center">Page {{page_obj1.number}}/{{page_obj1.paginator.num_pages}}</div>
 <div class="d-flex justify-content-center">
 {% if page_obj1.has_previous %}
-            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}page1={{ page_obj1.previous_page_number }}&page2={{page_obj2.number}}">&laquo; Previous  &nbsp;  </a>
+            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{ page_obj1.previous_page_number }}&page2={{page_obj2.number}}">&laquo; Previous  &nbsp;  </a>
   {% endif %}  
   {% if page_obj1.has_next %}
   
-            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}page1={{ page_obj1.next_page_number }}&page2={{page_obj2.number}}">Next &raquo;</a>
+            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{ page_obj1.next_page_number }}&page2={{page_obj2.number}}">Next &raquo;</a>
             
   {% endif %}
 </div>  
@@ -148,11 +148,11 @@
   </div>
 <main
   class="container px-4"
-  style="cursor: pointer"
-  onclick="location.href = 'https:/google.pl' "
+  
 >  
 {% for issue2 in page_obj2 %}
-  <article class="card mb-3 issue-card">
+  <article class="card mb-3 issue-card" style="cursor: pointer"
+  onclick="location.href = 'https:/google.pl' ">
     <div class="card-body">
       <h5 class="card-title">{{issue2.title}}</h5>
       <h6 class="card-subtitle text-muted">
@@ -218,12 +218,12 @@
   <div class="d-flex justify-content-center">
   {% if page_obj2.has_previous %}
 
-            <a class="btn flex-fill" href="?{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{page_obj1.number}}&page2={{ page_obj2.previous_page_number }}">&laquo; Previous  &nbsp;  </a>
+            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{page_obj1.number}}&page2={{ page_obj2.previous_page_number }}">&laquo; Previous  &nbsp;  </a>
   {% endif %}  
   
   {% if page_obj2.has_next %}
   
-            <a class="btn flex-fill" href="?{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{page_obj1.number}}&page2={{ page_obj2.next_page_number }}">Next &raquo;</a>
+            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{page_obj1.number}}&page2={{ page_obj2.next_page_number }}">Next &raquo;</a>
             
   {% endif %}
 

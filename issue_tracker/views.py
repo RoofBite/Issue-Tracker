@@ -2,14 +2,30 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from .models import *
 from django.db.models import Q
-from .models import *
 from .forms import IssueForm, IssueTagForm
 from django.views.generic import CreateView
 from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.http import require_http_methods
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import authenticate,login, logout
 
 def main(request):
     return render(request,'issue_tracker/index.html')
+
+def sign_up(request):
+    if request.user.is_authenticated:
+        return redirect('issue_tracker:main')
+
+    form=UserCreationForm()
+    if request.method=="POST":
+        form=UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            
+            
+
+    context={'form':form}    
+    return render(request,'issue_tracker/sign-up.html',context)
 
 class Add_issue(CreateView):
     
@@ -28,10 +44,10 @@ class Add_issue(CreateView):
 def my_issues(request):
     # Later I will add login and will chack if user is logged in and if has access to issue 
     context={}
-    
-        
-    
-    my_project_issues = Issue.objects.filter(project__member=request.user).order_by("-create_date").select_related('project','user_assigned')
+  
+    my_project_issues = (Issue.objects.filter(project__member=request.user).
+    order_by("-create_date").select_related('project','user_assigned'))
+
     my_issues=my_project_issues.filter(user_assigned=request.user)
 
     paginator1 = Paginator(my_issues, 2)
@@ -73,7 +89,7 @@ def my_issues(request):
     if request.GET.get('search_query2'):
         search_query2=request.GET.get('search_query2')
         context['search_query2']=str(search_query2)
-        
+
         query2=my_issues.filter(
         Q(project__name__icontains=search_query2) | Q(create_date__startswith=search_query2) | Q(update_date__startswith=search_query2) | Q(title__icontains=search_query2) | Q(description__icontains=search_query2) | Q(user_assigned__username__icontains=search_query2)
          | Q(status__icontains=search_query2) | Q(priority__icontains=search_query2) | Q(type__icontains=search_query2)
