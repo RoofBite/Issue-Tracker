@@ -66,12 +66,12 @@
             
             <div class="dropdown">
                 <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-expanded="false">
-                  Hello, John Doe
+                  Options
                 </button>
                 <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                   <li><a class="dropdown-item" href="#">Settings</a></li>
                   <li><a class="dropdown-item" href="#">Messages</a></li>
-                  <li><a class="dropdown-item" href="#">Sign out</a></li>
+                  <li><a class="dropdown-item" href="{% url 'issue_tracker:logout-page' %}">Sign out</a></li>
                 </ul>
               </div>
         </div>
@@ -88,7 +88,7 @@
                           </a>
                         </li>
                         <li class="nav-item">
-                          <a class="nav-link" href="{% url 'issue_tracker:my_issues' %}">
+                          <a class="nav-link" href="{% url 'issue_tracker:my-issues' %}">
                             
                             <span class="ml-2 text-center">Issues</span>
                           </a>
