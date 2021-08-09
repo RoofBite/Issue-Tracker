@@ -11,7 +11,9 @@
       <div class="card">
         <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Report issue</h5>
         <div class="card-body">
-        <form method="POST" action="">
+        <form method="POST" action='' id="personForm"
+        data-users_assigned-url="{% url 'issue_tracker:ajax_load_users' %}"
+        novalidate>
           {% csrf_token %}
           {{ form.as_p }}
           <button type="submit" class="btn btn-success">Confirm</button>
@@ -21,4 +23,43 @@
         </div>
     
   </main>
+
+  <form
+  method="POST"
+  id="personForm1"
+  data-users_assigned-url="{% url 'issue_tracker:ajax_load_users' %}"
+  novalidate>
+  {% csrf_token %}
+  <select id="id_project">
+    <option value="1">Test</option>
+    <option value="2">Test2</option>
+  </select>
+
+  <select id="id_user_assigned"></select>
+
+  <button type="submit">Save</button>
+  <a href="{% url 'issue_tracker:add-issue' %}">Nevermind</a>
+</form>
+
+<script>
+  let project = document.querySelector("#id_project");
+  let user_assigned = document.querySelector("#id_user_assigned");
+  let personForm = document.querySelector("#personForm");
+  
+  project.addEventListener("change", () => {  
+    let url = personForm.getAttribute("data-users_assigned-url");
+    var projectId = project.value;
+
+    fetch(url +'?project='+ projectId)
+      .then(response => response.text())
+      .then(data => {
+
+        user_assigned.innerHTML = data;
+      });
+  });
+</script>
+
 {% endblock %} 
+
+
+

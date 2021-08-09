@@ -2,13 +2,22 @@ from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
 from .models import *
 from django.db.models import Q
-from .forms import IssueForm, IssueTagForm
+from .forms import IssueFormDeveloper, IssueTagForm
 from django.views.generic import CreateView
 from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate,login, logout
 from django.urls import reverse_lazy
+
+def load_users(request):
+    project_id = request.GET.get('project')
+    users = User.objects.all()
+    users = Project.objects.get(id=project_id)
+    print(users)
+    print(Project.objects.values_list('member', flat=True).distinct())
+
+    return render(request, 'issue_tracker/hr/user_assigned_dropdown_list_options.html', {'users': users})
 
 def sign_in(request):
     if request.user.is_authenticated:
@@ -47,7 +56,7 @@ def sign_up(request):
 class Add_issue(CreateView):
     
     model = Issue
-    form_class = IssueForm
+    form_class = IssueFormDeveloper
     template_name = 'issue_tracker/add_issue.html'
     success_url = reverse_lazy('issue_tracker:main')
 
