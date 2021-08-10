@@ -70,44 +70,50 @@ def my_projects(request):
     context ={'projects':projects}
     return render(request, 'issue_tracker/my_projects.html', context)
 
+
+
 @login_required(login_url='issue_tracker:sign-in')
 @require_http_methods(["GET"])
-def issues_detail(request, pk):
+def project_details(request, pk):
     context = {}
   
+    project = Project.objects.get(id=pk)
     my_project_issues = (Issue.objects.filter(project__id=pk).
     order_by("-create_date").select_related('project', 'user_assigned'))
 
-    paginator2 = Paginator(my_project_issues, 3)
-    page_number2 = request.GET.get('page2')
+    paginator = Paginator(my_project_issues, 3)
+    page_number = request.GET.get('page')
 
     try:
-        page_obj2 = paginator2.get_page(page_number2)
+        page_obj = paginator.get_page(page_number)
     except EmptyPage:
-        page_obj2 = paginator2.page(paginator2.num_pages)
+        page_obj = paginator.page(paginator.num_pages)
     
-    page_obj2 = paginator2.get_page(page_number2)
+    page_obj = paginator.get_page(page_number)
     
-    if request.GET.get('search_query2'):
-        search_query2 = request.GET.get('search_query2')
-        context['search_query2']=str(search_query2)
+    if request.GET.get('search_query'):
+        search_query = request.GET.get('search_query')
+        context['search_query']=str(search_query)
 
-        query2=my_project_issues.filter(
-        Q(project__name__icontains=search_query2) | Q(create_date__startswith=search_query2) | Q(update_date__startswith=search_query2) | Q(title__icontains=search_query2) | Q(description__icontains=search_query2) | Q(user_assigned__username__icontains=search_query2)
-         | Q(status__icontains=search_query2) | Q(priority__icontains=search_query2) | Q(type__icontains=search_query2)
+        query=my_project_issues.filter(
+        Q(project__name__icontains=search_query) | Q(create_date__startswith=search_query) | Q(update_date__startswith=search_query) | Q(title__icontains=search_query) | Q(description__icontains=search_query) | Q(user_assigned__username__icontains=search_query)
+         | Q(status__icontains=search_query) | Q(priority__icontains=search_query) | Q(type__icontains=search_query)
         ).order_by('-create_date')
 
-        paginator2 = Paginator(query2, 3)
-        page_number2 = request.GET.get('page2')
+        paginator = Paginator(query, 3)
+        page_number = request.GET.get('page')
     try:
-        page_obj2 = paginator2.get_page(page_number2)
+        page_obj = paginator.get_page(page_number)
     except EmptyPage:
-        page_obj2=paginator2.page(paginator2.num_pages)
+        page_obj=paginator.page(paginator.num_pages)
     
-    context['page_obj2'] = page_obj2
+    context['page_obj'] = page_obj
     context['my_project_issues'] = my_project_issues
+    context['project'] = project
 
-    return render(request, 'issue_tracker/issues_detail.html', context)
+    return render(request, 'issue_tracker/project_details.html', context)
+
+
 
 @login_required(login_url='issue_tracker:sign-in')
 @require_http_methods(["GET"])
