@@ -9,16 +9,45 @@
       </nav>
       <h1 class="h2">Dashboard  </h1>
       <div class="card">
+        <center>
         <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Report issue</h5>
         <div class="card-body">
+    
         <form method="POST" action='' id="personForm"
         data-users_assigned-url="{% url 'issue_tracker:ajax_load_users' %}"
         novalidate>
-          {% csrf_token %}
-          {{ form.as_p }}
+        {% csrf_token %}
+      <section class="row">
+        <article class="col-6">
+          {{ form.creator }}
+          Title: 
+          {{ form.title }}
+          <br><br>
+          Project: 
+          {{ form.project }}
+          <br><br>
+          User assigned: 
+          {{ form.user_assigned }}
+          <br><br>
+          Priority: 
+          {{ form.priority }}
+          <br><br>
+          Status: 
+          {{ form.status }}: 
+          <br>
+        </article>
+        <article class="col-6">
+          Description
+          <br>
+          {{ form.description }}
+        </article>
+    </section>
+    <section class="row">
+      <article class="col-6">    
           <button type="submit" class="btn btn-success">Confirm</button>
-        </form>
-       
+        </form> 
+      </article>
+    </section>    
       </div>
         </div>
     
