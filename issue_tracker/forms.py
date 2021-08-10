@@ -1,6 +1,6 @@
 from django.http import request
 from .models import *
-from django.forms import ModelForm, ModelChoiceField
+from django.forms import ModelForm, ModelChoiceField, HiddenInput
 
 class IssueFormDeveloper(ModelForm):
     
@@ -8,13 +8,13 @@ class IssueFormDeveloper(ModelForm):
         self.request=kwargs.pop('request')
 
         super(IssueFormDeveloper,self).__init__(*args, **kwargs)
-        self.fields['user_assigned'].queryset=User.objects.none()
-        self.fields['project'].queryset=Project.objects.filter(member=self.request.user).prefetch_related('member')
-        self.fields['creator'].queryset=User.objects.filter(id=self.request.user.id) 
-    
+        self.fields['user_assigned'].queryset = User.objects.none()
+        self.fields['project'].queryset = Project.objects.filter(member=self.request.user).prefetch_related('member')
+        self.fields['creator'].initial = User.objects.get(id=self.request.user.id) 
+        self.fields['creator'].widget = HiddenInput()
+        
         if 'project' in self.data:
             try:
-                print('form',self.data.get('project'), int(self.data.get('project')))
                 project_id = int(self.data.get('project'))
                 self.fields['user_assigned'].queryset = User.objects.filter(project__id=project_id)
             except (ValueError, TypeError):
