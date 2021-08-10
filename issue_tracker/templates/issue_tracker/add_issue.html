@@ -24,22 +24,6 @@
     
   </main>
 
-  <form
-  method="POST"
-  id="personForm1"
-  data-users_assigned-url="{% url 'issue_tracker:ajax_load_users' %}"
-  novalidate>
-  {% csrf_token %}
-  <select id="id_project">
-    <option value="1">Test</option>
-    <option value="2">Test2</option>
-  </select>
-
-  <select id="id_user_assigned"></select>
-
-  <button type="submit">Save</button>
-  <a href="{% url 'issue_tracker:add-issue' %}">Nevermind</a>
-</form>
 
 <script>
   let project = document.querySelector("#id_project");
