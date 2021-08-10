@@ -64,6 +64,14 @@ class Add_issue(CreateView):
 
 @login_required(login_url='issue_tracker:sign-in')
 @require_http_methods(["GET"])
+def my_projects(request):
+    projects = Project.objects.filter(member__id=request.user.id)
+    print(request.user,projects.first().member.all())
+    context ={'projects':projects}
+    return render(request, 'issue_tracker/my_projects.html', context)
+
+@login_required(login_url='issue_tracker:sign-in')
+@require_http_methods(["GET"])
 def my_issues(request):
     # Later I will add login and will chack if user is logged in and if has access to issue 
     context = {}
