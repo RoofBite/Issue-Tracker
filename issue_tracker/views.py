@@ -12,11 +12,8 @@ from django.urls import reverse_lazy
 
 def load_users(request):
     project_id = request.GET.get('project')
-    users = User.objects.all()
-    users = Project.objects.get(id=project_id)
-    print(users)
-    print(Project.objects.values_list('member', flat=True).distinct())
-
+    users = User.objects.filter(project__id__in=project_id)
+    
     return render(request, 'issue_tracker/hr/user_assigned_dropdown_list_options.html', {'users': users})
 
 def sign_in(request):
