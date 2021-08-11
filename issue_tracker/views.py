@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.generic import CreateView
 from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.http import require_http_methods
@@ -91,6 +91,8 @@ def project_details(request, pk):
         project = Project.objects.get(id=pk)
         my_project_issues = (
             Issue.objects.filter(project__id=pk)
+            .exclude(status="RESOLVED")
+        .exclude(status="CLOSED")
             .order_by("-create_date")
             .select_related("project", "user_assigned")
         )
@@ -199,11 +201,12 @@ def reported_issues(request):
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET"])
 def my_issues(request):
-    # Later I will add login and will chack if user is logged in and if has access to issue
     context = {}
 
     my_project_issues = (
         Issue.objects.filter(project__member=request.user)
+        .exclude(status="RESOLVED")
+        .exclude(status="CLOSED")
         .order_by("-create_date")
         .select_related("project", "user_assigned")
     )

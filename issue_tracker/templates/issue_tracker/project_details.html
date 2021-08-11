@@ -80,7 +80,7 @@
       
     <div class="col col-6">
       
-        <div class="text-center mt-2 ">Issues in project </div>
+        <div class="text-center mt-2 ">Active issues in project </div>
     </div>
     <div class="col col-6">
        <form class="d-flex">
@@ -100,7 +100,7 @@
 
 {% for issue in page_obj %}
   <article class="card mb-3 issue-card" style="cursor: pointer"
-  onclick="location.href = '{% url 'issue_tracker:issue-details'  issue.id %}' ">
+  onclick="location.href = `{% url 'issue_tracker:issue-details'  issue.id %}` ">
     <div class="card-body">
       <h5 class="card-title">{{issue.title}}</h5>
       <h6 class="card-subtitle text-muted">
