@@ -9,6 +9,7 @@ urlpatterns = [
     path("my-issues/", views.my_issues, name="my-issues"),
     path("reported-issues/", views.reported_issues, name="reported-issues"),
     path("project-details/<int:pk>/", views.project_details, name="project-details"),
+    path("project-details-old-issues/<int:pk>/", views.project_details_old_issues, name="project-details-old-issues"),
     path("issue-details/<int:pk>/", views.issue_details, name="issue-details"),
     path("my-projects/", views.my_projects, name="my-projects"),
     path("add-issue/", login_required(views.Add_issue.as_view()), name="add-issue"),
