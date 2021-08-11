@@ -1,14 +1,15 @@
 from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from .models import *
-from django.db.models import Q
-from .forms import IssueFormDeveloper, IssueTagForm
 from django.views.generic import CreateView
 from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate,login, logout
 from django.urls import reverse_lazy
+from django.db.models import Q
+from .forms import IssueFormDeveloper, IssueTagForm
+from .models import *
 
 def load_users(request):
     project_id = request.GET.get('project')
@@ -75,44 +76,46 @@ def my_projects(request):
 @login_required(login_url='issue_tracker:sign-in')
 @require_http_methods(["GET"])
 def project_details(request, pk):
-    context = {}
-  
-    project = Project.objects.get(id=pk)
-    my_project_issues = (Issue.objects.filter(project__id=pk).
-    order_by("-create_date").select_related('project', 'user_assigned'))
-
-    paginator = Paginator(my_project_issues, 3)
-    page_number = request.GET.get('page')
-
-    try:
-        page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+    project_instance=Project.objects.filter(id=pk,member=request.user.id).first()
+    if project_instance:
+        context = {}
     
-    page_obj = paginator.get_page(page_number)
-    
-    if request.GET.get('search_query'):
-        search_query = request.GET.get('search_query')
-        context['search_query']=str(search_query)
+        project = Project.objects.get(id=pk)
+        my_project_issues = (Issue.objects.filter(project__id=pk).
+        order_by("-create_date").select_related('project', 'user_assigned'))
 
-        query=my_project_issues.filter(
-        Q(project__name__icontains=search_query) | Q(create_date__startswith=search_query) | Q(update_date__startswith=search_query) | Q(title__icontains=search_query) | Q(description__icontains=search_query) | Q(user_assigned__username__icontains=search_query)
-         | Q(status__icontains=search_query) | Q(priority__icontains=search_query) | Q(type__icontains=search_query)
-        ).order_by('-create_date')
-
-        paginator = Paginator(query, 3)
+        paginator = Paginator(my_project_issues, 3)
         page_number = request.GET.get('page')
-    try:
+
+        try:
+            page_obj = paginator.get_page(page_number)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+        
         page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj=paginator.page(paginator.num_pages)
-    
-    context['page_obj'] = page_obj
-    context['my_project_issues'] = my_project_issues
-    context['project'] = project
+        
+        if request.GET.get('search_query'):
+            search_query = request.GET.get('search_query')
+            context['search_query']=str(search_query)
 
-    return render(request, 'issue_tracker/project_details.html', context)
+            query=my_project_issues.filter(
+            Q(project__name__icontains=search_query) | Q(create_date__startswith=search_query) | Q(update_date__startswith=search_query) | Q(title__icontains=search_query) | Q(description__icontains=search_query) | Q(user_assigned__username__icontains=search_query)
+            | Q(status__icontains=search_query) | Q(priority__icontains=search_query) | Q(type__icontains=search_query)
+            ).order_by('-create_date')
 
+            paginator = Paginator(query, 3)
+            page_number = request.GET.get('page')
+        try:
+            page_obj = paginator.get_page(page_number)
+        except EmptyPage:
+            page_obj=paginator.page(paginator.num_pages)
+        
+        context['page_obj'] = page_obj
+        context['my_project_issues'] = my_project_issues
+        context['project'] = project
+
+        return render(request, 'issue_tracker/project_details.html', context)
+    return HttpResponse("You are not allowed to see this project")
 
 
 @login_required(login_url='issue_tracker:sign-in')
