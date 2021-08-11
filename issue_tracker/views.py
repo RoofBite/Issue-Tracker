@@ -120,6 +120,17 @@ def project_details(request, pk):
 
 @login_required(login_url='issue_tracker:sign-in')
 @require_http_methods(["GET"])
+def issue_details(request, pk):
+    projects = Project.objects.filter(member__id=request.user.id)
+    issue_instance = Issue.objects.filter(id=pk, project__in=projects).first()
+    if issue_instance:
+        context = {'issue':issue_instance}
+        return render(request, 'issue_tracker/issue_details.html', context)
+    return HttpResponse("You are not allowed to see this issue")
+
+
+@login_required(login_url='issue_tracker:sign-in')
+@require_http_methods(["GET"])
 def my_issues(request):
     # Later I will add login and will chack if user is logged in and if has access to issue 
     context = {}

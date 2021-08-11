@@ -61,7 +61,7 @@ class Issue(models.Model):
         default='BUG',
     )
 
-    description=models.TextField(null=True)
+    description=models.CharField(max_length=250,null=True)
     create_date=models.DateTimeField(auto_now_add=True)
     update_date=models.DateTimeField(null=True ,blank=True)
     tags=models.ManyToManyField(IssueTag,blank= True)
