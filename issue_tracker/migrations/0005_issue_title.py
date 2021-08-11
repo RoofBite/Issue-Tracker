@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('issue_tracker', '0004_alter_issue_update_date'),
+        ("issue_tracker", "0004_alter_issue_update_date"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='issue',
-            name='title',
-            field=models.CharField(default='', max_length=50),
+            model_name="issue",
+            name="title",
+            field=models.CharField(default="", max_length=50),
         ),
     ]

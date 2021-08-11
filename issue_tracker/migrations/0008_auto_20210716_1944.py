@@ -7,17 +7,22 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('issue_tracker', '0007_auto_20210716_1942'),
+        ("issue_tracker", "0007_auto_20210716_1942"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='issue',
-            name='tags',
+            model_name="issue",
+            name="tags",
         ),
         migrations.AddField(
-            model_name='issue',
-            name='tags',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='issue_tracker.issuetag'),
+            model_name="issue",
+            name="tags",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="issue_tracker.issuetag",
+            ),
         ),
     ]

@@ -8,22 +8,22 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('issue_tracker', '0010_alter_issue_tags'),
+        ("issue_tracker", "0010_alter_issue_tags"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='project',
-            name='members',
+            model_name="project",
+            name="members",
         ),
         migrations.AddField(
-            model_name='project',
-            name='member',
+            model_name="project",
+            name="member",
             field=models.ManyToManyField(blank=True, to=settings.AUTH_USER_MODEL),
         ),
         migrations.AlterField(
-            model_name='issue',
-            name='title',
+            model_name="issue",
+            name="title",
             field=models.CharField(max_length=80),
         ),
     ]

@@ -20,7 +20,7 @@ import debug_toolbar
 from django.urls.conf import include
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('',include('issue_tracker.urls')),
-    path('__debug__/', include(debug_toolbar.urls)),
+    path("admin/", admin.site.urls),
+    path("", include("issue_tracker.urls")),
+    path("__debug__/", include(debug_toolbar.urls)),
 ]
