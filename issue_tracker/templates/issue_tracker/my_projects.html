@@ -39,7 +39,7 @@
   class="container px-4" 
 >
 {% for project in projects %}
-  <article class="card mb-3 issue-card" style="cursor: pointer"
+  <article class="card mb-3 mt-3 issue-card" style="cursor: pointer"
   onclick="location.href = '{% url 'issue_tracker:project-details'  project.id  %}' ">
     <div class="card-body">
       <h5 class="card-title">{{project.name}}</h5>

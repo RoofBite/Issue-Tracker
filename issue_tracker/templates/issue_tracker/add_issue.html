@@ -19,6 +19,7 @@
         {% csrf_token %}
       <section class="row">
         <article class="col-6">
+          <br>
           {{ form.creator }}
           Title: 
           {{ form.title }}
@@ -33,7 +34,7 @@
           {{ form.priority }}
           <br><br>
           Status: 
-          {{ form.status }}: 
+          {{ form.status }}
           <br>
         </article>
         <article class="col-6">
@@ -43,8 +44,8 @@
         </article>
     </section>
     <section class="row">
-      <article class="col-6">    
-          <button type="submit" class="btn btn-success">Confirm</button>
+      <article class="col-12">    
+          <button type="submit" class="btn btn-success mt-2">Confirm</button>
         </form> 
       </article>
     </section>    
