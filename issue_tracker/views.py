@@ -41,7 +41,7 @@ def sign_in(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required('developer', 'leader', 'admin')
+@group_required("developer", "leader", "admin")
 def main(request):
     return render(request, "issue_tracker/index.html")
 
@@ -77,11 +77,12 @@ class Add_issue(CreateView):
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET"])
 def my_projects(request):
-    context={}
+    context = {}
     if Project.objects.filter(member__id=request.user.id).exists():
         projects = Project.objects.filter(member__id=request.user.id)
         context = {"projects": projects}
     return render(request, "issue_tracker/my_projects.html", context)
+
 
 
 @login_required(login_url="issue_tracker:sign-in")

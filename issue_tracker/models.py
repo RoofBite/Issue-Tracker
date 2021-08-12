@@ -5,7 +5,13 @@ from django.contrib.auth.models import User
 class Project(models.Model):
     name = models.TextField(null=True)
     member = models.ManyToManyField(User, blank=True)
-
+    leader = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=False,
+        related_name="leader_project_set",
+    )
     def __str__(self):
         return self.name
 
