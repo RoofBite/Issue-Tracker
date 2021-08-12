@@ -3,8 +3,9 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 class Project(models.Model):
-    name = models.TextField(null=True)
+    name = models.TextField(null=False, default='None')
     member = models.ManyToManyField(User, blank=True)
+    description = models.TextField(null=True)
     leader = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,

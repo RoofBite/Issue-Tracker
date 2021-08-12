@@ -110,7 +110,7 @@ def manage_project_details(request, pk):
 
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET", "POST"])
-def manage_project_add_developer(request, pk):
+def manage_project_developers(request, pk):
     project_instance = Project.objects.filter(pk=pk, leader__id=request.user.id).first()
     if project_instance:
         form = AddDeveloper(instance=project_instance)
@@ -120,10 +120,11 @@ def manage_project_add_developer(request, pk):
             if form.is_valid():
                 new_project = form.save(commit=False)
                 new_project.member.set(list(form.cleaned_data['member']))
+                print(list(form.cleaned_data['member']))
                 new_project.save()
                 return redirect(request.path)
         context = {"project":project_instance,"form": form}
-        return render(request, "issue_tracker/manage_project_add_developer.html", context)
+        return render(request, "issue_tracker/manage_project_developers.html", context)
 
 
 @login_required(login_url="issue_tracker:sign-in")

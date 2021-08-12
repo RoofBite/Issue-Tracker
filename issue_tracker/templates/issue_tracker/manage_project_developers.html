@@ -15,9 +15,9 @@
   <nav class="text-center" aria-label="breadcrumb" style="padding: 20px">
     <ol class="breadcrumb">
       <li class="card me-3"><a class="btn btn-primary me-3 text-center"
-        href="{% url 'issue_tracker:manage-project-add-developer' project.id %}">Manage developer list  </a></li>  
+        href="{% url 'issue_tracker:manage-project-developers' project.id %}">Manage developers list  </a></li>  
       <li class="card me-3"><a class="btn btn-primary me-2 text-center"
-          href="{% url 'issue_tracker:project-details-old-issues' project.id %}">Add leader (change link) </a></li>  
+          href="{% url 'issue_tracker:manage-project-details' project.id %}">Project details </a></li>  
           
     </ol>
     <b>{{project.name}}</b>
