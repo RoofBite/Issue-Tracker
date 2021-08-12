@@ -8,7 +8,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
-from .forms import IssueFormDeveloper, IssueTagForm
+from .forms import IssueFormDeveloper, IssueTagForm, AddDeveloper
 from .models import *
 from .decorators import group_required
 
@@ -87,11 +87,44 @@ def my_projects(request):
 @group_required("leader")
 @require_http_methods(["GET"])
 def manage_projects_list(request):
-    context={}
+    context = {}
     if Project.objects.filter(member__id=request.user.id).exists():
-        projects = Project.objects.filter(member__id=request.user.id,leader__id=request.user.id)
+        projects = Project.objects.filter(
+            member__id=request.user.id, leader__id=request.user.id
+        )
         context = {"projects": projects}
     return render(request, "issue_tracker/manage_projects_list.html", context)
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@require_http_methods(["GET"])
+def manage_project_details(request, pk):
+    project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
+    if project_instance:
+        project = Project.objects.get(id=pk)
+        context = {"project": project}
+
+        return render(request, "issue_tracker/manage_project_details.html", context)
+    return HttpResponse("You are not allowed to see this project")
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@require_http_methods(["GET", "POST"])
+def manage_project_add_developer(request, pk):
+    project_instance = Project.objects.filter(pk=pk, leader__id=request.user.id).first()
+    if project_instance:
+        form = AddDeveloper(instance=project_instance)
+
+        if request.method == "POST":
+            form = AddDeveloper(request.POST, instance=project_instance)
+            if form.is_valid():
+                new_project = form.save(commit=False)
+                new_project.member.set(list(form.cleaned_data['member']))
+                new_project.save()
+                return redirect(request.path)
+        context = {"project":project_instance,"form": form}
+        return render(request, "issue_tracker/manage_project_add_developer.html", context)
+
 
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET"])

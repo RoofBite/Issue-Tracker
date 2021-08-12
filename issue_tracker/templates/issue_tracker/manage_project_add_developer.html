@@ -1,0 +1,70 @@
+{% extends "issue_tracker/base.html" %}
+{% block content %}
+
+
+<style>
+  .issue-card {
+    transition: background-color 0.2s;
+  }
+
+  .issue-card:hover {
+    background-color: #eeebeb;
+  }
+</style>
+<div class='col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
+  <nav class="text-center" aria-label="breadcrumb" style="padding: 20px">
+    <ol class="breadcrumb">
+      <li class="card me-3"><a class="btn btn-primary me-3 text-center"
+        href="{% url 'issue_tracker:manage-project-add-developer' project.id %}">Manage developer list  </a></li>  
+      <li class="card me-3"><a class="btn btn-primary me-2 text-center"
+          href="{% url 'issue_tracker:project-details-old-issues' project.id %}">Add leader (change link) </a></li>  
+          
+    </ol>
+    <b>{{project.name}}</b>
+  </nav>
+
+  <main class="container px-4">
+    
+
+    <container class="card">
+      <div class="card card-header">
+
+        <div class="row">
+          <div class="col col-12"></div>
+
+          <div class="col col-12">
+
+            <div class="text-center mt-2 "> Project </div>
+          </div>
+
+        </div>
+
+
+
+
+
+        <article class="card mb-3 mt-2 issue-card">
+          <div class="card-body">
+            <h5 class="card-title">Add developer</h5>
+            
+            <form method="POST" action=''>
+            {% csrf_token %}
+
+            <div class="mt-1">
+              {{form.as_table}}
+
+            </div>
+            <button type="submit" class="btn btn-success mt-2">Confirm</button>
+            </form>
+          </div>
+        </article>
+
+    </container>
+
+</div>
+
+
+
+</div>
+</main>
+{% endblock %}

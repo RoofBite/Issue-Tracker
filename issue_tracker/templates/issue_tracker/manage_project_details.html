@@ -1,0 +1,74 @@
+{% extends "issue_tracker/base.html" %}
+{% block content %}
+
+
+<style>
+  .issue-card {
+    transition: background-color 0.2s;
+  }
+
+  .issue-card:hover {
+    background-color: #eeebeb;
+  }
+</style>
+<div class='col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
+  <nav class='text-center' aria-label="breadcrumb" style="padding: 20px">
+    <ol class="breadcrumb">
+      <li class="card me-3"><a class="btn btn-primary me-3 text-center"
+          href="{% url 'issue_tracker:manage-project-add-developer' project.id %}">Manage developer list </a></li>
+      <li class="card me-3"><a class="btn btn-primary me-2 text-center"
+          href="{% url 'issue_tracker:project-details-old-issues' project.id %}">Add leader (change link) </a></li>  
+  
+    </ol>
+    <b>{{project.name}}</b>
+  </nav>
+  
+  <main class="container px-4">
+
+
+    <container class="card">
+      <div class="card card-header">
+
+        <div class="row">
+          <div class="col col-12"></div>
+
+          <div class="col col-12">
+
+            <div class="text-center mt-2 "> Project </div>
+          </div>
+
+        </div>
+
+
+
+
+
+        <article class="card mb-3 mt-2 issue-card">
+          <div class="card-body">
+            <h5 class="card-title">{{project.name}}</h5>
+
+
+            <div class="mt-1">
+              {% for user in project.member.all %}
+
+              <span class="badge bg-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                  class="bi bi-broadcast me-1" viewBox="0 0 16 16">
+
+                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                </svg>
+                {{user}}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </article>
+
+    </container>
+
+</div>
+
+
+
+</div>
+</main>
+{% endblock %}

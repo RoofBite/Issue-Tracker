@@ -1,6 +1,28 @@
 from django.http import request
 from .models import *
-from django.forms import ModelForm, ModelChoiceField, HiddenInput, Textarea
+from django.forms import (
+    ModelForm,
+    ModelChoiceField,
+    HiddenInput,
+    Textarea,
+    ModelMultipleChoiceField,
+    CheckboxSelectMultiple,
+)
+
+
+class AddDeveloper(ModelForm):
+    # member = CheckboxSelectMultiple(queryset=User.objects.all())
+    member = ModelMultipleChoiceField(
+        queryset=User.objects.all(), widget=CheckboxSelectMultiple()
+    )
+
+    class Meta:
+        model = Project
+        fields = ["name", "member", "leader"]
+        widgets = {
+            "name": HiddenInput(),
+            "leader": HiddenInput(),
+        }
 
 
 class IssueFormDeveloper(ModelForm):
