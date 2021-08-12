@@ -13,13 +13,31 @@ class AddDeveloper(ModelForm):
             'description': HiddenInput(),
         }
 
-    
+class IssueFormUpdate(ModelForm):
+    class Meta:
+            model = Issue
+            fields = [
+                "title",
+                "creator",
+                "project",
+                "user_assigned",
+                "priority",
+                "status",
+                "description",
+                "type"
+            ]
 
-class IssueFormDeveloper(ModelForm):
+        #     widgets = {
+        #     'creator': HiddenInput(),
+        #     'project': HiddenInput(),
+        #     "description": Textarea(attrs={"rows": 9, "cols": 20}),
+        # }
+
+class IssueFormCreate(ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
 
-        super(IssueFormDeveloper, self).__init__(*args, **kwargs)
+        super(IssueFormCreate, self).__init__(*args, **kwargs)
         self.fields["user_assigned"].queryset = User.objects.none()
         self.fields["project"].queryset = Project.objects.filter(
             member=self.request.user
@@ -48,6 +66,7 @@ class IssueFormDeveloper(ModelForm):
             "priority",
             "status",
             "description",
+            "type"
         ]
 
         widgets = {

@@ -1,14 +1,14 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
-from django.views.generic import CreateView
+from django.views.generic import CreateView, UpdateView
 from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy
 from django.db.models import Q
-from .forms import IssueFormDeveloper, IssueTagForm, AddDeveloper
+from .forms import IssueFormCreate, IssueTagForm, AddDeveloper, IssueFormUpdate
 from .models import *
 from .decorators import group_required
 
@@ -59,10 +59,23 @@ def sign_up(request):
     return render(request, "issue_tracker/sign_up.html", context)
 
 
+class Update_issue(UpdateView):
+    model = Issue
+    form_class = IssueFormUpdate
+    template_name = "issue_tracker/update_issue.html"
+    success_url = reverse_lazy("issue_tracker:main")
+
+    def get_object(self):
+        pk = self.kwargs["pk"]
+        issue = get_object_or_404(
+            Issue, pk=pk, project__leader__id=self.request.user.id
+        )
+        return issue
+
 class Add_issue(CreateView):
 
     model = Issue
-    form_class = IssueFormDeveloper
+    form_class = IssueFormCreate
     template_name = "issue_tracker/add_issue.html"
     success_url = reverse_lazy("issue_tracker:main")
 
@@ -119,13 +132,12 @@ def manage_project_developers(request, pk):
             form = AddDeveloper(request.POST, instance=project_instance)
             if form.is_valid():
                 new_project = form.save(commit=False)
-                new_project.member.set(list(form.cleaned_data['member']))
-                print(list(form.cleaned_data['member']))
+                new_project.member.set(list(form.cleaned_data["member"]))
+                print(list(form.cleaned_data["member"]))
                 new_project.save()
                 return redirect(request.path)
-        context = {"project":project_instance,"form": form}
+        context = {"project": project_instance, "form": form}
         return render(request, "issue_tracker/manage_project_developers.html", context)
-
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -181,6 +193,7 @@ def manage_project_issues_list(request, pk):
 
         return render(request, "issue_tracker/manage_project_issues_list.html", context)
     return HttpResponse("You are not allowed to see this project")
+
 
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET"])

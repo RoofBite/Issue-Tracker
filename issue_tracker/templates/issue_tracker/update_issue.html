@@ -13,19 +13,15 @@
         <h5 class="card-header text-center" style="font-size: 17px; font-weight: bold; font-weight: 550; ">Report issue</h5>
         <div class="card-body">
     
-        <form method="POST" action='' id="personForm"
-        data-users_assigned-url="{% url 'issue_tracker:ajax_load_users' %}"
-        novalidate>
+        <form method="POST" action=''>
         {% csrf_token %}
       <section class="row">
         <article class="col-6">
           <br>
           {{ form.creator }}
+          {{ form.project }}
           Title: 
           {{ form.title }}
-          <br><br>
-          Project: 
-          {{ form.project }}
           <br><br>
           User assigned: 
           {{ form.user_assigned }}
@@ -44,6 +40,7 @@
           Description
           <br>
           {{ form.description }}
+          
         </article>
     </section>
     <section class="row">
@@ -56,25 +53,6 @@
         </div>
     
   </main>
-
-
-<script>
-  let project = document.querySelector("#id_project");
-  let user_assigned = document.querySelector("#id_user_assigned");
-  let personForm = document.querySelector("#personForm");
-  
-  project.addEventListener("change", () => {  
-    let url = personForm.getAttribute("data-users_assigned-url");
-    var projectId = project.value;
-
-    fetch(url +'?project='+ projectId)
-      .then(response => response.text())
-      .then(data => {
-
-        user_assigned.innerHTML = data;
-      });
-  });
-</script>
 
 {% endblock %} 
 
