@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.decorators import login_required
 from django.views.generic import CreateView
 from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.http import require_http_methods
@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from django.db.models import Q
 from .forms import IssueFormDeveloper, IssueTagForm
 from .models import *
+from .decorators import group_required
 
 
 def load_users(request):
@@ -40,6 +41,7 @@ def sign_in(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required('developer', 'leader', 'admin')
 def main(request):
     return render(request, "issue_tracker/index.html")
 
@@ -55,7 +57,7 @@ def sign_up(request):
             form.save()
 
     context = {"form": form}
-    return render(request, "issue_tracker/sign-up.html", context)
+    return render(request, "issue_tracker/sign_up.html", context)
 
 
 class Add_issue(CreateView):
@@ -75,9 +77,10 @@ class Add_issue(CreateView):
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET"])
 def my_projects(request):
-    projects = Project.objects.filter(member__id=request.user.id)
-    print(request.user, projects.first().member.all())
-    context = {"projects": projects}
+    context={}
+    if Project.objects.filter(member__id=request.user.id).exists():
+        projects = Project.objects.filter(member__id=request.user.id)
+        context = {"projects": projects}
     return render(request, "issue_tracker/my_projects.html", context)
 
 
