@@ -12,6 +12,7 @@ urlpatterns = [
     path("project-details-old-issues/<int:pk>/", views.project_details_old_issues, name="project-details-old-issues"),
     path("issue-details/<int:pk>/", views.issue_details, name="issue-details"),
     path("my-projects/", views.my_projects, name="my-projects"),
+    path("manage-projects-list/", views.manage_projects_list, name="manage-projects-list"),
     path("add-issue/", login_required(views.Add_issue.as_view()), name="add-issue"),
     path("sign-up/", views.sign_up, name="sign-up"),
     path("sign-in/", views.sign_in, name="sign-in"),

@@ -93,6 +93,19 @@
                             <span class="ml-2">My projects</span>
                           </a>
                         </li>
+                        {% for group in  request.user.groups.all %}
+                        {%  if 'leader' == group.name %}
+
+                        <li class="nav-item">
+                          <a class="nav-link" href="{% url 'issue_tracker:manage-projects-list' %}">
+                            
+                            <span class="ml-2">Manage projects</span>
+                          </a>
+                        </li>
+
+                        {% endif %}
+                        {% endfor %}
+                        
                         <li class="nav-item">
                           <a class="nav-link" href="{% url 'issue_tracker:my-issues' %}">
                             
