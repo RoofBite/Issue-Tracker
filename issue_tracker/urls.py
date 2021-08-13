@@ -43,6 +43,7 @@ urlpatterns = [
     path("sign-up/", views.sign_up, name="sign-up"),
     path("sign-in/", views.sign_in, name="sign-in"),
     path("logout/", views.logout_page, name="logout-page"),
+    path("set-demo-user/", views.set_demo_user, name="set-demo-user"),
     path("ajax/load-users/", views.load_users, name="ajax_load_users"),
 ]
 

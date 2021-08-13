@@ -9,15 +9,19 @@ from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django.utils.decorators import method_decorator
-from lazysignup.decorators import allow_lazy_user, require_nonlazy_user
+from lazysignup.decorators import (
+    allow_lazy_user,
+    require_nonlazy_user,
+    require_lazy_user,
+)
 from lazysignup.utils import is_lazy_user
 from .forms import IssueFormCreate, IssueTagForm, AddDeveloper, IssueFormUpdate
 from .models import *
 from .decorators import group_required
 
 
-
 from django.contrib.auth.models import Group
+
 
 def load_users(request):
     project_id = request.GET.get("project")
@@ -27,6 +31,17 @@ def load_users(request):
         "issue_tracker/hr/user_assigned_dropdown_list_options.html",
         {"users": users},
     )
+
+
+def set_demo_user(request):
+    if is_lazy_user(request.user):
+        my_group1 = Group.objects.get(name="leader")
+        my_group1.user_set.add(request.user)
+        my_group2 = Group.objects.get(name="developer")
+        my_group2.user_set.add(request.user)
+        return redirect("issue_tracker:main")
+    return redirect("issue_tracker:main")
+    
 
 
 def sign_in(request):
@@ -49,7 +64,7 @@ def sign_in(request):
 @allow_lazy_user
 @login_required(login_url="issue_tracker:sign-in")
 def main(request):
-    # my_group = Group.objects.get(name='leader') 
+    # my_group = Group.objects.get(name='leader')
     # my_group.user_set.add(request.user)
 
     return render(request, "issue_tracker/index.html")
@@ -68,7 +83,8 @@ def sign_up(request):
     context = {"form": form}
     return render(request, "issue_tracker/sign_up.html", context)
 
-@method_decorator(group_required("developer","leader"), name='get')
+
+@method_decorator(group_required("developer", "leader"), name="get")
 class Update_issue(UpdateView):
     model = Issue
     form_class = IssueFormUpdate
@@ -88,7 +104,8 @@ class Update_issue(UpdateView):
             "issue_tracker:manage-project-issues-list", kwargs={"pk": issue_project_id}
         )
 
-@method_decorator(group_required("developer","leader"), name='get')
+
+@method_decorator(group_required("developer", "leader"), name="get")
 class Add_issue(CreateView):
 
     model = Issue
