@@ -1,6 +1,8 @@
 from django.http import request
-from .models import *
+from django.db.models import Q
 from django.forms import ModelForm, ModelChoiceField, HiddenInput, Textarea, ModelMultipleChoiceField, CheckboxSelectMultiple
+from lazysignup.utils import is_lazy_user
+from .models import *
 
 class AddDeveloper(ModelForm):
     member = ModelMultipleChoiceField(queryset=User.objects.all() ,widget = CheckboxSelectMultiple())
@@ -12,6 +14,15 @@ class AddDeveloper(ModelForm):
             'leader': HiddenInput(),
             'description': HiddenInput(),
         }
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        
+        super(AddDeveloper, self).__init__(*args, **kwargs)
+        # Defining list of users that demo user will be able to add to project
+        if not is_lazy_user(self.request.user):
+            admin_id = 1
+            self.fields["member"].queryset = User.objects.filter(Q(id=admin_id) | Q(id=self.request.user.id))
+
 
 class IssueFormUpdate(ModelForm):
     class Meta:

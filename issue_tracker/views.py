@@ -104,6 +104,10 @@ class Update_issue(UpdateView):
             "issue_tracker:manage-project-issues-list", kwargs={"pk": issue_project_id}
         )
 
+    def get_form_kwargs(self):
+        kwargs = super(Update_issue, self).get_form_kwargs()
+        kwargs["request"] = self.request
+        return kwargs
 
 @method_decorator(group_required("developer", "leader"), name="get")
 class Add_issue(CreateView):
@@ -163,7 +167,7 @@ def manage_project_details(request, pk):
 def manage_project_developers(request, pk):
     project_instance = Project.objects.filter(pk=pk, leader__id=request.user.id).first()
     if project_instance:
-        form = AddDeveloper(instance=project_instance)
+        form = AddDeveloper(instance=project_instance, request=request)
 
         if request.method == "POST":
             form = AddDeveloper(request.POST, instance=project_instance)
