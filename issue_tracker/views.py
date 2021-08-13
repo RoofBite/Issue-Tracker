@@ -18,8 +18,6 @@ from lazysignup.utils import is_lazy_user
 from .forms import IssueFormCreate, IssueTagForm, AddDeveloper, IssueFormUpdate
 from .models import *
 from .decorators import group_required
-
-
 from django.contrib.auth.models import Group
 
 
@@ -34,14 +32,33 @@ def load_users(request):
 
 
 def set_demo_user(request):
-    if is_lazy_user(request.user):
+    if is_lazy_user(request.user) and not request.user.groups.filter(
+        name__in=("developer", "leader")
+    ):
+        # Adding to groups
         my_group1 = Group.objects.get(name="leader")
         my_group1.user_set.add(request.user)
         my_group2 = Group.objects.get(name="developer")
         my_group2.user_set.add(request.user)
+        # Creating demo project
+        project1 = Project.objects.create(
+            name="Demo Project1",
+            description="This is project made only for demo purposes",
+            leader=request.user,
+        )
+        project1.member.add(request.user)
+
+        admin_user = User.objects.get(id=1, is_superuser=True)
+
+        project2 = Project.objects.create(
+            name="Demo Project2",
+            description="This is project made only for demo purposes",
+            leader=admin_user,
+        )
+        project2.member.add(request.user)
+
         return redirect("issue_tracker:main")
     return redirect("issue_tracker:main")
-    
 
 
 def sign_in(request):
@@ -64,9 +81,6 @@ def sign_in(request):
 @allow_lazy_user
 @login_required(login_url="issue_tracker:sign-in")
 def main(request):
-    # my_group = Group.objects.get(name='leader')
-    # my_group.user_set.add(request.user)
-
     return render(request, "issue_tracker/index.html")
 
 
@@ -108,6 +122,7 @@ class Update_issue(UpdateView):
         kwargs = super(Update_issue, self).get_form_kwargs()
         kwargs["request"] = self.request
         return kwargs
+
 
 @method_decorator(group_required("developer", "leader"), name="get")
 class Add_issue(CreateView):
