@@ -39,8 +39,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
+    "lazysignup",
     "issue_tracker",
 ]
+
+AUTHENTICATION_BACKENDS = (
+  'django.contrib.auth.backends.ModelBackend',
+  'lazysignup.backends.LazySignupBackend',
+)
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

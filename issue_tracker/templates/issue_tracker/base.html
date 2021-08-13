@@ -1,4 +1,4 @@
-  
+{% load i18n lazysignup_tags %}  
 
 <!DOCTYPE html>
 <html lang="en">
@@ -60,8 +60,23 @@
             </button>
         </div>
         <div class="col-12 col-md-4 col-lg-2">
-            <input class="form-control form-control-dark" type="text" placeholder="Search" aria-label="Search">
-        </div>
+        {% if user|is_lazy_user %}
+        <b>You are demo user</b>
+          
+            {% if request.user.groups.all.0.name == 'developer' %}
+            <b>Click here to get developer and project leader permissions</b>
+            {% else %}
+            
+            {% if request.user.groups.all.0.name == 'leader' %}
+            <b>Click here to get developer and project leader permissions</b>
+            {% endif %}
+
+            {% endif %}
+        
+        {% endif %}
+          </div>
+        
+        
         <div class="col-12 col-md-5 col-lg-8 d-flex align-items-center justify-content-md-end mt-3 mt-md-0">
             
             <div class="dropdown">

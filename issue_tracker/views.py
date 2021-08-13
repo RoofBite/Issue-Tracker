@@ -8,10 +8,16 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
 from django.urls import reverse_lazy, reverse
 from django.db.models import Q
+from django.utils.decorators import method_decorator
+from lazysignup.decorators import allow_lazy_user, require_nonlazy_user
+from lazysignup.utils import is_lazy_user
 from .forms import IssueFormCreate, IssueTagForm, AddDeveloper, IssueFormUpdate
 from .models import *
 from .decorators import group_required
 
+
+
+from django.contrib.auth.models import Group
 
 def load_users(request):
     project_id = request.GET.get("project")
@@ -40,8 +46,12 @@ def sign_in(request):
         return render(request, "issue_tracker/sign_in.html")
 
 
+@allow_lazy_user
 @login_required(login_url="issue_tracker:sign-in")
 def main(request):
+    # my_group = Group.objects.get(name='leader') 
+    # my_group.user_set.add(request.user)
+
     return render(request, "issue_tracker/index.html")
 
 
@@ -58,7 +68,7 @@ def sign_up(request):
     context = {"form": form}
     return render(request, "issue_tracker/sign_up.html", context)
 
-
+@method_decorator(group_required("developer","leader"), name='get')
 class Update_issue(UpdateView):
     model = Issue
     form_class = IssueFormUpdate
@@ -70,12 +80,15 @@ class Update_issue(UpdateView):
             Issue, pk=pk, project__leader__id=self.request.user.id
         )
         return issue
-    
+
     def get_success_url(self):
         issue = self.get_object()
         issue_project_id = issue.project.id
-        return reverse("issue_tracker:manage-project-issues-list", kwargs={'pk': issue_project_id})
+        return reverse(
+            "issue_tracker:manage-project-issues-list", kwargs={"pk": issue_project_id}
+        )
 
+@method_decorator(group_required("developer","leader"), name='get')
 class Add_issue(CreateView):
 
     model = Issue
@@ -91,6 +104,7 @@ class Add_issue(CreateView):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def my_projects(request):
     context = {}
@@ -114,6 +128,7 @@ def manage_projects_list(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader")
 @require_http_methods(["GET"])
 def manage_project_details(request, pk):
     project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
@@ -126,6 +141,7 @@ def manage_project_details(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader")
 @require_http_methods(["GET", "POST"])
 def manage_project_developers(request, pk):
     project_instance = Project.objects.filter(pk=pk, leader__id=request.user.id).first()
@@ -145,6 +161,7 @@ def manage_project_developers(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader")
 @require_http_methods(["GET"])
 def manage_project_issues_list(request, pk):
     project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
@@ -200,6 +217,7 @@ def manage_project_issues_list(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_details_old_issues(request, pk):
     project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
@@ -255,6 +273,7 @@ def project_details_old_issues(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_details(request, pk):
     project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
@@ -312,6 +331,7 @@ def project_details(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def issue_details(request, pk):
     projects = Project.objects.filter(member__id=request.user.id)
@@ -323,6 +343,7 @@ def issue_details(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def reported_issues(request):
     issues = (
@@ -372,6 +393,7 @@ def reported_issues(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def my_issues(request):
     context = {}
