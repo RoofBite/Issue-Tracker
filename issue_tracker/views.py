@@ -6,7 +6,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from .forms import IssueFormCreate, IssueTagForm, AddDeveloper, IssueFormUpdate
 from .models import *
@@ -63,7 +63,6 @@ class Update_issue(UpdateView):
     model = Issue
     form_class = IssueFormUpdate
     template_name = "issue_tracker/update_issue.html"
-    success_url = reverse_lazy("issue_tracker:main")
 
     def get_object(self):
         pk = self.kwargs["pk"]
@@ -71,6 +70,11 @@ class Update_issue(UpdateView):
             Issue, pk=pk, project__leader__id=self.request.user.id
         )
         return issue
+    
+    def get_success_url(self):
+        issue = self.get_object()
+        issue_project_id = issue.project.id
+        return reverse("issue_tracker:manage-project-issues-list", kwargs={'pk': issue_project_id})
 
 class Add_issue(CreateView):
 
