@@ -40,22 +40,24 @@ def set_demo_user(request):
         my_group1.user_set.add(request.user)
         my_group2 = Group.objects.get(name="developer")
         my_group2.user_set.add(request.user)
-        # Creating demo project
+        # Creating demo projects
+        admin_user = User.objects.get(id=1, is_superuser=True)
+
         project1 = Project.objects.create(
             name="Demo Project1",
             description="This is project made only for demo purposes",
             leader=request.user,
         )
         project1.member.add(request.user)
-
-        admin_user = User.objects.get(id=1, is_superuser=True)
-
+        project1.member.add(admin_user)
+        
         project2 = Project.objects.create(
             name="Demo Project2",
             description="This is project made only for demo purposes",
             leader=admin_user,
         )
         project2.member.add(request.user)
+        project2.member.add(admin_user)
 
         return redirect("issue_tracker:main")
     return redirect("issue_tracker:main")

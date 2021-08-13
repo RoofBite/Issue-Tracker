@@ -53,19 +53,24 @@
 
 <body>
   <nav class="navbar navbar-light bg-light p-2">
-    <div class="d-flex col-12 col-md-3 col-lg-2 mb-2 mb-lg-0 flex-wrap flex-md-nowrap justify-content-between">
+    <div class="d-flex col-7 col-md-1 col-lg-3 col-sm-7 col-xs-8 mb-2 mb-lg-0 flex-wrap flex-md-nowrap justify-content-between">
       <a class="navbar-brand" href="#">
         Issue-Tracker
 
       </a>
-      <button class="navbar-toggler d-md-none collapsed mb-3" type="button" data-toggle="collapse"
+      <button class="navbar-toggler d-md-none collapsed mb-3 " type="button" data-toggle="collapse"
         data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
     </div>
-    <div class="col-12 col-md-4 col-lg-2 mt-1">
+    
+
+    
+
+
+    <div class="col-5 col-xs-2 col-sm-5 col-md-6 col-lg-5 d-flex align-items-center justify-content-md-end mt-3 mt-md-0 ">
       {% if user|is_lazy_user %}
-      <p style="font-size:14px"><b>You are demo user</b>
+      <p class="btn mb-3 mt-2" style="font-size:14px"><b>You are demo user</b>
 
         {% if request.user.groups.all.0.name == 'developer' %}
       
@@ -79,12 +84,7 @@
         {% endif %}
 
       {% endif %}
-    </div>
-
-
-    <div class="col-12 col-md-5 col-lg-8 d-flex align-items-center justify-content-md-end mt-3 mt-md-0">
-
-      <div class="dropdown">
+      <div class="dropleft">
         <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown"
           aria-expanded="false">
           Options
