@@ -17,13 +17,6 @@ class Project(models.Model):
         return self.name
 
 
-class IssueTag(models.Model):
-    tag_name = models.CharField(max_length=40)
-
-    def __str__(self):
-        return self.tag_name
-
-
 class Issue(models.Model):
 
     PRIORITY_CHOICES = [
@@ -85,7 +78,6 @@ class Issue(models.Model):
     description = models.CharField(max_length=250, null=True)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(null=True, blank=True)
-    tags = models.ManyToManyField(IssueTag, blank=True)
 
     def __str__(self):
         return self.title

@@ -15,7 +15,7 @@ from lazysignup.decorators import (
     require_lazy_user,
 )
 from lazysignup.utils import is_lazy_user
-from .forms import IssueFormCreate, IssueTagForm, AddDeveloper, IssueFormUpdate
+from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate
 from .models import *
 from .decorators import group_required
 from django.contrib.auth.models import Group

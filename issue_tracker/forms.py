@@ -99,11 +99,3 @@ class IssueFormCreate(ModelForm):
             "description": Textarea(attrs={"rows": 9, "cols": 20}),
         }
 
-
-class IssueTagForm(ModelForm):
-    class Meta:
-        model = IssueTag
-
-        # If I would like to use all fileds I could use fields = __all__
-
-        fields = "__all__"
