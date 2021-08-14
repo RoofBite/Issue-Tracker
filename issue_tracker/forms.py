@@ -1,6 +1,7 @@
 from django.http import request
 from django.db.models import Q
 from datetime import datetime, timedelta, date
+from django.contrib.auth.forms import UserCreationForm
 from django.forms import (
     ModelForm,
     ModelChoiceField,
@@ -100,3 +101,9 @@ class IssueFormCreate(ModelForm):
         widgets = {
             "description": Textarea(attrs={"rows": 9, "cols": 20}),
         }
+
+
+class CreateUserForm(UserCreationForm):
+	class Meta:
+		model = User
+		fields = ['username', 'email', 'password1', 'password2']

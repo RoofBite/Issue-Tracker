@@ -15,7 +15,7 @@ from lazysignup.decorators import (
     require_lazy_user,
 )
 from lazysignup.utils import is_lazy_user
-from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate
+from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate, CreateUserForm
 from .models import *
 from .decorators import group_required
 from django.contrib.auth.models import Group
@@ -90,11 +90,12 @@ def sign_up(request):
     if request.user.is_authenticated:
         return redirect("issue_tracker:main")
 
-    form = UserCreationForm()
+    form = CreateUserForm()
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CreateUserForm(request.POST)
         if form.is_valid():
             form.save()
+            return redirect("issue_tracker:sign-in")
 
     context = {"form": form}
     return render(request, "issue_tracker/sign_up.html", context)
