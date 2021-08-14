@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta, date
+from simple_history.models import HistoricalRecords
 
 # Create your models here.
 class Project(models.Model):
@@ -81,6 +82,8 @@ class Issue(models.Model):
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(null=True, blank=True)
 
+    history = HistoricalRecords()
+    
     def __str__(self):
         return self.title
 
