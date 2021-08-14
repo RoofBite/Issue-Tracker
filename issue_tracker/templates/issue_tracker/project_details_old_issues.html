@@ -58,7 +58,9 @@
           <h5 class="card-title">{{issue.title}}</h5>
           <h6 class="card-subtitle text-muted">
             <a href="">{{issue.project}}</a> / <a href="" class="">{{issue.user_assigned}}</a> -
-            <b> {{issue.update_date}}</b>
+            {% if issue.update_date %}
+            <b>Update: {{issue.update_date}}</b>
+            {% endif %}
             <i>
               <small class="text-muted">{{issue.create_date.date}} {{issue.create_date|date:"H:i"}}</small>
             </i>

@@ -1,9 +1,10 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import datetime, timedelta, date
 
 # Create your models here.
 class Project(models.Model):
-    name = models.TextField(null=False, default='None')
+    name = models.TextField(null=False, default="None")
     member = models.ManyToManyField(User, blank=True)
     description = models.TextField(null=True)
     leader = models.ForeignKey(
@@ -13,6 +14,7 @@ class Project(models.Model):
         blank=False,
         related_name="leader_project_set",
     )
+
     def __str__(self):
         return self.name
 
@@ -81,3 +83,10 @@ class Issue(models.Model):
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if self.create_date and self.update_date is None:
+            self.update_date = None
+        if self.create_date is not None:
+            self.update_date = datetime.now()
+        super(Issue, self).save(*args, **kwargs)
