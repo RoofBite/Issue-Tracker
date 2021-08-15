@@ -48,7 +48,8 @@
 
 
       {% for project in page_obj %}
-      <article class="card mb-3 issue-card">
+      <article class="card mb-3 issue-card" style="cursor: pointer"
+      onclick="location.href = `{% url 'issue_tracker:project-details'  project.id  %}` ">
         <div class="card-body text-center">
       
         <section class="row">

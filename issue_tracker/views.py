@@ -104,6 +104,17 @@ def sign_up(request):
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
+def project_apply(request, pk):
+    project = Project.objects.filter(id=pk).first()
+    if project:
+        context = {'pk':pk,'project':project}
+        return render(request, "issue_tracker/project_apply.html", context)
+    return HttpResponse("That project does not exist")
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
+@require_http_methods(["GET"])
 def project_list_all(request):
     context = {}
 
