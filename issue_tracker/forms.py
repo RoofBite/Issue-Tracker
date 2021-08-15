@@ -1,3 +1,5 @@
+from django.forms.fields import CharField
+from django.forms.widgets import TextInput
 from django.http import request
 from django.db.models import Q
 from datetime import datetime, timedelta, date
@@ -99,7 +101,9 @@ class IssueFormCreate(ModelForm):
         ]
 
         widgets = {
-            "description": Textarea(attrs={"rows": 9, "cols": 20}),
+            "description": Textarea(attrs={"rows": 6, "cols": 17}),
+            "title": TextInput(attrs={'size': '14'}),
+            
         }
 
 

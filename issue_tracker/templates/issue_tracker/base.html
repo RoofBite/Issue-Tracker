@@ -100,7 +100,7 @@
           Options
         </button>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-          <li><a class="dropdown-item">User:<br> {{user}}</a></li>
+          <li><a class="dropdown-item">User:<br> {{user|make_list|slice:':6'|join:''}}</a></li>
           <li><a class="dropdown-item" href="#">Messages</a></li>
           <li><a class="dropdown-item" href="{% url 'issue_tracker:logout-page' %}">Sign out</a></li>
         </ul>

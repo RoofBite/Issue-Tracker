@@ -54,7 +54,20 @@
             {% csrf_token %}
 
             <div class="mt-1">
-              {{form.as_table}}
+
+              <fieldset>
+                <legend>{{ form.member.label }}</legend>
+                {% for user in form.member %}
+                <label for="{{ radio.id_for_label }}">
+                  <span class="radio">{{ user.tag }}</span>
+                    {{ user.choice_label|make_list|slice:':6'|join:'' }}
+                    
+                </label>
+                <br>
+                {% endfor %}
+            </fieldset>
+
+              
 
             </div>
             <button type="submit" class="btn btn-success mt-2">Confirm</button>
