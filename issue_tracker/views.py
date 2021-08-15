@@ -106,21 +106,33 @@ def sign_up(request):
 def project_apply_developer(request, pk):
     project = Project.objects.filter(pk=pk).first()
     member_ids = project.member.values_list('id', flat=True)
-    if project and not (request.user.id in member_ids):
+    is_applied_already=DeveloperApplication.objects.filter(project=project, applicant=request.user).first()
+    if project and not (request.user.id in member_ids) and not is_applied_already:
         DeveloperApplication.objects.create(applicant=request.user, project=project)
         return redirect("issue_tracker:main")
-    return HttpResponse("You are developer in this project or project deos not exist")
+    if is_applied_already:
+        return HttpResponse("You have already applied for being developer in this project.")
+    return HttpResponse("You are developer in this project or project deos not exist.")
 
 
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET"])
 def project_apply_leader(request, pk):
     project = Project.objects.filter(pk=pk).first()
-    leader_id = project.leader.id
-    if project and request.user.id != leader_id:
+    user_is_not_already_leader = False
+    try:
+        leader_id = project.leader.id
+        user_is_not_already_leader = request.user.id != leader_id
+    except AttributeError:
+        user_is_not_already_leader = True
+
+    is_applied_already=LeaderApplication.objects.filter(project=project, applicant=request.user).first()
+    if project and user_is_not_already_leader and not is_applied_already:
         LeaderApplication.objects.create(applicant=request.user, project=project)
         return redirect("issue_tracker:main")
-    return HttpResponse("You are leader in this project or project deos not exist")
+    if is_applied_already:
+        return HttpResponse("You have already applied for being leader in this project.")
+    return HttpResponse("You are leader in this project or project deos not exist.")
         
 
 
