@@ -12,7 +12,12 @@
   }
 </style>
 <div class='col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
-  
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="#">Home</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Overview</li>
+    </ol>
+</nav>
 
   <main class="container px-4">
 
@@ -59,25 +64,29 @@
       </section>
 
         <section class="col-4">
+          
+          
 
+
+          
           
             
           <div class="text-center">
-              <div class="btn btn-primary" href= "{% url 'issue_tracker:main' %}"> Apply for <br> developer position </div>
+              <a  class="btn btn-primary" href= "{% url 'issue_tracker:project-apply-developer' pk %}"> Apply for <br> developer position </a>
           </div>
           
-
+        
         </section>
 
         <section class="col-4">
-
+        
           
             
           <div class="text-center">
-              <div class="btn btn-primary" href= "{% url 'issue_tracker:main' %}"> Apply for <br> leader position </div>
+              <a class="btn btn-primary" href= "{% url 'issue_tracker:project-apply-leader' pk %}"> Apply for <br> leader position </a>
           </div>
           
-
+       
         </section>
       </div>
     </div>

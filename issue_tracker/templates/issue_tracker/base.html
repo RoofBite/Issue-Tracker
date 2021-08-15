@@ -124,7 +124,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'issue_tracker:project-list-all' %}">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:project-list-all' %}">
 
                 {% if request.user.groups.all.0.name == 'developer' or request.user.groups.all.0.name == 'leader' %}
 
@@ -141,12 +141,12 @@
                 {% endif %}
 
                 <li class="nav-item">
-                  <a class="nav-link" href="{% url 'issue_tracker:main' %}">
+                  <a class="nav-link py-1" href="{% url 'issue_tracker:main' %}">
                 <span class="ml-2">Dashboard</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'issue_tracker:my-projects' %}">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:my-projects' %}">
 
                 <span class="ml-2">My projects</span>
               </a>
@@ -155,7 +155,7 @@
             {% if 'leader' == group.name %}
 
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'issue_tracker:manage-projects-list' %}">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:manage-projects-list' %}">
 
                 <span class="ml-2">Manage projects and issues in them</span>
               </a>
@@ -165,20 +165,20 @@
             {% endfor %}
 
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'issue_tracker:my-issues' %}">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:my-issues' %}">
 
                 <span class="ml-2 text-center">Active issues</span>
               </a>
             </li>
 
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'issue_tracker:add-issue' %}">
+              <a class="nav-link py-0" href="{% url 'issue_tracker:add-issue' %}">
 
                 <span class="ml-2">Report issue</span>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{% url 'issue_tracker:reported-issues' %}">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:reported-issues' %}">
 
                 <span class="ml-2">Reports I've made</span>
               </a>

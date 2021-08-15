@@ -102,8 +102,31 @@ def sign_up(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader", "developer")
 @require_http_methods(["GET"])
+def project_apply_developer(request, pk):
+    project = Project.objects.filter(pk=pk).first()
+    member_ids = project.member.values_list('id', flat=True)
+    if project and not (request.user.id in member_ids):
+        DeveloperApplication.objects.create(applicant=request.user, project=project)
+        return redirect("issue_tracker:main")
+    return HttpResponse("You are developer in this project or project deos not exist")
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@require_http_methods(["GET"])
+def project_apply_leader(request, pk):
+    project = Project.objects.filter(pk=pk).first()
+    leader_id = project.leader.id
+    if project and request.user.id != leader_id:
+        LeaderApplication.objects.create(applicant=request.user, project=project)
+        return redirect("issue_tracker:main")
+    return HttpResponse("You are leader in this project or project deos not exist")
+        
+
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@require_http_methods(["GET", "POST"])
 def project_apply(request, pk):
     project = Project.objects.filter(id=pk).first()
     if project:
@@ -113,7 +136,6 @@ def project_apply(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_list_all(request):
     context = {}

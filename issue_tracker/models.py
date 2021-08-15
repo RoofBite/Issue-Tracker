@@ -1,9 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import User
 from datetime import datetime, timedelta, date
+
+from django.db.models.fields.related import OneToOneField
 from simple_history.models import HistoricalRecords
 
 # Create your models here.
+
+class DeveloperApplication(models.Model):
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
+    project = models.ForeignKey("Project", on_delete=models.CASCADE, null=False, blank=False)
+
+    def __str__(self):
+        return str(self.project) + " " + str(self.applicant)
+
+class LeaderApplication(models.Model):
+    applicant = models.ForeignKey(User, on_delete=models.CASCADE,  null=False, blank=False)
+    project = models.ForeignKey("Project", on_delete=models.CASCADE, null=False, blank=False)
+
+    def __str__(self):
+        return str(self.project) + " " + str(self.applicant)
+
 class Project(models.Model):
     name = models.TextField(null=False, default="None")
     member = models.ManyToManyField(User, blank=True)
@@ -58,7 +75,7 @@ class Issue(models.Model):
         related_name="user_assigned_issue_set",
     )
     project = models.ForeignKey(
-        Project, on_delete=models.CASCADE, null=False, blank=False
+        "Project", on_delete=models.CASCADE, null=False, blank=False
     )
     priority = models.CharField(
         max_length=20,
@@ -83,7 +100,7 @@ class Issue(models.Model):
     update_date = models.DateTimeField(null=True, blank=True)
 
     history = HistoricalRecords()
-    
+
     def __str__(self):
         return self.title
 

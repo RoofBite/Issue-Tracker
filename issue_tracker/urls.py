@@ -48,6 +48,10 @@ urlpatterns = [
     path("logout/", views.logout_page, name="logout-page"),
     path("project-list-all/", views.project_list_all, name="project-list-all"),
     path("project-apply/<int:pk>/", views.project_apply, name="project-apply"),
+
+    path("project-apply-leader/<int:pk>/", views.project_apply_leader, name="project-apply-leader"),
+    path("project-apply-developer/<int:pk>/", views.project_apply_developer, name="project-apply-developer"),
+    
     
     path("set-demo-user/", views.set_demo_user, name="set-demo-user"),
     path("ajax/load-users/", views.load_users, name="ajax_load_users"),
