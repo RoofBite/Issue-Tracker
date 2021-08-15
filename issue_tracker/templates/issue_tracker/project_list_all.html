@@ -1,0 +1,129 @@
+{% extends "issue_tracker/base.html" %}
+{% block content %}
+
+
+<style>
+  .issue-card {
+    transition: background-color 0.2s;
+  }
+
+  .issue-card:hover {
+    background-color: #eeebeb;
+  }
+</style>
+<div class='col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
+  <nav aria-label="breadcrumb" style="padding: 20px">
+    <ol class="breadcrumb">
+      <li class=""><a class="btn btn-primary me-2" href="{% url 'issue_tracker:main' %}">See main </a></li>
+
+
+    </ol>
+  </nav>
+
+  <main class="container px-4">
+
+
+    <container class="card mt-4">
+      <div class="card card-header">
+
+        <div class="row">
+          <div class="col col-10"></div>
+
+          <div class="col col-6">
+
+            <div class="text-center mt-2 "> Choose project to apply  </div>
+          </div>
+          <div class="col col-6">
+            <form class="d-flex">
+              <input class="form-control mt-1 mb-1 me-2" name="search_query" type="search" placeholder="Search"
+                aria-label="Search">
+              <button class="btn btn-outline-success mt-1 mb-1 me-2" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+
+
+      </div>
+
+
+
+      {% for project in page_obj %}
+      <article class="card mb-3 issue-card">
+        <div class="card-body text-center">
+      
+        <section class="row">
+        <article class="col-6">
+          <h5 class="card-title ">{{project.name}}</h5>
+    
+            <div class="mt-1">
+              Leader: <br>
+              
+              <span class="badge bg-danger">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  fill="currentColor"
+                  class="bi bi-broadcast me-1"
+                  viewBox="0 0 16 16"
+                >
+                
+                <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                </svg>
+                {{project.leader}}</span
+              >
+              
+            </div>
+
+
+          <div class="mt-1">
+            Developers: <br>
+            {% for user in project.member.all %}
+            <span class="badge bg-primary">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-broadcast me-1"
+                viewBox="0 0 16 16"
+              >
+              
+              <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+              </svg>
+              {{user}}</span
+            >
+            {% endfor %} 
+          </div>
+
+        </article>
+        <article class="col-6 text-center">
+          <h6 class="card-title">
+          Description:
+        </h6>
+        {{project.description}}
+        </article>
+        </section>  
+        </div>
+      </article>
+      {% endfor %}
+      <div class="card card-footer text-center">Page {{page_obj.number}}/{{page_obj.paginator.num_pages}} </div>
+    
+      <div class="d-flex justify-content-center">
+        {% if page_obj.has_previous %}
+    
+        <a class="btn flex-fill"
+          href="?{% if search_query %}search_query={{search_query}}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;
+          Previous &nbsp; </a>
+        {% endif %}
+    
+        {% if page_obj.has_next %}
+    
+        <a class="btn flex-fill"
+          href="?{% if search_query %}search_query={{search_query}}&{% endif %}page={{ page_obj.next_page_number }}">Next
+          &raquo;</a>
+    
+        {% endif %}
+</div>
+</main>
+{% endblock %}

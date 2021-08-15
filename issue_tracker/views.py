@@ -101,6 +101,46 @@ def sign_up(request):
     return render(request, "issue_tracker/sign_up.html", context)
 
 
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
+@require_http_methods(["GET"])
+def project_list_all(request):
+    context = {}
+
+    projects = Project.objects.all()
+
+    paginator = Paginator(projects, 5)
+    page_number = request.GET.get("page")
+
+    try:
+        page_obj = paginator.get_page(page_number)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    page_obj = paginator.get_page(page_number)
+
+    if request.GET.get("search_query"):
+        search_query = request.GET.get("search_query")
+        context["search_query"] = str(search_query)
+
+        query = projects.filter(
+            Q(name__icontains=search_query) | Q(description__icontains=search_query)
+        )
+
+        paginator = Paginator(query, 5)
+        page_number = request.GET.get("page")
+    try:
+        page_obj = paginator.get_page(page_number)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    context["page_obj"] = page_obj
+    
+
+    return render(request, "issue_tracker/project_list_all.html", context)
+    
+
+
 @method_decorator(group_required("developer", "leader"), name="get")
 class Update_issue(UpdateView):
     model = Issue
