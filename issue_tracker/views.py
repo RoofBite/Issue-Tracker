@@ -460,8 +460,8 @@ class Add_issue(CreateView):
 @require_http_methods(["GET"])
 def my_projects(request):
     context = {}
-    if Project.objects.filter(member__id=request.user.id).exists():
-        projects = Project.objects.filter(member__id=request.user.id)
+    if Project.objects.filter(Q(leader__id=request.user.id) | Q(member__id=request.user.id)).exists():
+        projects = Project.objects.filter(Q(leader__id=request.user.id) | Q(member__id=request.user.id))
         context = {"projects": projects}
     return render(request, "issue_tracker/my_projects.html", context)
 
