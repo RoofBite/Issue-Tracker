@@ -355,7 +355,7 @@ def manage_projects_list(request):
 @group_required("leader")
 @require_http_methods(["GET"])
 def manage_project_details(request, pk):
-    project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
+    project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
     if project_instance:
         project = Project.objects.get(id=pk)
         context = {"project": project}
@@ -388,7 +388,7 @@ def manage_project_developers(request, pk):
 @group_required("leader")
 @require_http_methods(["GET"])
 def manage_project_issues_list(request, pk):
-    project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
+    project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
     if project_instance:
         context = {}
 
