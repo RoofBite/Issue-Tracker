@@ -48,16 +48,16 @@ def set_demo_user(request):
             description="This is project made only for demo purposes",
             leader=request.user,
         )
-        project1.member.add(request.user)
-        project1.member.add(admin_user)
+        project1.developer.add(request.user)
+        project1.developer.add(admin_user)
 
         project2 = Project.objects.create(
             name="Demo Project2",
             description="This is project made only for demo purposes",
             leader=admin_user,
         )
-        project2.member.add(request.user)
-        project2.member.add(admin_user)
+        project2.developer.add(request.user)
+        project2.developer.add(admin_user)
 
         return redirect("issue_tracker:main")
     return redirect("issue_tracker:main")
@@ -137,7 +137,7 @@ def developer_application_accept(request, pk):
     if request.user.groups.filter(name="admin").exists():
         # For admin user
         if application:
-            application.project.member.add(application.applicant)
+            application.project.developer.add(application.applicant)
             application.delete()
         else:
             return HttpResponse("This application does not exist")
@@ -148,7 +148,7 @@ def developer_application_accept(request, pk):
         # For leader user
         if application:
             if application.project.leader.pk == request.user.pk:
-                application.project.member.add(application.applicant)
+                application.project.developer.add(application.applicant)
                 application.delete()
         else:
             return HttpResponse("This application does not exist")
@@ -334,11 +334,11 @@ def manage_leaders_applications_list(request):
 @require_http_methods(["GET"])
 def project_apply_developer(request, pk):
     project = Project.objects.filter(pk=pk).first()
-    member_ids = project.member.values_list("id", flat=True)
+    developer_ids = project.developer.values_list("id", flat=True)
     is_applied_already = DeveloperApplication.objects.filter(
         project=project, applicant=request.user
     ).first()
-    if project and not (request.user.id in member_ids) and not is_applied_already:
+    if project and not (request.user.id in developer_ids) and not is_applied_already:
         DeveloperApplication.objects.create(applicant=request.user, project=project)
         return redirect("issue_tracker:project-list-all")
     if is_applied_already:
@@ -460,8 +460,8 @@ class Add_issue(CreateView):
 @require_http_methods(["GET"])
 def my_projects(request):
     context = {}
-    if Project.objects.filter(Q(leader__id=request.user.id) | Q(member__id=request.user.id)).exists():
-        projects = Project.objects.filter(Q(leader__id=request.user.id) | Q(member__id=request.user.id))
+    if Project.objects.filter(Q(leader__id=request.user.id) | Q(developer__id=request.user.id)).exists():
+        projects = Project.objects.filter(Q(leader__id=request.user.id) | Q(developer__id=request.user.id))
         context = {"projects": projects}
     return render(request, "issue_tracker/my_projects.html", context)
 
@@ -471,7 +471,7 @@ def my_projects(request):
 @require_http_methods(["GET"])
 def manage_projects_list(request):
     context = {}
-    if Project.objects.filter(member__id=request.user.id).exists() or Project.objects.filter(leader__id=request.user.id).exists():
+    if Project.objects.filter(developer__id=request.user.id).exists() or Project.objects.filter(leader__id=request.user.id).exists():
         projects = Project.objects.filter(leader__id=request.user.id
         )
         context = {"projects": projects}
@@ -482,7 +482,7 @@ def manage_projects_list(request):
 @group_required("leader")
 @require_http_methods(["GET"])
 def manage_project_details(request, pk):
-    project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
+    project_instance = Project.objects.filter(id=pk, leader=request.user).first()
     if project_instance:
         project = Project.objects.get(id=pk)
         context = {"project": project}
@@ -503,8 +503,8 @@ def manage_project_developers(request, pk):
             form = AddDeveloper(request.POST, instance=project_instance)
             if form.is_valid():
                 new_project = form.save(commit=False)
-                new_project.member.set(list(form.cleaned_data["member"]))
-                print(list(form.cleaned_data["member"]))
+                new_project.developer.set(list(form.cleaned_data["developer"]))
+                print(list(form.cleaned_data["developer"]))
                 new_project.save()
                 return redirect(request.path)
         context = {"project": project_instance, "form": form}
@@ -571,7 +571,7 @@ def manage_project_issues_list(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_details_old_issues(request, pk):
-    project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
+    project_instance = Project.objects.filter(id=pk, developer=request.user.id).first()
     if project_instance:
         context = {}
 
@@ -627,7 +627,7 @@ def project_details_old_issues(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_details(request, pk):
-    project_instance = Project.objects.filter(id=pk, member=request.user.id).first()
+    project_instance = Project.objects.filter(id=pk, developer=request.user.id).first()
     if project_instance:
         context = {}
 
@@ -685,14 +685,14 @@ def project_details(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def issue_details(request, pk):
-    projects = Project.objects.filter(member__id=request.user.id)
+    projects = Project.objects.filter(developer__id=request.user.id)
     issue_instance = Issue.objects.filter(id=pk, project__in=projects).first()
 
     if issue_instance:
         context = {}
 
         issues = (
-            Issue.history.filter(project__member=request.user)
+            Issue.history.filter(project__developer=request.user)
             .order_by("-update_date")
             .select_related("project", "user_assigned")
         )
@@ -746,7 +746,7 @@ def reported_issues(request):
     context = {}
 
     issues = (
-        Issue.objects.filter(project__member=request.user, creator=request.user)
+        Issue.objects.filter(project__developer=request.user, creator=request.user)
         .order_by("-create_date")
         .select_related("project", "user_assigned")
     )
@@ -795,7 +795,7 @@ def reported_issues(request):
 @require_http_methods(["GET"])
 def reported_issues(request):
     issues = (
-        Issue.objects.filter(project__member=request.user, creator=request.user)
+        Issue.objects.filter(project__developer=request.user, creator=request.user)
         .order_by("-create_date")
         .select_related("project", "user_assigned")
     )
@@ -847,7 +847,7 @@ def my_issues(request):
     context = {}
 
     my_project_issues = (
-        Issue.objects.filter(project__member=request.user)
+        Issue.objects.filter(project__developer=request.user)
         .exclude(status="RESOLVED")
         .exclude(status="CLOSED")
         .order_by("-create_date")

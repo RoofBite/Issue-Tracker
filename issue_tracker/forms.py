@@ -18,13 +18,13 @@ from .models import *
 
 
 class AddDeveloper(ModelForm):
-    member = ModelMultipleChoiceField(
+    developer = ModelMultipleChoiceField(
         queryset=User.objects.all(), widget=CheckboxSelectMultiple()
     )
 
     class Meta:
         model = Project
-        fields = ["name", "member", "leader", "description"]
+        fields = ["name", "developer", "leader", "description"]
         widgets = {
             "name": HiddenInput(),
             "leader": HiddenInput(),
@@ -38,7 +38,7 @@ class AddDeveloper(ModelForm):
         # Defining list of users that demo user will be able to add to project
         if is_lazy_user(self.request.user):
             # id=1 stands for admin user id
-            self.fields["member"].queryset = User.objects.filter(
+            self.fields["developer"].queryset = User.objects.filter(
                 Q(id=1) | Q(id=self.request.user.id)
             )
 
@@ -71,8 +71,8 @@ class IssueFormCreate(ModelForm):
         super(IssueFormCreate, self).__init__(*args, **kwargs)
         self.fields["user_assigned"].queryset = User.objects.none()
         self.fields["project"].queryset = Project.objects.filter(
-            member=self.request.user
-        ).prefetch_related("member")
+            developer=self.request.user
+        ).prefetch_related("developer")
         self.fields["creator"].initial = User.objects.get(id=self.request.user.id)
         self.fields["creator"].widget = HiddenInput()
 
