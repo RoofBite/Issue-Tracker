@@ -49,9 +49,13 @@
 
 
       {% for application in page_obj %}
+   
+      {{application.pk}}
       <article class="card mb-3 issue-card" style="cursor: pointer"
         onclick="location.href = `{% url 'issue_tracker:main'  %}` ">
-        <div class="card-body">
+        <div class="card-body text-center">
+<section class="row">
+<div class="col">
           <h5 class="card-title">Project name: {{application.project}} </h5>
           <h6 class="card-subtitle text-muted">
             <span class="badge bg-primary">
@@ -75,14 +79,35 @@
               
               {{application.applicant|make_list|slice:':20'|join:''}} applied
               {% endif %}
+              <br>
+              {% if application.applicant.username|length  == 32 %}
+              First name: {{application.applicant|make_list|slice:':15'|join:''}}
+              {% else %}
+              First name: {{application.applicant}}
+              
+              {% endif %}
+              <br>
+              
+              {% if application.applicant.username|length  == 32 %}
+              Last name: {{application.applicant|make_list|slice:':15'|join:''}}
+              {% else %}
+              Last name: {{application.applicant}}
+              
+              {% endif %}
               </span
             >
-            
-            
-
-          
+      
+          </div>
+</section>
+<section class="row">
+  <div class="col mt-2">
+<a class="btn btn-success" href="{% url 'issue_tracker:developer-application-accept' application.pk %}">accept</a>
+<a class="btn btn-danger">deny</a>
+  </div>
+</section>
         </div>
       </article>
+    
       {% endfor %}
       <div class="card card-footer text-center">Page {{page_obj.number}}/{{page_obj.paginator.num_pages}} </div>
 

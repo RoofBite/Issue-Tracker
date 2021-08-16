@@ -26,7 +26,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -157,4 +157,4 @@ EMAIL_HOST_USER = email
 EMAIL_HOST_PASSWORD = password
 
 
-ALLOWED_HOSTS = ["localhost", "127.0.0.1", ip]
+#ALLOWED_HOSTS = ["localhost", "127.0.0.1", ip]

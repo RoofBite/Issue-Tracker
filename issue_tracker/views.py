@@ -100,6 +100,27 @@ def sign_up(request):
     context = {"form": form}
     return render(request, "issue_tracker/sign_up.html", context)
 
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("leader")
+@require_http_methods(["GET"])
+def developer_application_accept(request, pk):
+    # For admin user
+
+    # For leader user
+    application = DeveloperApplication.objects.filter(pk=pk).first()
+    if application:
+        if application.project.leader.pk == request.user.pk:
+            print(application.applicant)
+            application.project.member.add(application.applicant)
+            
+    else:
+        return HttpResponse("This application does not exist")
+    
+
+
+    return redirect("issue_tracker:my-projects")
+
+
 
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader")
@@ -107,7 +128,7 @@ def sign_up(request):
 def manage_developers_applications_list(request):
     context = {}
 
-    applications = DeveloperApplication.objects.filter(project__leader=request.user)
+    applications = DeveloperApplication.objects.filter(project__leader=request.user).order_by('id')
 
     paginator = Paginator(applications, 3)
     page_number = request.GET.get("page")

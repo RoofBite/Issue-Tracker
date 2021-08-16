@@ -48,6 +48,8 @@ urlpatterns = [
     path("logout/", views.logout_page, name="logout-page"),
     path("project-list-all/", views.project_list_all, name="project-list-all"),
     path("manage-developers-applications-list/", views.manage_developers_applications_list, name="manage-developers-applications-list"),
+    path("developer-application-accept/<int:pk>/", views.developer_application_accept, name="developer-application-accept"),
+
     path("project-apply/<int:pk>/", views.project_apply, name="project-apply"),
 
     path("project-apply-leader/<int:pk>/", views.project_apply_leader, name="project-apply-leader"),
