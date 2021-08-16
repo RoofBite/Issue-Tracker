@@ -110,15 +110,14 @@ def developer_application_accept(request, pk):
     application = DeveloperApplication.objects.filter(pk=pk).first()
     if application:
         if application.project.leader.pk == request.user.pk:
-            print(application.applicant)
             application.project.member.add(application.applicant)
-            
+            application.delete()
     else:
         return HttpResponse("This application does not exist")
     
 
 
-    return redirect("issue_tracker:my-projects")
+    return redirect("issue_tracker:manage-developers-applications-list")
 
 
 

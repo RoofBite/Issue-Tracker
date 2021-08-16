@@ -50,7 +50,6 @@
 
       {% for application in page_obj %}
    
-      {{application.pk}}
       <article class="card mb-3 issue-card" style="cursor: pointer"
         onclick="location.href = `{% url 'issue_tracker:main'  %}` ">
         <div class="card-body text-center">
