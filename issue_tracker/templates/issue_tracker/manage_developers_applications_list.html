@@ -101,7 +101,7 @@
 <section class="row">
   <div class="col mt-2">
 <a class="btn btn-success" href="{% url 'issue_tracker:developer-application-accept' application.pk %}">accept</a>
-<a class="btn btn-danger">deny</a>
+<a class="btn btn-danger"  href="{% url 'issue_tracker:developer-application-deny' application.pk %}">deny</a>
   </div>
 </section>
         </div>

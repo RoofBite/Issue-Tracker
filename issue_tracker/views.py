@@ -100,6 +100,25 @@ def sign_up(request):
     context = {"form": form}
     return render(request, "issue_tracker/sign_up.html", context)
 
+
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("leader")
+@require_http_methods(["GET"])
+def developer_application_deny(request, pk):
+    # For admin user
+
+    # For leader user
+    application = DeveloperApplication.objects.filter(pk=pk).first()
+    if application:
+        if application.project.leader.pk == request.user.pk:
+            application.delete()
+    else:
+        return HttpResponse("This application does not exist")
+
+    return redirect("issue_tracker:manage-developers-applications-list")
+
+
+
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader")
 @require_http_methods(["GET"])
@@ -114,11 +133,8 @@ def developer_application_accept(request, pk):
             application.delete()
     else:
         return HttpResponse("This application does not exist")
-    
-
 
     return redirect("issue_tracker:manage-developers-applications-list")
-
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -127,7 +143,9 @@ def developer_application_accept(request, pk):
 def manage_developers_applications_list(request):
     context = {}
 
-    applications = DeveloperApplication.objects.filter(project__leader=request.user).order_by('id')
+    applications = DeveloperApplication.objects.filter(
+        project__leader=request.user
+    ).order_by("id")
 
     paginator = Paginator(applications, 3)
     page_number = request.GET.get("page")
@@ -159,23 +177,26 @@ def manage_developers_applications_list(request):
     context["page_obj"] = page_obj
     context["applications"] = applications
 
-
-    return render(request, "issue_tracker/manage_developers_applications_list.html", context)
-    
-
+    return render(
+        request, "issue_tracker/manage_developers_applications_list.html", context
+    )
 
 
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET"])
 def project_apply_developer(request, pk):
     project = Project.objects.filter(pk=pk).first()
-    member_ids = project.member.values_list('id', flat=True)
-    is_applied_already=DeveloperApplication.objects.filter(project=project, applicant=request.user).first()
+    member_ids = project.member.values_list("id", flat=True)
+    is_applied_already = DeveloperApplication.objects.filter(
+        project=project, applicant=request.user
+    ).first()
     if project and not (request.user.id in member_ids) and not is_applied_already:
         DeveloperApplication.objects.create(applicant=request.user, project=project)
         return redirect("issue_tracker:main")
     if is_applied_already:
-        return HttpResponse("You have already applied for being developer in this project.")
+        return HttpResponse(
+            "You have already applied for being developer in this project."
+        )
     return HttpResponse("You are developer in this project or project deos not exist.")
 
 
@@ -190,15 +211,17 @@ def project_apply_leader(request, pk):
     except AttributeError:
         user_is_not_already_leader = True
 
-    is_applied_already=LeaderApplication.objects.filter(project=project, applicant=request.user).first()
+    is_applied_already = LeaderApplication.objects.filter(
+        project=project, applicant=request.user
+    ).first()
     if project and user_is_not_already_leader and not is_applied_already:
         LeaderApplication.objects.create(applicant=request.user, project=project)
         return redirect("issue_tracker:main")
     if is_applied_already:
-        return HttpResponse("You have already applied for being leader in this project.")
+        return HttpResponse(
+            "You have already applied for being leader in this project."
+        )
     return HttpResponse("You are leader in this project or project deos not exist.")
-        
-
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -206,7 +229,7 @@ def project_apply_leader(request, pk):
 def project_apply(request, pk):
     project = Project.objects.filter(id=pk).first()
     if project:
-        context = {'pk':pk,'project':project}
+        context = {"pk": pk, "project": project}
         return render(request, "issue_tracker/project_apply.html", context)
     return HttpResponse("That project does not exist")
 
@@ -244,10 +267,8 @@ def project_list_all(request):
         page_obj = paginator.page(paginator.num_pages)
 
     context["page_obj"] = page_obj
-    
 
     return render(request, "issue_tracker/project_list_all.html", context)
-    
 
 
 @method_decorator(group_required("developer", "leader"), name="get")
