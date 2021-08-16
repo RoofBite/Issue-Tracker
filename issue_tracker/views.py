@@ -159,7 +159,7 @@ def developer_application_accept(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader")
+@group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_developers_applications_list(request):
     context = {}
@@ -201,6 +201,133 @@ def manage_developers_applications_list(request):
     return render(
         request, "issue_tracker/manage_developers_applications_list.html", context
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("admin")
+@require_http_methods(["GET"])
+def leader_application_deny(request, pk):
+    application = LeaderApplication.objects.filter(pk=pk).first()
+
+    if application:
+        application.delete()
+    else:
+        return HttpResponse("This application does not exist")
+
+    return redirect("issue_tracker:manage-leaders-applications-list")
+
+
+   
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("admin")
+@require_http_methods(["GET"])
+def leader_application_accept(request, pk):
+    application = LeaderApplication.objects.filter(pk=pk).first()
+
+    if application:
+        project_pk = application.project.pk
+        Project.objects.filter(pk=project_pk).update(leader=application.applicant)
+        application.delete()
+    else:
+        return HttpResponse("This application does not exist")
+
+    return redirect("issue_tracker:manage-leaders-applications-list")
+
+
+    
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("admin")
+@require_http_methods(["GET"])
+def manage_leaders_applications_list(request):
+    context = {}
+
+    applications = LeaderApplication.objects.all().order_by("id")
+
+    paginator = Paginator(applications, 3)
+    page_number = request.GET.get("page")
+
+    try:
+        page_obj = paginator.get_page(page_number)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    page_obj = paginator.get_page(page_number)
+
+    if request.GET.get("search_query"):
+        search_query = request.GET.get("search_query")
+        context["search_query"] = str(search_query)
+
+        query = applications.filter(
+            Q(project__name__icontains=search_query)
+            | Q(applicant__icontains=search_query)
+            | Q(project__description__icontains=search_query)
+        )
+
+        paginator = Paginator(query, 3)
+        page_number = request.GET.get("page")
+    try:
+        page_obj = paginator.get_page(page_number)
+    except EmptyPage:
+        page_obj = paginator.page(paginator.num_pages)
+
+    context["page_obj"] = page_obj
+    context["applications"] = applications
+
+    return render(
+        request, "issue_tracker/manage_leaders_applications_list.html", context
+    )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 @login_required(login_url="issue_tracker:sign-in")

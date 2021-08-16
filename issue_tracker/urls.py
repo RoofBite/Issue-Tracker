@@ -51,6 +51,12 @@ urlpatterns = [
     path("developer-application-accept/<int:pk>/", views.developer_application_accept, name="developer-application-accept"),
     path("developer-application-deny/<int:pk>/", views.developer_application_deny, name="developer-application-deny"),
 
+    path("manage-leaders-applications-list/", views.manage_leaders_applications_list, name="manage-leaders-applications-list"),
+    path("leader-application-accept/<int:pk>/", views.leader_application_accept, name="leader-application-accept"),
+    path("leader-application-deny/<int:pk>/", views.leader_application_deny, name="leader-application-deny"),
+
+
+
     path("project-apply/<int:pk>/", views.project_apply, name="project-apply"),
 
     path("project-apply-leader/<int:pk>/", views.project_apply_leader, name="project-apply-leader"),

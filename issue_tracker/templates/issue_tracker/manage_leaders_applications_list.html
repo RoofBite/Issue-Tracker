@@ -98,13 +98,60 @@
               {% endif %}
               </span
             >
-      
+              
+      <div class="col mt-1">
+
+
+            <span class="badge bg-danger">
+
+              Current leader: 
+              <br>
+
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                fill="currentColor"
+                class="bi bi-broadcast me-1"
+                viewBox="0 0 16 16"
+              ><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+            </svg>
+              {% if application.project.leader.username|length  == 32 %}
+             
+              {{application.project.leader|make_list|slice:':6'|join:''}}
+              
+              {% else %}
+              
+              {{application.project.leader|make_list|slice:':20'|join:''}}
+              {% endif %}
+              <br>
+              {% if application.project.leader.username|length  == 32 %}
+              First name: {{application.project.leader|make_list|slice:':15'|join:''}}
+              {% else %}
+              First name: {{application.project.leader}}
+              
+              {% endif %}
+              <br>
+              
+              {% if application.project.leader.username|length  == 32 %}
+              Last name: {{application.project.leader|make_list|slice:':15'|join:''}}
+              {% else %}
+              Last name: {{application.project.leader}}
+              
+              {% endif %}
+              </span
+            >
+
+
+</div>
+
+
           </div>
 </section>
 <section class="row">
   <div class="col mt-2">
-<a class="btn btn-success" href="{% url 'issue_tracker:developer-application-accept' application.pk %}">accept</a>
-<a class="btn btn-danger"  href="{% url 'issue_tracker:developer-application-deny' application.pk %}">deny</a>
+<a class="btn btn-success" href="{% url 'issue_tracker:leader-application-accept' application.pk %}">accept</a>
+<a class="btn btn-danger"  href="{% url 'issue_tracker:leader-application-deny' application.pk %}">deny</a>
   </div>
 </section>
         </div>
