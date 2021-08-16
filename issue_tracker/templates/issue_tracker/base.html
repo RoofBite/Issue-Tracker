@@ -99,7 +99,8 @@
           aria-expanded="false">
           Options
         </button>
-        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        <ul class="dropdown-menu" aria-lab
+        elledby="dropdownMenuButton">
           <li><a class="dropdown-item">User:<br> {{user|make_list|slice:':6'|join:''}}</a></li>
           <li><a class="dropdown-item" href="#">Messages</a></li>
           <li><a class="dropdown-item" href="{% url 'issue_tracker:logout-page' %}">Sign out</a></li>
@@ -139,12 +140,30 @@
 
 
                 {% endif %}
-
+<!--
                 <li class="nav-item">
                   <a class="nav-link py-1" href="{% url 'issue_tracker:main' %}">
                 <span class="ml-2">Dashboard</span>
               </a>
             </li>
+--> 
+            {% if 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
+
+            
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:manage-developers-applications-list' %}">
+            <span class="ml-2">Manage application</span>
+            </a>
+            </li>
+            {% elif 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:manage-developers-applications-list' %}">
+            <span class="ml-2">Manage application</span>
+            </a>
+            </li>
+            {% endif %}
+
+
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:my-projects' %}">
 

@@ -60,8 +60,16 @@
                 {% for user in form.member %}
                 <label for="{{ radio.id_for_label }}">
                   <span class="radio">{{ user.tag }}</span>
+                    
+                    {% if user.choice_label|length  == 32 %}
+
                     {{ user.choice_label|make_list|slice:':6'|join:'' }}
                     
+                    {% else %}
+                    
+                    {{ user.choice_label|make_list|slice:':24'|join:'' }}
+                    {% endif %}
+
                 </label>
                 <br>
                 {% endfor %}

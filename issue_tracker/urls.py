@@ -47,6 +47,7 @@ urlpatterns = [
     path("sign-in/", views.sign_in, name="sign-in"),
     path("logout/", views.logout_page, name="logout-page"),
     path("project-list-all/", views.project_list_all, name="project-list-all"),
+    path("manage-developers-applications-list/", views.manage_developers_applications_list, name="manage-developers-applications-list"),
     path("project-apply/<int:pk>/", views.project_apply, name="project-apply"),
 
     path("project-apply-leader/<int:pk>/", views.project_apply_leader, name="project-apply-leader"),
