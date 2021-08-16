@@ -102,39 +102,60 @@ def sign_up(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader")
+@group_required("leader", "admin")
 @require_http_methods(["GET"])
 def developer_application_deny(request, pk):
-    # For admin user
-
-    # For leader user
     application = DeveloperApplication.objects.filter(pk=pk).first()
-    if application:
-        if application.project.leader.pk == request.user.pk:
+    if request.user.groups.filter(name="admin").exists():
+        # For admin user
+        if application:
             application.delete()
-    else:
-        return HttpResponse("This application does not exist")
+        else:
+            return HttpResponse("This application does not exist")
 
-    return redirect("issue_tracker:manage-developers-applications-list")
+        return redirect("issue_tracker:manage-developers-applications-list")
 
+    elif request.user.groups.filter(name="leader").exists():
+        # For leader user
+        if application:
+            if application.project.leader.pk == request.user.pk:
+                application.delete()
+        else:
+            return HttpResponse("This application does not exist")
+
+        return redirect("issue_tracker:manage-developers-applications-list")
+
+    return HttpResponse("You are not admin nor leader")
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader")
+@group_required("leader", "admin")
 @require_http_methods(["GET"])
 def developer_application_accept(request, pk):
-    # For admin user
-
-    # For leader user
     application = DeveloperApplication.objects.filter(pk=pk).first()
-    if application:
-        if application.project.leader.pk == request.user.pk:
+
+    if request.user.groups.filter(name="admin").exists():
+        # For admin user
+        if application:
             application.project.member.add(application.applicant)
             application.delete()
-    else:
-        return HttpResponse("This application does not exist")
+        else:
+            return HttpResponse("This application does not exist")
 
-    return redirect("issue_tracker:manage-developers-applications-list")
+        return redirect("issue_tracker:manage-developers-applications-list")
+
+    elif request.user.groups.filter(name="leader").exists():
+        # For leader user
+        if application:
+            if application.project.leader.pk == request.user.pk:
+                application.project.member.add(application.applicant)
+                application.delete()
+        else:
+            return HttpResponse("This application does not exist")
+
+        return redirect("issue_tracker:manage-developers-applications-list")
+
+    return HttpResponse("You are not admin nor leader")
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -192,7 +213,7 @@ def project_apply_developer(request, pk):
     ).first()
     if project and not (request.user.id in member_ids) and not is_applied_already:
         DeveloperApplication.objects.create(applicant=request.user, project=project)
-        return redirect("issue_tracker:main")
+        return redirect("issue_tracker:project-list-all")
     if is_applied_already:
         return HttpResponse(
             "You have already applied for being developer in this project."
@@ -216,7 +237,7 @@ def project_apply_leader(request, pk):
     ).first()
     if project and user_is_not_already_leader and not is_applied_already:
         LeaderApplication.objects.create(applicant=request.user, project=project)
-        return redirect("issue_tracker:main")
+        return redirect("issue_tracker:project-list-all")
     if is_applied_already:
         return HttpResponse(
             "You have already applied for being leader in this project."

@@ -14,7 +14,10 @@
 <div class='col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
   <nav aria-label="breadcrumb" style="padding: 20px">
     <ol class="breadcrumb">
-     
+      <li class="card me-3"> <a class="btn btn-primary me-2" href="{% url  'issue_tracker:manage-developers-applications-list' %}">Developer applications</a>  </li>
+      {% if 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+     <li class="card me-3"> <a class="btn btn-primary">Leader applications</a>  </li>
+     {% endif %}
     </ol>
   </nav>
 
