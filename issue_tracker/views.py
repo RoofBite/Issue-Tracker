@@ -344,9 +344,8 @@ def my_projects(request):
 @require_http_methods(["GET"])
 def manage_projects_list(request):
     context = {}
-    if Project.objects.filter(member__id=request.user.id).exists():
-        projects = Project.objects.filter(
-            member__id=request.user.id, leader__id=request.user.id
+    if Project.objects.filter(member__id=request.user.id).exists() or Project.objects.filter(leader__id=request.user.id).exists():
+        projects = Project.objects.filter(leader__id=request.user.id
         )
         context = {"projects": projects}
     return render(request, "issue_tracker/manage_projects_list.html", context)
