@@ -544,7 +544,7 @@ def manage_project_issues_list(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_details_old_issues(request, pk):
-    project_instance = Project.objects.filter(id=pk, developer=request.user.id).first()
+    project_instance = Project.objects.filter(Q(id=pk), Q(leader__id=request.user.id) | Q(developer__id=request.user.id)).first()
     if project_instance:
         context = {}
 
@@ -832,13 +832,13 @@ def my_issues(request):
     context = {}
 
     my_project_issues = (
-        Issue.objects.filter(project__developer=request.user)
+        Issue.objects.filter(Q(project__leader__id=request.user.id) | Q(project__developer__id=request.user.id))
         .exclude(status="RESOLVED")
         .exclude(status="CLOSED")
         .order_by("-create_date")
         .select_related("project", "user_assigned")
     )
-
+    print(my_project_issues)
     my_issues = my_project_issues.filter(user_assigned=request.user)
 
     paginator1 = Paginator(my_issues, 2)
@@ -864,7 +864,7 @@ def my_issues(request):
         search_query1 = request.GET.get("search_query1")
         context["search_query1"] = str(search_query1)
 
-        query1 = my_project_issues.filter(
+        query1 = my_issues.filter(
             Q(project__name__icontains=search_query1)
             | Q(create_date__startswith=search_query1)
             | Q(update_date__startswith=search_query1)
@@ -887,7 +887,7 @@ def my_issues(request):
         search_query2 = request.GET.get("search_query2")
         context["search_query2"] = str(search_query2)
 
-        query2 = my_issues.filter(
+        query2 = my_project_issues.filter(
             Q(project__name__icontains=search_query2)
             | Q(create_date__startswith=search_query2)
             | Q(update_date__startswith=search_query2)
@@ -908,6 +908,8 @@ def my_issues(request):
 
     context["page_obj1"] = page_obj1
     context["page_obj2"] = page_obj2
+
+    #They are not used now
     context["my_issues"] = my_issues
     context["my_project_issues"] = my_project_issues
 
