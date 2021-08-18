@@ -239,7 +239,11 @@ def leader_application_accept(request, pk):
 def manage_leaders_applications_list(request):
     context = {}
 
-    applications = LeaderApplication.objects.all().order_by("id")
+    applications = (
+        LeaderApplication.objects.all()
+        .order_by("id")
+        .select_related("project", "applicant")
+    )
 
     paginator = Paginator(applications, 3)
     page_number = request.GET.get("page")
@@ -333,7 +337,9 @@ def project_apply(request, pk):
 def project_list_all(request):
     context = {}
 
-    projects = Project.objects.all().select_related("leader").prefetch_related("developer")
+    projects = (
+        Project.objects.all().select_related("leader").prefetch_related("developer")
+    )
 
     paginator = Paginator(projects, 5)
     page_number = request.GET.get("page")
