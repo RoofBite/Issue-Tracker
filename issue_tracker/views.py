@@ -203,26 +203,6 @@ def manage_developers_applications_list(request):
     )
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("admin")
 @require_http_methods(["GET"])
@@ -235,9 +215,6 @@ def leader_application_deny(request, pk):
         return HttpResponse("This application does not exist")
 
     return redirect("issue_tracker:manage-leaders-applications-list")
-
-
-   
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -254,9 +231,6 @@ def leader_application_accept(request, pk):
         return HttpResponse("This application does not exist")
 
     return redirect("issue_tracker:manage-leaders-applications-list")
-
-
-    
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -300,34 +274,6 @@ def manage_leaders_applications_list(request):
     return render(
         request, "issue_tracker/manage_leaders_applications_list.html", context
     )
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -460,8 +406,12 @@ class Add_issue(CreateView):
 @require_http_methods(["GET"])
 def my_projects(request):
     context = {}
-    if Project.objects.filter(Q(leader__id=request.user.id) | Q(developer__id=request.user.id)).exists():
-        projects = Project.objects.filter(Q(leader__id=request.user.id) | Q(developer__id=request.user.id))
+    if Project.objects.filter(
+        Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+    ).exists():
+        projects = Project.objects.filter(
+            Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+        )
         context = {"projects": projects}
     return render(request, "issue_tracker/my_projects.html", context)
 
@@ -471,9 +421,15 @@ def my_projects(request):
 @require_http_methods(["GET"])
 def manage_projects_list(request):
     context = {}
-    if Project.objects.filter(developer__id=request.user.id).exists() or Project.objects.filter(leader__id=request.user.id).exists():
-        projects = Project.objects.filter(leader__id=request.user.id
+    try:
+        projects = (
+            Project.objects.filter(leader__id=request.user.id)
+            .select_related("leader")
+            .prefetch_related("developer",'leader')
         )
+    except:
+        projects = None
+    if projects:
         context = {"projects": projects}
     return render(request, "issue_tracker/manage_projects_list.html", context)
 
