@@ -5,21 +5,36 @@ from datetime import datetime, timedelta, date
 from django.db.models.fields.related import OneToOneField
 from simple_history.models import HistoricalRecords
 
-# Create your models here.
+
+class Comment(models.Model):
+    text = models.TextField()
+    create_date = models.DateTimeField(auto_now_add=True)
+    author = models.ForeignKey(User, on_delete=models.CASCADE)
+
 
 class DeveloperApplication(models.Model):
-    applicant = models.ForeignKey(User, on_delete=models.CASCADE, null=False, blank=False)
-    project = models.ForeignKey("Project", on_delete=models.CASCADE, null=False, blank=False)
+    applicant = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=False, blank=False
+    )
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, null=False, blank=False
+    )
 
     def __str__(self):
         return str(self.project) + " " + str(self.applicant)
+
 
 class LeaderApplication(models.Model):
-    applicant = models.ForeignKey(User, on_delete=models.CASCADE,  null=False, blank=False)
-    project = models.ForeignKey("Project", on_delete=models.CASCADE, null=False, blank=False)
+    applicant = models.ForeignKey(
+        User, on_delete=models.CASCADE, null=False, blank=False
+    )
+    project = models.ForeignKey(
+        "Project", on_delete=models.CASCADE, null=False, blank=False
+    )
 
     def __str__(self):
         return str(self.project) + " " + str(self.applicant)
+
 
 class Project(models.Model):
     name = models.TextField(null=False, default="None")
@@ -98,6 +113,9 @@ class Issue(models.Model):
     description = models.CharField(max_length=250, null=True)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(null=True, blank=True)
+    comment = models.ForeignKey(
+        "Comment", on_delete=models.SET_NULL, null=True, blank=True
+    )
 
     history = HistoricalRecords()
 

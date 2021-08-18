@@ -600,7 +600,7 @@ def project_details_old_issues(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_details(request, pk):
-    project_instance = Project.objects.filter(id=pk, developer=request.user.id).first()
+    project_instance = Project.objects.filter(Q(id=pk),  Q(leader__id=request.user.id) | Q(developer__id=request.user.id)).first()
     if project_instance:
         context = {}
 
@@ -652,6 +652,18 @@ def project_details(request, pk):
 
         return render(request, "issue_tracker/project_details.html", context)
     return HttpResponse("You are not allowed to see this project")
+
+
+
+# @login_required(login_url="issue_tracker:sign-in")
+# @group_required("leader", "developer")
+# @require_http_methods(["GET"])
+# def issue_details_comments(request, pk):
+#     projects = Project.objects.filter(developer__id=request.user.id)
+#     issue_instance = Issue.objects.filter(id=pk, project__in=projects).first()
+
+#     if issue_instance:
+
 
 
 @login_required(login_url="issue_tracker:sign-in")
