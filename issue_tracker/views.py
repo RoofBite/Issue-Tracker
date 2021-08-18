@@ -406,12 +406,18 @@ class Add_issue(CreateView):
 @require_http_methods(["GET"])
 def my_projects(request):
     context = {}
-    if Project.objects.filter(
-        Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
-    ).exists():
-        projects = Project.objects.filter(
-            Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+    try:
+        projects = (
+            Project.objects.filter(
+                Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+            )
+            .select_related("leader")
+            .prefetch_related("developer")
         )
+    except:
+        projects = None
+
+    if projects:
         context = {"projects": projects}
     return render(request, "issue_tracker/my_projects.html", context)
 
@@ -425,7 +431,7 @@ def manage_projects_list(request):
         projects = (
             Project.objects.filter(leader__id=request.user.id)
             .select_related("leader")
-            .prefetch_related("developer",'leader')
+            .prefetch_related("developer", "leader")
         )
     except:
         projects = None
