@@ -333,7 +333,7 @@ def project_apply(request, pk):
 def project_list_all(request):
     context = {}
 
-    projects = Project.objects.all()
+    projects = Project.objects.all().select_related("leader").prefetch_related("developer")
 
     paginator = Paginator(projects, 5)
     page_number = request.GET.get("page")
