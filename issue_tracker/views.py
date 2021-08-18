@@ -24,7 +24,9 @@ from django.contrib.auth.models import Group
 
 def load_users(request):
     project_id = request.GET.get("project")
-    users = User.objects.filter(project__id=project_id)
+    
+    users = User.objects.filter(Q(project__id=project_id) | Q(leader_project_set__id=project_id)).distinct()
+    print(users)
     return render(
         request,
         "issue_tracker/hr/user_assigned_dropdown_list_options.html",

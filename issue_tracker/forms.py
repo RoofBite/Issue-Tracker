@@ -71,8 +71,8 @@ class IssueFormCreate(ModelForm):
         super(IssueFormCreate, self).__init__(*args, **kwargs)
         self.fields["user_assigned"].queryset = User.objects.none()
         self.fields["project"].queryset = Project.objects.filter(
-            developer=self.request.user
-        ).prefetch_related("developer")
+            Q(developer=self.request.user) | Q(leader=self.request.user)
+        ).prefetch_related("developer", "leader")
         self.fields["creator"].initial = User.objects.get(id=self.request.user.id)
         self.fields["creator"].widget = HiddenInput()
 
@@ -80,8 +80,8 @@ class IssueFormCreate(ModelForm):
             try:
                 project_id = int(self.data.get("project"))
                 self.fields["user_assigned"].queryset = User.objects.filter(
-                    project__id=project_id
-                )
+                    Q(project__id=project_id) | Q(leader_project_set__id=project_id)
+                ).distinct()
             except (ValueError, TypeError):
                 pass  # invalid input from the client; ignore and fallback to empty City queryset
         elif self.instance.pk:
@@ -102,12 +102,11 @@ class IssueFormCreate(ModelForm):
 
         widgets = {
             "description": Textarea(attrs={"rows": 6, "cols": 17}),
-            "title": TextInput(attrs={'size': '14'}),
-            
+            "title": TextInput(attrs={"size": "14"}),
         }
 
 
 class CreateUserForm(UserCreationForm):
-	class Meta:
-		model = User
-		fields = ['username', 'email', 'password1', 'password2']
+    class Meta:
+        model = User
+        fields = ["username", "email", "password1", "password2"]
