@@ -166,7 +166,7 @@ def manage_developers_applications_list(request):
 
     applications = DeveloperApplication.objects.filter(
         project__leader=request.user
-    ).order_by("id")
+    ).select_related("project", "applicant")
 
     paginator = Paginator(applications, 3)
     page_number = request.GET.get("page")
