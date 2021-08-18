@@ -670,14 +670,14 @@ def project_details(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def issue_details(request, pk):
-    projects = Project.objects.filter(developer__id=request.user.id)
+    projects = Project.objects.filter(Q(leader__id=request.user.id) | Q(developer__id=request.user.id))
     issue_instance = Issue.objects.filter(id=pk, project__in=projects).first()
 
     if issue_instance:
         context = {}
 
         issues = (
-            Issue.history.filter(project__developer=request.user)
+            Issue.history.filter(Q(id=pk), Q(project__leader__id=request.user.id) | Q(project__developer__id=request.user.id))
             .order_by("-update_date")
             .select_related("project", "user_assigned")
         )
@@ -728,59 +728,8 @@ def issue_details(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def reported_issues(request):
-    context = {}
-
     issues = (
-        Issue.objects.filter(project__developer=request.user, creator=request.user)
-        .order_by("-create_date")
-        .select_related("project", "user_assigned")
-    )
-
-    paginator = Paginator(issues, 3)
-    page_number = request.GET.get("page")
-
-    try:
-        page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
-
-    page_obj = paginator.get_page(page_number)
-
-    if request.GET.get("search_query"):
-        search_query = request.GET.get("search_query")
-        context["search_query"] = str(search_query)
-
-        query = issues.filter(
-            Q(project__name__icontains=search_query)
-            | Q(create_date__startswith=search_query)
-            | Q(update_date__startswith=search_query)
-            | Q(title__icontains=search_query)
-            | Q(description__icontains=search_query)
-            | Q(user_assigned__username__icontains=search_query)
-            | Q(status__icontains=search_query)
-            | Q(priority__icontains=search_query)
-            | Q(type__icontains=search_query)
-        ).order_by("-create_date")
-
-        paginator = Paginator(query, 3)
-        page_number = request.GET.get("page")
-    try:
-        page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
-
-    context["page_obj"] = page_obj
-    context["my_project_issues"] = issues
-
-    return render(request, "issue_tracker/reported-issues.html", context)
-
-
-@login_required(login_url="issue_tracker:sign-in")
-@group_required("leader", "developer")
-@require_http_methods(["GET"])
-def reported_issues(request):
-    issues = (
-        Issue.objects.filter(project__developer=request.user, creator=request.user)
+        Issue.objects.filter(Q(creator=request.user), Q(project__leader__id=request.user.id) | Q(project__developer__id=request.user.id))
         .order_by("-create_date")
         .select_related("project", "user_assigned")
     )
