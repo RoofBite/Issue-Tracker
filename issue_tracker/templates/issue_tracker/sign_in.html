@@ -41,9 +41,11 @@
             {% for message in messages %}
            <p>{{message}}</p>
             {% endfor %}
-            
+                <br>
             If you don't have account: <br>
             <a class="btn btn-success mt-2" href="{% url 'issue_tracker:sign-up' %}">Sign up</a>
+             <br>
+            <a class="btn btn-danger mt-2" href="{% url 'issue_tracker:set-demo-user' %}">Use as demo user</a>
             </div>
         </div>
     </div>

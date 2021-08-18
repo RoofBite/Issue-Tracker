@@ -1,0 +1,32 @@
+{% extends "issue_tracker/base.html" %}
+{% block content %}
+  <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
+      <nav aria-label="breadcrumb">
+          <ol class="breadcrumb">
+              <li class="breadcrumb-item"><a href="#">Home</a></li>
+              <li class="breadcrumb-item active" aria-current="page">Overview</li>
+          </ol>
+      </nav>
+      <h1 class="h2">You have no permission to see this page</h1>
+      <p>{% if user|is_lazy_user %}
+        <p class="btn mb-3 mt-2" style="font-size:14px">
+          <b>You are demo user </b>
+  
+          {% if request.user.groups.all.0.name == 'developer' %}
+  
+          {% else %}
+          {% if request.user.groups.all.0.name == 'leader' %}
+          {% else %}
+          <a class="link-danger" href="{% url 'issue_tracker:set-demo-user' %}"><b>Click here to get developer and project
+              leader permissions</b></a>
+        </p>
+        {% endif %}
+  
+  
+        {% endif %}
+        {% else %}
+  
+        </p>
+        {% endif %}</p>
+  </main>
+{% endblock %} 

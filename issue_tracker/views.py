@@ -31,11 +31,13 @@ def load_users(request):
         {"users": users},
     )
 
-
+@allow_lazy_user
 def set_demo_user(request):
+    print('1',is_lazy_user(request.user))
     if is_lazy_user(request.user) and not request.user.groups.filter(
         name__in=("developer", "leader")
     ):
+        print('2')
         # Adding to groups
         my_group1 = Group.objects.get(name="leader")
         my_group1.user_set.add(request.user)
