@@ -6,6 +6,7 @@ from django.core.paginator import Paginator, EmptyPage
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django.utils.decorators import method_decorator
@@ -75,7 +76,9 @@ def sign_in(request):
         if user is not None:
             login(request, user)
             return redirect("issue_tracker:main")
-        return redirect(request.path)
+        else:
+            messages.info(request, "Wrong password or username")
+            return redirect(request.path)
     else:
         return render(request, "issue_tracker/sign_in.html")
 

@@ -4,15 +4,59 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+    integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
     <title>Sign-in</title>
 </head>
 <body>
-    <form method="POST">
-        {% csrf_token %}
-        {{form.as_p}}
 
-        <button type="submit">Submit</button>
-    </form>
+
+    <div style="height: 100px;">
+        <section class="row h-50 d-inline-block" >
+            <div class="col-12">
+            
+            </div>
+        </section>
+        </div>
+    <section class="row">
+        
+        <div class="col-3">
+            
+        </div>
+    
+        <div class="col-6">
+     
+            <div class="card text-center text-white bg-primary mb-3">
+                <div class="card-header">Sign up</div>
+                <div class="card-body">
+                
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                     
+                        Username:  <br> {{form.username}}  <br>
+                        Email: <br>  {{form.email}} <br>
+                        Password: <br> {{form.password1}} <br>
+                        Password confirmation: <br>  {{form.password2}} <br>
+                        {{form.errors}}
+                
+                        <button class="btn btn-success mt-2" type="submit">Submit</button>
+                    </form>
+    
+                </div>
+            </div>
+        </div>
+    
+        <div class="col-3">
+            
+        </div>
+    </section>  
+
+
+
+
+
+    
    
 </body>
 </html>

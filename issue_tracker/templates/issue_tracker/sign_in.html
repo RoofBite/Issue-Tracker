@@ -4,18 +4,60 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha1/css/bootstrap.min.css"
+    integrity="sha384-r4NyP46KrjDleawBgD5tp8Y7UzmLA05oM1iAEQ17CSuDqnUK2+k9luXQOfXJCJ4I" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
     <title>Sign-in</title>
 </head>
 <body> 
-    Sign-in
-    <form method="POST" action="">
-        {% csrf_token %}
-       
-        <input type="text" name='username' placeholder="username">
-        <input type="text" name='password' placeholder="password">
-        <button class="btn btn-success" type="submit">Submit</button>
-    </form>
-    <a href="{% url 'issue_tracker:sign-up' %}">Sign up</a>
+    <div style="height: 100px;">
+    <section class="row h-50 d-inline-block" >
+        <div class="col-12">
+        
+        </div>
+    </section>
+    </div>
+<section class="row">
+    
+    <div class="col-3">
+        
+    </div>
+
+    <div class="col-6">
+ 
+        <div class="card text-center text-white bg-primary mb-3">
+            <div class="card-header">Sign in</div>
+            <div class="card-body">
+            
+
+            <form method="POST" action="">
+                {% csrf_token %}
+            
+                <input type="text" name='username' placeholder="Username">
+                <input type="text" name='password' placeholder="Password">
+                <button class="btn btn-success" type="submit">Submit</button>
+            </form>
+
+            {% for message in messages %}
+           <p>{{message}}</p>
+            {% endfor %}
+            
+            If you don't have account: <br>
+            <a class="btn btn-success mt-2" href="{% url 'issue_tracker:sign-up' %}">Sign up</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-3">
+        
+    </div>
+</section>  
+
+
+    
+    
    
+
+
 </body>
 </html>
