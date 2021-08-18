@@ -398,6 +398,12 @@ class Update_issue(UpdateView):
             "issue_tracker:manage-project-issues-list", kwargs={"pk": issue_project_id}
         )
 
+    def get_form_kwargs(self):
+
+        kwargs = super(Update_issue, self).get_form_kwargs()
+        kwargs["pk"] = self.kwargs['pk']
+        kwargs["request"] = self.request
+        return kwargs
 
 @method_decorator(group_required("developer", "leader"), name="get")
 class Add_issue(CreateView):

@@ -63,11 +63,21 @@ class IssueFormUpdate(ModelForm):
             "description": Textarea(attrs={"rows": 9, "cols": 20}),
         }
 
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        
+        self.pk = kwargs.pop('pk')
+        super(IssueFormUpdate, self).__init__(*args, **kwargs)
+        project_id = Issue.objects.get(pk=self.pk).project.id
+        
+        self.fields["user_assigned"].queryset = User.objects.filter(
+                    Q(project__id=project_id) | Q(leader_project_set__id=project_id)
+                ).distinct()
 
 class IssueFormCreate(ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-
+        
         super(IssueFormCreate, self).__init__(*args, **kwargs)
         self.fields["user_assigned"].queryset = User.objects.none()
         self.fields["project"].queryset = Project.objects.filter(
