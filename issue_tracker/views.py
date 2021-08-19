@@ -18,7 +18,7 @@ from lazysignup.decorators import (
 from lazysignup.utils import is_lazy_user
 from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate, CreateUserForm
 from .models import *
-from .decorators import group_required
+from .decorators import group_required, group_excluded
 from django.contrib.auth.models import Group
 
 
@@ -147,21 +147,30 @@ def developer_application_accept(request, pk):
     application = DeveloperApplication.objects.filter(pk=pk).first()
 
     if request.user.groups.filter(name="admin").exists():
-        # For admin user
+        print("1")
         if application:
+            print("2")
             application.project.developer.add(application.applicant)
             application.delete()
+            
+            my_group = Group.objects.get(name='developer') 
+            my_group.user_set.add(application.applicant)
+            print(my_group)
         else:
             return HttpResponse("This application does not exist")
 
         return redirect("issue_tracker:manage-developers-applications-list")
 
     elif request.user.groups.filter(name="leader").exists():
-        # For leader user
+        
         if application:
             if application.project.leader.pk == request.user.pk:
                 application.project.developer.add(application.applicant)
                 application.delete()
+
+                my_group = Group.objects.get(name='developer') 
+                my_group.user_set.add(application.applicant)
+                print(my_group)
         else:
             return HttpResponse("This application does not exist")
 
@@ -246,6 +255,10 @@ def leader_application_accept(request, pk):
         project_pk = application.project.pk
         Project.objects.filter(pk=project_pk).update(leader=application.applicant)
         application.delete()
+
+        my_group = Group.objects.get(name='leader') 
+        my_group.user_set.add(application.applicant)
+        print(my_group)
     else:
         return HttpResponse("This application does not exist")
 
@@ -300,7 +313,7 @@ def manage_leaders_applications_list(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader", "developer")
+@group_excluded("admin")
 @require_http_methods(["GET"])
 def project_apply_developer(request, pk):
     project = Project.objects.filter(pk=pk).first()
@@ -310,7 +323,7 @@ def project_apply_developer(request, pk):
     ).first()
     if project and not (request.user.id in developer_ids) and not is_applied_already:
         DeveloperApplication.objects.create(applicant=request.user, project=project)
-        return redirect("issue_tracker:project-list-all")
+        return redirect("issue_tracker:apply-project-list-all")
     if is_applied_already:
         return HttpResponse(
             "You have already applied for being developer in this project."
@@ -319,7 +332,7 @@ def project_apply_developer(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader", "developer")
+@group_excluded("admin")
 @require_http_methods(["GET"])
 def project_apply_leader(request, pk):
     project = Project.objects.filter(pk=pk).first()
@@ -335,7 +348,7 @@ def project_apply_leader(request, pk):
     ).first()
     if project and user_is_not_already_leader and not is_applied_already:
         LeaderApplication.objects.create(applicant=request.user, project=project)
-        return redirect("issue_tracker:project-list-all")
+        return redirect("issue_tracker:apply-project-list-all")
     if is_applied_already:
         return HttpResponse(
             "You have already applied for being leader in this project."
@@ -344,7 +357,7 @@ def project_apply_leader(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader", "developer")
+@group_excluded("admin")
 @require_http_methods(["GET", "POST"])
 def project_apply(request, pk):
     project = Project.objects.filter(id=pk).first()
@@ -355,7 +368,7 @@ def project_apply(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader", "developer")
+@group_excluded("admin")
 @require_http_methods(["GET"])
 def apply_project_list_all(request):
     context = {}

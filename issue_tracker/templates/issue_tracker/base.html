@@ -140,7 +140,7 @@
             </li>
             
 
-                {% if request.user.groups.all.0.name == 'developer' or request.user.groups.all.0.name == 'leader' %}
+                {% if request.user.groups.all.0.name == 'developer' or request.user.groups.all.0.name == 'developer' %}
 
                 <li class="nav-item">
                   <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
@@ -148,13 +148,25 @@
               </a>
             </li>
            
-            {% elif 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+            {% elif 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
                 
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
             <span class="ml-2 mt-0">Apply for projects</span>
           </a>
         </li>
+
+        {% elif 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+        
+        
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
+        <span class="ml-2 mt-0">Apply for projects</span>
+      </a>
+    </li>
+
+
 
 
                 {% endif %}
