@@ -353,7 +353,7 @@ def project_apply(request, pk):
 
 @login_required(login_url="issue_tracker:sign-in")
 @require_http_methods(["GET"])
-def project_list_all(request):
+def apply_project_list_all(request):
     context = {}
 
     projects = (
@@ -387,7 +387,7 @@ def project_list_all(request):
 
     context["page_obj"] = page_obj
 
-    return render(request, "issue_tracker/project_list_all.html", context)
+    return render(request, "issue_tracker/apply_project_list_all.html", context)
 
 
 @method_decorator(group_required("developer", "leader"), name="get")
@@ -470,28 +470,44 @@ def my_projects(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader")
+@group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_projects_list(request):
     context = {}
-    try:
-        projects = (
-            Project.objects.filter(leader__id=request.user.id)
-            .select_related("leader")
-            .prefetch_related("developer", "leader")
-        )
-    except:
-        projects = None
+
+    if request.user.groups.filter(name__in=("admin",)):
+        try:
+            projects = Project.objects.all()
+        except:
+            projects = None
+
+    elif request.user.groups.filter(name__in=("leader",)):
+
+        try:
+            projects = (
+                Project.objects.filter(leader__id=request.user.id)
+                .select_related("leader")
+                .prefetch_related("developer", "leader")
+            )
+        except:
+            projects = None
+
     if projects:
         context = {"projects": projects}
     return render(request, "issue_tracker/manage_projects_list.html", context)
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader")
+@group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_project_details(request, pk):
-    project_instance = Project.objects.filter(id=pk, leader=request.user).first()
+    
+    if request.user.groups.filter(name__in=("admin",)):
+        project_instance = Project.objects.filter(id=pk).first()
+
+    elif request.user.groups.filter(name__in=("leader",)):
+        project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
+
     if project_instance:
         project = Project.objects.get(id=pk)
         context = {"project": project}
@@ -501,10 +517,16 @@ def manage_project_details(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader")
+@group_required("leader", "admin")
 @require_http_methods(["GET", "POST"])
 def manage_project_developers(request, pk):
-    project_instance = Project.objects.filter(pk=pk, leader__id=request.user.id).first()
+    if request.user.groups.filter(name__in=("admin",)):
+        project_instance = Project.objects.filter(id=pk).first()
+
+    elif request.user.groups.filter(name__in=("leader",)):
+        project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
+
+
     if project_instance:
         form = AddDeveloper(instance=project_instance, request=request)
 
@@ -521,10 +543,17 @@ def manage_project_developers(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
-@group_required("leader")
+@group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_project_issues_list(request, pk):
-    project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
+    
+    if request.user.groups.filter(name__in=("admin",)):
+        project_instance = Project.objects.filter(id=pk).first()
+
+    elif request.user.groups.filter(name__in=("leader",)):
+        project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
+
+    
     if project_instance:
         context = {}
 
@@ -571,6 +600,7 @@ def manage_project_issues_list(request, pk):
         context["page_obj"] = page_obj
         context["my_project_issues"] = my_project_issues
         context["project"] = project
+        
 
         return render(request, "issue_tracker/manage_project_issues_list.html", context)
     return HttpResponse("You are not allowed to see this project")
@@ -733,7 +763,7 @@ def issue_details(request, pk):
 
     if issue_instance:
         context = {}
-        
+
         if request.user.groups.filter(name__in=("admin",)):
             issues = (
                 Issue.history.filter(id=pk)

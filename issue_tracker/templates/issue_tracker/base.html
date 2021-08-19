@@ -139,7 +139,7 @@
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link py-1" href="{% url 'issue_tracker:project-list-all' %}">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
 
                 {% if request.user.groups.all.0.name == 'developer' or request.user.groups.all.0.name == 'leader' %}
 
@@ -173,8 +173,8 @@
 
 
             
-            {% for group in request.user.groups.all %}
-            {% if 'leader' == group.name %}
+            
+            {% if 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
 
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:manage-projects-list' %}">
@@ -183,8 +183,21 @@
               </a>
             </li>
 
+            {% elif 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:manage-projects-list' %}">
+
+                <span class="ml-2">Manage projects and issues in them</span>
+              </a>
+            </li>
+
+
+
+
+
             {% endif %}
-            {% endfor %}
+            
 
             
             {% for group in request.user.groups.all %}
