@@ -1,0 +1,129 @@
+{% extends "issue_tracker/base.html" %}
+{% block content %}
+
+
+<style>
+  .issue-card {
+    transition: background-color 0.2s;
+  }
+  .issue-card:hover {
+    background-color: #eeebeb;
+  }
+</style>
+<div class= 'col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
+<nav aria-label="breadcrumb" style="padding: 20px">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="#">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Overview</li>
+  </ol>
+</nav>
+
+
+
+<container class="card">
+  <div class="card card-header">
+    
+    <div class="row">
+      <div class="col col-10"></div>
+      
+    <div class="col col-6">
+      
+        <div class="text-center mt-2 ">All active issues </div>
+    </div>
+    <div class="col col-6">
+       <form class="d-flex">
+        <input class="form-control mt-1 mb-1 me-2"  name="search_query" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success mt-1 mb-1 me-2" type="submit">Search</button>
+      </form>
+    </div>  
+    </div>
+
+
+  </div>
+<main
+  class="container px-4"
+  
+>
+{% for issue in page_obj %}
+  <article class="card mb-3 issue-card" style="cursor: pointer"
+  onclick="location.href = `{% url 'issue_tracker:issue-details'  issue.id %}` ">
+    <div class="card-body">
+      <h5 class="card-title">{{issue.title}}</h5>
+      <h6 class="card-subtitle text-muted">
+        <a href="">{{issue.project}}</a> / <a href=""class="d-none">{{issue.user_assigned}}</a> -
+        {% if issue.update_date %}
+            <b>Update: {{issue.update_date}}</b>
+            {% endif %}
+        <i>
+          <small class="text-muted">Created: {{issue.create_date.date}} {{issue.create_date|date:"H:i"}}</small>
+        </i>
+      </h6>
+
+      <div class="mt-1">
+        <span class="badge bg-dark">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-info-circle-fill me-1"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm.93-9.412-1 4.705c-.07.34.029.533.304.533.194 0 .487-.07.686-.246l-.088.416c-.287.346-.92.598-1.465.598-.703 0-1.002-.422-.808-1.319l.738-3.468c.064-.293.006-.399-.287-.47l-.451-.081.082-.381 2.29-.287zM8 5.5a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+            />
+          </svg>
+          {{issue.type}}
+        </span>
+        <span class="badge bg-secondary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-clock-fill me-1"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"
+            />
+          </svg>
+          {{issue.priority}}</span
+        >
+        <span class="badge bg-primary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            class="bi bi-broadcast me-1"
+            viewBox="0 0 16 16"
+          >
+            <path
+              d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707zm2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708zm5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708zm2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z"
+            />
+          </svg>
+          {{issue.status}}</span
+        >
+      </div>
+    </div>
+  </article>
+  {% endfor %}
+<div class="card card-footer text-center">Page {{page_obj.number}}/{{page_obj.paginator.num_pages}}</div>
+<div class="d-flex justify-content-center">
+{% if page_obj.has_previous %}
+            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{ page_obj.previous_page_number }}&page2={{page_obj2.number}}">&laquo; Previous  &nbsp;  </a>
+  {% endif %}  
+  {% if page_obj.has_next %}
+  
+            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{ page_obj.next_page_number }}&page2={{page_obj2.number}}">Next &raquo;</a>
+            
+  {% endif %}
+</div>  
+</container>
+</main>
+</div>
+
+
+
+{% endblock %} 

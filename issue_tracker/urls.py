@@ -9,6 +9,7 @@ from . import views
 app_name = "issue_tracker"
 urlpatterns = [
     path("", views.main, name="main"),
+    path("all-issues/", views.all_issues, name="all-issues"),
     path("my-issues/", views.my_issues, name="my-issues"),
     path("reported-issues/", views.reported_issues, name="reported-issues"),
     path("project-details/<int:pk>/", views.project_details, name="project-details"),
