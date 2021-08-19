@@ -138,19 +138,23 @@
                 </div>
               </a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
+            
 
                 {% if request.user.groups.all.0.name == 'developer' or request.user.groups.all.0.name == 'leader' %}
 
+                <li class="nav-item">
+                  <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
                 <span class="ml-2 mt-0">Apply for projects</span>
               </a>
             </li>
            
-                {% else %}
-                <b><span class="ml-2 mt-0 text-danger">Apply for projects</span></b>
-              </a>
-            </li>
+            {% elif 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+                
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
+            <span class="ml-2 mt-0">Apply for projects</span>
+          </a>
+        </li>
 
 
                 {% endif %}

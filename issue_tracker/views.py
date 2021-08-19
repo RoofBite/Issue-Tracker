@@ -300,6 +300,7 @@ def manage_leaders_applications_list(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_apply_developer(request, pk):
     project = Project.objects.filter(pk=pk).first()
@@ -318,6 +319,7 @@ def project_apply_developer(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_apply_leader(request, pk):
     project = Project.objects.filter(pk=pk).first()
@@ -342,6 +344,7 @@ def project_apply_leader(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET", "POST"])
 def project_apply(request, pk):
     project = Project.objects.filter(id=pk).first()
@@ -352,6 +355,7 @@ def project_apply(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer")
 @require_http_methods(["GET"])
 def apply_project_list_all(request):
     context = {}
