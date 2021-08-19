@@ -434,6 +434,21 @@ class Add_issue(CreateView):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("admin")
+@require_http_methods(["GET"])
+def all_projects(request):
+    context = {}
+    try:
+        projects = Project.objects.all()
+    except:
+        projects = None
+
+    if projects:
+        context = {"projects": projects}
+    return render(request, "issue_tracker/all_projects.html", context)
+
+
+@login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def my_projects(request):
@@ -813,9 +828,9 @@ def reported_issues(request):
 def all_issues(request):
     context = {}
 
-    
     my_project_issues = (
-        Issue.objects.all().exclude(status="RESOLVED")
+        Issue.objects.all()
+        .exclude(status="RESOLVED")
         .exclude(status="CLOSED")
         .order_by("-create_date")
         .select_related("project", "user_assigned")
@@ -856,10 +871,8 @@ def all_issues(request):
 
     context["page_obj"] = page_obj
     context["my_project_issues"] = my_project_issues
-    
 
     return render(request, "issue_tracker/all_issues.html", context)
-
 
 
 @login_required(login_url="issue_tracker:sign-in")

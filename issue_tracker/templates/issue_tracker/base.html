@@ -187,6 +187,25 @@
             {% endfor %}
 
             
+            {% for group in request.user.groups.all %}
+            {% if 'admin' == group.name %}
+
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:all-projects' %}">
+
+                <span class="ml-2">All projects</span>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:all-issues' %}">
+
+                <span class="ml-2">All issues</span>
+              </a>
+            </li>
+
+            {% endif %}
+            {% endfor %}
 
 
 

@@ -25,6 +25,7 @@ urlpatterns = [
     ),
     path("issue-details/<int:pk>/", views.issue_details, name="issue-details"),
     path("my-projects/", views.my_projects, name="my-projects"),
+    path("all-projects/", views.all_projects, name="all-projects"),
     path(
         "manage-projects-list/", views.manage_projects_list, name="manage-projects-list"
     ),
