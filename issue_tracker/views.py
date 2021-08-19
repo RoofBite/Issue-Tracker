@@ -538,23 +538,47 @@ def manage_project_details(request, pk):
 @require_http_methods(["GET", "POST"])
 def manage_project_developers(request, pk):
     if request.user.groups.filter(name__in=("admin",)):
-        project_instance = Project.objects.filter(id=pk).first()
+        project_instance = Project.objects.filter(id=pk).prefetch_related("developer").first()
 
     elif request.user.groups.filter(name__in=("leader",)):
-        project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
+        project_instance = Project.objects.filter(id=pk, leader=request.user.id).prefetch_related("developer").first()
 
+    
 
     if project_instance:
+
+        developers_before = project_instance.developer.all()
+
         form = AddDeveloper(instance=project_instance, request=request)
 
         if request.method == "POST":
-            form = AddDeveloper(request.POST, instance=project_instance)
+            form = AddDeveloper(request.POST, instance=project_instance, request=request)
+            
             if form.is_valid():
                 new_project = form.save(commit=False)
                 new_project.developer.set(list(form.cleaned_data["developer"]))
-                print(list(form.cleaned_data["developer"]))
+                
+                developers_now = new_project.developer.all()
+
+            # Checking if user has developer position in any project
+                
+                # Deference between two sets, which developers have changed on the list
+                changed_developers = set(list(developers_now)) ^ set(list(developers_before))
+
+                developer_group = Group.objects.get(name='developer')
+
+                for user in changed_developers:
+                    # User is not developer anymore, will be deleted from group
+                    if not user.project_set.all():
+                        developer_group.user_set.remove(user)
+                    # User is developer, will be added to group
+                    else:
+                        developer_group.user_set.add(user)
+
                 new_project.save()
                 return redirect(request.path)
+            else:
+                print(form.errors)
         context = {"project": project_instance, "form": form}
         return render(request, "issue_tracker/manage_project_developers.html", context)
 

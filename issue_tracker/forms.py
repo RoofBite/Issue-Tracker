@@ -33,8 +33,12 @@ class AddDeveloper(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-
+        
         super(AddDeveloper, self).__init__(*args, **kwargs)
+        
+        #self.fields["description"].initial = self.instance.description
+
+
         # Defining list of users that demo user will be able to add to project
         if is_lazy_user(self.request.user):
             # id=1 stands for admin user id

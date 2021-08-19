@@ -39,7 +39,7 @@ class LeaderApplication(models.Model):
 class Project(models.Model):
     name = models.TextField(null=False, default="None")
     developer = models.ManyToManyField(User, blank=True)
-    description = models.TextField(null=True)
+    description = models.TextField(null=False)
     leader = models.ForeignKey(
         User,
         on_delete=models.SET_NULL,
