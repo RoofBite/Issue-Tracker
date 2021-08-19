@@ -67,9 +67,9 @@ def set_demo_user(request):
         return redirect("issue_tracker:main")
     return redirect("issue_tracker:main")
 
-
+@allow_lazy_user
 def sign_in(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and not is_lazy_user(request.user):
         return redirect("issue_tracker:main")
 
     if request.method == "POST":
@@ -92,9 +92,9 @@ def sign_in(request):
 def main(request):
     return render(request, "issue_tracker/index.html")
 
-
+@allow_lazy_user
 def sign_up(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and not is_lazy_user(request.user):
         return redirect("issue_tracker:main")
 
     form = CreateUserForm()
