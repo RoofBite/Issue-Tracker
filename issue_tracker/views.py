@@ -24,8 +24,10 @@ from django.contrib.auth.models import Group
 
 def load_users(request):
     project_id = request.GET.get("project")
-    
-    users = User.objects.filter(Q(project__id=project_id) | Q(leader_project_set__id=project_id)).distinct()
+
+    users = User.objects.filter(
+        Q(project__id=project_id) | Q(leader_project_set__id=project_id)
+    ).distinct()
     print(users)
     return render(
         request,
@@ -33,13 +35,14 @@ def load_users(request):
         {"users": users},
     )
 
+
 @allow_lazy_user
 def set_demo_user(request):
-    print('1',is_lazy_user(request.user))
+    print("1", is_lazy_user(request.user))
     if is_lazy_user(request.user) and not request.user.groups.filter(
         name__in=("developer", "leader")
     ):
-        print('2')
+        print("2")
         # Adding to groups
         my_group1 = Group.objects.get(name="leader")
         my_group1.user_set.add(request.user)
@@ -67,6 +70,7 @@ def set_demo_user(request):
         return redirect("issue_tracker:main")
     return redirect("issue_tracker:main")
 
+
 @allow_lazy_user
 def sign_in(request):
     if request.user.is_authenticated and not is_lazy_user(request.user):
@@ -91,6 +95,7 @@ def sign_in(request):
 @login_required(login_url="issue_tracker:sign-in")
 def main(request):
     return render(request, "issue_tracker/index.html")
+
 
 @allow_lazy_user
 def sign_up(request):
@@ -170,10 +175,17 @@ def developer_application_accept(request, pk):
 @require_http_methods(["GET"])
 def manage_developers_applications_list(request):
     context = {}
+    if request.user.groups.filter(name__in=("leader",)):
 
-    applications = DeveloperApplication.objects.filter(
-        project__leader=request.user
-    ).select_related("project", "applicant")
+        applications = DeveloperApplication.objects.filter(
+            project__leader=request.user
+        ).select_related("project", "applicant")
+
+    elif request.user.groups.filter(name__in=("admin",)):
+
+        applications = DeveloperApplication.objects.all().select_related(
+            "project", "applicant"
+        )
 
     paginator = Paginator(applications, 3)
     page_number = request.GET.get("page")
@@ -401,9 +413,10 @@ class Update_issue(UpdateView):
     def get_form_kwargs(self):
 
         kwargs = super(Update_issue, self).get_form_kwargs()
-        kwargs["pk"] = self.kwargs['pk']
+        kwargs["pk"] = self.kwargs["pk"]
         kwargs["request"] = self.request
         return kwargs
+
 
 @method_decorator(group_required("developer", "leader"), name="get")
 class Add_issue(CreateView):
@@ -552,7 +565,9 @@ def manage_project_issues_list(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_details_old_issues(request, pk):
-    project_instance = Project.objects.filter(Q(id=pk), Q(leader__id=request.user.id) | Q(developer__id=request.user.id)).first()
+    project_instance = Project.objects.filter(
+        Q(id=pk), Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+    ).first()
     if project_instance:
         context = {}
 
@@ -608,7 +623,9 @@ def project_details_old_issues(request, pk):
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def project_details(request, pk):
-    project_instance = Project.objects.filter(Q(id=pk),  Q(leader__id=request.user.id) | Q(developer__id=request.user.id)).first()
+    project_instance = Project.objects.filter(
+        Q(id=pk), Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+    ).first()
     if project_instance:
         context = {}
 
@@ -662,7 +679,6 @@ def project_details(request, pk):
     return HttpResponse("You are not allowed to see this project")
 
 
-
 # @login_required(login_url="issue_tracker:sign-in")
 # @group_required("leader", "developer")
 # @require_http_methods(["GET"])
@@ -673,19 +689,24 @@ def project_details(request, pk):
 #     if issue_instance:
 
 
-
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def issue_details(request, pk):
-    projects = Project.objects.filter(Q(leader__id=request.user.id) | Q(developer__id=request.user.id))
+    projects = Project.objects.filter(
+        Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+    )
     issue_instance = Issue.objects.filter(id=pk, project__in=projects).first()
 
     if issue_instance:
         context = {}
 
         issues = (
-            Issue.history.filter(Q(id=pk), Q(project__leader__id=request.user.id) | Q(project__developer__id=request.user.id))
+            Issue.history.filter(
+                Q(id=pk),
+                Q(project__leader__id=request.user.id)
+                | Q(project__developer__id=request.user.id),
+            )
             .order_by("-update_date")
             .select_related("project", "user_assigned")
         )
@@ -737,7 +758,11 @@ def issue_details(request, pk):
 @require_http_methods(["GET"])
 def reported_issues(request):
     issues = (
-        Issue.objects.filter(Q(creator=request.user), Q(project__leader__id=request.user.id) | Q(project__developer__id=request.user.id))
+        Issue.objects.filter(
+            Q(creator=request.user),
+            Q(project__leader__id=request.user.id)
+            | Q(project__developer__id=request.user.id),
+        )
         .order_by("-create_date")
         .select_related("project", "user_assigned")
     )
@@ -789,7 +814,10 @@ def my_issues(request):
     context = {}
 
     my_project_issues = (
-        Issue.objects.filter(Q(project__leader__id=request.user.id) | Q(project__developer__id=request.user.id))
+        Issue.objects.filter(
+            Q(project__leader__id=request.user.id)
+            | Q(project__developer__id=request.user.id)
+        )
         .exclude(status="RESOLVED")
         .exclude(status="CLOSED")
         .order_by("-create_date")
@@ -866,7 +894,7 @@ def my_issues(request):
     context["page_obj1"] = page_obj1
     context["page_obj2"] = page_obj2
 
-    #They are not used now
+    # They are not used now
     context["my_issues"] = my_issues
     context["my_project_issues"] = my_project_issues
 

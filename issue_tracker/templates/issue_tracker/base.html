@@ -172,12 +172,7 @@
             {% endif %}
 
 
-            <li class="nav-item">
-              <a class="nav-link py-1" href="{% url 'issue_tracker:my-projects' %}">
-
-                <span class="ml-2">My projects</span>
-              </a>
-            </li>
+            
             {% for group in request.user.groups.all %}
             {% if 'leader' == group.name %}
 
@@ -190,6 +185,53 @@
 
             {% endif %}
             {% endfor %}
+
+            
+
+
+
+            {% if 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
+
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:my-projects' %}">
+
+                <span class="ml-2">My projects</span>
+              </a>
+            </li>
+
+
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:my-issues' %}">
+
+                <span class="ml-2 text-center">Active issues</span>
+              </a>
+            </li>
+            
+            <li class="nav-item">
+              <a class="nav-link py-0" href="{% url 'issue_tracker:add-issue' %}">
+
+                <span class="ml-2">Report issue</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:reported-issues' %}">
+
+                <span class="ml-2">Reports I've made</span>
+              </a>
+            </li>
+
+
+
+
+            {% elif 'developer' == request.user.groups.all.0.name or 'developer' == request.user.groups.all.1.name or 'developer' == request.user.groups.all.2.name    %}
+           
+            <li class="nav-item">
+              <a class="nav-link py-1" href="{% url 'issue_tracker:my-projects' %}">
+
+                <span class="ml-2">My projects</span>
+              </a>
+            </li>
+
 
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:my-issues' %}">
@@ -210,6 +252,13 @@
                 <span class="ml-2">Reports I've made</span>
               </a>
             </li>
+
+
+
+            {% endif %}
+
+
+
 
           </ul>
         </div>
