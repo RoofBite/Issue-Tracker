@@ -145,15 +145,13 @@ def developer_application_accept(request, pk):
     application = DeveloperApplication.objects.filter(pk=pk).first()
 
     if request.user.groups.filter(name="admin").exists():
-        print("1")
         if application:
-            print("2")
             application.project.developer.add(application.applicant)
             application.delete()
 
             my_group = Group.objects.get(name="developer")
             my_group.user_set.add(application.applicant)
-            print(my_group)
+            
         else:
             return HttpResponse("This application does not exist")
 
@@ -168,13 +166,17 @@ def developer_application_accept(request, pk):
 
                 my_group = Group.objects.get(name="developer")
                 my_group.user_set.add(application.applicant)
-                print(my_group)
+                
         else:
             return HttpResponse("This application does not exist")
 
         return redirect("issue_tracker:manage-developers-applications-list")
 
     return HttpResponse("You are not admin nor leader")
+
+
+
+
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -252,12 +254,26 @@ def leader_application_accept(request, pk):
 
     if application:
         project_pk = application.project.pk
+        
+        if Project.objects.get(pk=application.project.pk).leader:
+            print(Project.objects.get(pk=application.project.pk).leader)
+            previous_leader = Project.objects.get(pk=application.project.pk).leader
+            
         Project.objects.filter(pk=project_pk).update(leader=application.applicant)
         application.delete()
 
+        if previous_leader:
+            leader_group = Group.objects.get(name="leader")
+
+            # If previous_leader is not leader anymore, will be deleted from group
+            if not previous_leader.leader_project_set.all():
+                leader_group.user_set.remove(previous_leader)
+                print(previous_leader.leader_project_set.all())
+
+
         my_group = Group.objects.get(name="leader")
         my_group.user_set.add(application.applicant)
-        print(my_group)
+        
     else:
         return HttpResponse("This application does not exist")
 
