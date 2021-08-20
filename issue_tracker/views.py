@@ -254,10 +254,10 @@ def leader_application_accept(request, pk):
 
     if application:
         project_pk = application.project.pk
-        
-        if Project.objects.get(pk=application.project.pk).leader:
-            print(Project.objects.get(pk=application.project.pk).leader)
-            previous_leader = Project.objects.get(pk=application.project.pk).leader
+        project = Project.objects.get(pk=application.project.pk)
+
+        if project.leader:
+            previous_leader = project.leader
             
         Project.objects.filter(pk=project_pk).update(leader=application.applicant)
         application.delete()
@@ -268,9 +268,7 @@ def leader_application_accept(request, pk):
             # If previous_leader is not leader anymore, will be deleted from group
             if not previous_leader.leader_project_set.all():
                 leader_group.user_set.remove(previous_leader)
-                print(previous_leader.leader_project_set.all())
-
-
+                
         my_group = Group.objects.get(name="leader")
         my_group.user_set.add(application.applicant)
         
