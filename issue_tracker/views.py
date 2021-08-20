@@ -466,6 +466,7 @@ def all_projects(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_excluded("admin")
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def my_projects(request):
@@ -975,6 +976,7 @@ def all_issues(request):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_excluded("admin")
 @group_required("leader", "developer")
 @require_http_methods(["GET"])
 def my_issues(request):
