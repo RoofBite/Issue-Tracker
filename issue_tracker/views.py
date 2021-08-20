@@ -150,8 +150,8 @@ def developer_application_accept(request, pk):
             print("2")
             application.project.developer.add(application.applicant)
             application.delete()
-            
-            my_group = Group.objects.get(name='developer') 
+
+            my_group = Group.objects.get(name="developer")
             my_group.user_set.add(application.applicant)
             print(my_group)
         else:
@@ -160,13 +160,13 @@ def developer_application_accept(request, pk):
         return redirect("issue_tracker:manage-developers-applications-list")
 
     elif request.user.groups.filter(name="leader").exists():
-        
+
         if application:
             if application.project.leader.pk == request.user.pk:
                 application.project.developer.add(application.applicant)
                 application.delete()
 
-                my_group = Group.objects.get(name='developer') 
+                my_group = Group.objects.get(name="developer")
                 my_group.user_set.add(application.applicant)
                 print(my_group)
         else:
@@ -182,7 +182,7 @@ def developer_application_accept(request, pk):
 @require_http_methods(["GET"])
 def manage_developers_applications_list(request):
     context = {}
-    
+
     if request.user.groups.filter(name__in=("admin",)):
 
         applications = DeveloperApplication.objects.all().select_related(
@@ -194,7 +194,6 @@ def manage_developers_applications_list(request):
         applications = DeveloperApplication.objects.filter(
             project__leader=request.user
         ).select_related("project", "applicant")
-
 
     paginator = Paginator(applications, 3)
     page_number = request.GET.get("page")
@@ -256,7 +255,7 @@ def leader_application_accept(request, pk):
         Project.objects.filter(pk=project_pk).update(leader=application.applicant)
         application.delete()
 
-        my_group = Group.objects.get(name='leader') 
+        my_group = Group.objects.get(name="leader")
         my_group.user_set.add(application.applicant)
         print(my_group)
     else:
@@ -519,7 +518,7 @@ def manage_projects_list(request):
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_project_details(request, pk):
-    
+
     if request.user.groups.filter(name__in=("admin",)):
         project_instance = Project.objects.filter(id=pk).first()
 
@@ -539,12 +538,16 @@ def manage_project_details(request, pk):
 @require_http_methods(["GET", "POST"])
 def manage_project_developers(request, pk):
     if request.user.groups.filter(name__in=("admin",)):
-        project_instance = Project.objects.filter(id=pk).prefetch_related("developer").first()
+        project_instance = (
+            Project.objects.filter(id=pk).prefetch_related("developer").first()
+        )
 
     elif request.user.groups.filter(name__in=("leader",)):
-        project_instance = Project.objects.filter(id=pk, leader=request.user.id).prefetch_related("developer").first()
-
-    
+        project_instance = (
+            Project.objects.filter(id=pk, leader=request.user.id)
+            .prefetch_related("developer")
+            .first()
+        )
 
     if project_instance:
 
@@ -553,20 +556,24 @@ def manage_project_developers(request, pk):
         form = AddDeveloper(instance=project_instance, request=request)
 
         if request.method == "POST":
-            form = AddDeveloper(request.POST, instance=project_instance, request=request)
-            
+            form = AddDeveloper(
+                request.POST, instance=project_instance, request=request
+            )
+
             if form.is_valid():
                 new_project = form.save(commit=False)
                 new_project.developer.set(list(form.cleaned_data["developer"]))
-                
+
                 developers_now = new_project.developer.all()
 
-            # Checking if user has developer position in any project
-                
-                # Deference between two sets, which developers have changed on the list
-                changed_developers = set(list(developers_now)) ^ set(list(developers_before))
+                # Checking if user has developer position in any project
 
-                developer_group = Group.objects.get(name='developer')
+                # Deference between two sets, which developers have changed on the list
+                changed_developers = set(list(developers_now)) ^ set(
+                    list(developers_before)
+                )
+
+                developer_group = Group.objects.get(name="developer")
 
                 for user in changed_developers:
                     # User is not developer anymore, will be deleted from group
@@ -588,14 +595,13 @@ def manage_project_developers(request, pk):
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_project_issues_list(request, pk):
-    
+
     if request.user.groups.filter(name__in=("admin",)):
         project_instance = Project.objects.filter(id=pk).first()
 
     elif request.user.groups.filter(name__in=("leader",)):
         project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
 
-    
     if project_instance:
         context = {}
 
@@ -642,7 +648,6 @@ def manage_project_issues_list(request, pk):
         context["page_obj"] = page_obj
         context["my_project_issues"] = my_project_issues
         context["project"] = project
-        
 
         return render(request, "issue_tracker/manage_project_issues_list.html", context)
     return HttpResponse("You are not allowed to see this project")
@@ -713,6 +718,32 @@ def project_details_old_issues(request, pk):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("developer")
+@require_http_methods(["GET"])
+def project_developer_resign(request, pk):
+    project = Project.objects.filter(pk=pk).first()
+    context = {"project": project}
+    return render(request, "issue_tracker/project_developer_resign.html", context)
+
+
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("developer")
+@require_http_methods(["GET"])
+def project_developer_resign_confirm(request, pk):
+    project = Project.objects.filter(pk=pk).first()
+    user = request.user
+    project.developer.remove(user)
+
+    developer_group = Group.objects.get(name="developer")
+    print(user.project_set.all())
+    # User is not developer anymore, will be deleted from group
+    if not user.project_set.all():
+        developer_group.user_set.remove(user)
+
+    return redirect("issue_tracker:my-projects")
+
+
+@login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "developer", "admin")
 @require_http_methods(["GET"])
 def project_details(request, pk):
@@ -770,6 +801,11 @@ def project_details(request, pk):
         except EmptyPage:
             page_obj = paginator.page(paginator.num_pages)
 
+        is_user_project_developer = Project.objects.filter(
+            id=pk, developer__id=request.user.id
+        ).first()
+
+        context["is_user_project_developer"] = is_user_project_developer
         context["page_obj"] = page_obj
         context["my_project_issues"] = my_project_issues
         context["project"] = project
@@ -812,7 +848,6 @@ def issue_details(request, pk):
                 .order_by("-update_date")
                 .select_related("project", "user_assigned")
             )
-            
 
         elif request.user.groups.filter(name__in=("developer", "leader")):
             issues = (

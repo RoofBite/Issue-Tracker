@@ -52,12 +52,14 @@ urlpatterns = [
     path("manage-developers-applications-list/", views.manage_developers_applications_list, name="manage-developers-applications-list"),
     path("developer-application-accept/<int:pk>/", views.developer_application_accept, name="developer-application-accept"),
     path("developer-application-deny/<int:pk>/", views.developer_application_deny, name="developer-application-deny"),
+    path("project-developer-resign/<int:pk>/", views.project_developer_resign, name="project-developer-resign"),
+    path("project-developer-resign-confirm/<int:pk>/", views.project_developer_resign_confirm, name="project-developer-resign-confirm"),
 
     path("manage-leaders-applications-list/", views.manage_leaders_applications_list, name="manage-leaders-applications-list"),
     path("leader-application-accept/<int:pk>/", views.leader_application_accept, name="leader-application-accept"),
     path("leader-application-deny/<int:pk>/", views.leader_application_deny, name="leader-application-deny"),
 
-
+    
 
     path("project-apply/<int:pk>/", views.project_apply, name="project-apply"),
 
