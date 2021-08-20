@@ -182,17 +182,19 @@ def developer_application_accept(request, pk):
 @require_http_methods(["GET"])
 def manage_developers_applications_list(request):
     context = {}
-    if request.user.groups.filter(name__in=("leader",)):
+    
+    if request.user.groups.filter(name__in=("admin",)):
+
+        applications = DeveloperApplication.objects.all().select_related(
+            "project", "applicant"
+        )
+
+    elif request.user.groups.filter(name__in=("leader",)):
 
         applications = DeveloperApplication.objects.filter(
             project__leader=request.user
         ).select_related("project", "applicant")
 
-    elif request.user.groups.filter(name__in=("admin",)):
-
-        applications = DeveloperApplication.objects.all().select_related(
-            "project", "applicant"
-        )
 
     paginator = Paginator(applications, 3)
     page_number = request.GET.get("page")
