@@ -24,9 +24,11 @@
           {% endif %}   
 
         {% if 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
-     <li class="card ms-2 me-2"><a class="btn btn-danger text-center"
+        {% if is_user_project_leader %}
+        <li class="card ms-2 me-2"><a class="btn btn-danger text-center"
         href="{% url 'issue_tracker:project-details-old-issues' project.id %}">Resign from leader position </a></li>
         {% endif %}
+        {% endif %}  
     </ol>
   </nav>
 

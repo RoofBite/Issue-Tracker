@@ -818,8 +818,12 @@ def project_details(request, pk):
         is_user_project_developer = Project.objects.filter(
             id=pk, developer__id=request.user.id
         ).first()
+        is_user_project_leader = Project.objects.filter(
+            id=pk, leader__id=request.user.id
+        ).first()
 
         context["is_user_project_developer"] = is_user_project_developer
+        context["is_user_project_leader"] = is_user_project_leader
         context["page_obj"] = page_obj
         context["my_project_issues"] = my_project_issues
         context["project"] = project
