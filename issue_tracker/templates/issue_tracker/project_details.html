@@ -24,46 +24,95 @@
   <main class="container px-4">
 
 
-    <container class="card">
-      <div class="card card-header">
-
-        <div class="row">
-          <div class="col col-12"></div>
-
-          <div class="col col-12">
-
-            <div class="text-center mt-2 "> Project </div>
-          </div>
-
-        </div>
-
-
-
-
-
-        <article class="card mb-3 mt-2 issue-card">
-          <div class="card-body">
-            <h5 class="card-title">{{project.name}}</h5>
-
-
-            <div class="mt-1">
-              {% for user in project.developer.all %}
-
-              <span class="badge bg-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                  class="bi bi-broadcast me-1" viewBox="0 0 16 16">
-
-                  <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-                </svg>
-                {{user|make_list|slice:':6'|join:''}}</span>
-              {% endfor %}
+      <container class="card">
+        <div class="card card-header">
+  
+          <div class="row">
+            <div class="col col-12"></div>
+  
+            <div class="col col-12">
+  
+              <div class="text-center mt-2 "> Project </div>
             </div>
+  
           </div>
-        </article>
+  
+  
+  
+  
+  
+          <article class="card mb-3 mt-2 issue-card">
+            <div class="card-body text-center">
+              <section class="row">
+                <article class="col-6">
+              <h5 class="card-title">{{project.name}}</h5>
+  
+  
+              <div class="mt-1">
+                
+  
+                <span class="badge bg-danger mt-1">
+  
+                  Leader: 
+                  <br>
+    
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    fill="currentColor"
+                    class="bi bi-broadcast me-1"
+                    viewBox="0 0 16 16"
+                  ><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                </svg>
+                  {% if project.leader.username|length  == 32 %}
+                 
+                  {{project.leader|make_list|slice:':6'|join:''}}
+                  
+                  {% else %}
+                  
+                  {{project.leader|make_list|slice:':20'|join:''}}
+                  {% endif %}
+                  
+                  
+                  
+                  </span
+                >
+                <br>
+                {% for user in project.developer.all %}
+  
+                <span class="badge bg-primary" >
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-broadcast me-1" viewBox="0 0 16 16">
+  
+                    <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                  </svg>
+                  {{user|make_list|slice:':14'|join:''}}</span>
+                {% endfor %}
+                
+  
+              </div>
+            
+          </article>
+          <article class="col-6 text-center">
+            <h6 class="card-title">
+            Description:
+          </h6>
+          {{project.description}}
+          </article>
+        </section>
+      </section>
+  
+  </div>
+  </div>
+  </article>
+  </container>
+  
+  
+  </div>
+  
 
-    </container>
 
-</div>
 
 
 <container class="card mt-4">
