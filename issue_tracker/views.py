@@ -28,7 +28,7 @@ def load_users(request):
     users = User.objects.filter(
         Q(project__id=project_id) | Q(leader_project_set__id=project_id)
     ).distinct()
-    print(users)
+    
     return render(
         request,
         "issue_tracker/hr/user_assigned_dropdown_list_options.html",
@@ -749,7 +749,7 @@ def project_developer_resign_confirm(request, pk):
     project.developer.remove(user)
 
     developer_group = Group.objects.get(name="developer")
-    print(user.project_set.all())
+    
     # User is not developer anymore, will be deleted from group
     if not user.project_set.all():
         developer_group.user_set.remove(user)
@@ -1045,7 +1045,7 @@ def my_issues(request):
         .order_by("-create_date")
         .select_related("project", "user_assigned")
     )
-    print(my_project_issues)
+    
     my_issues = my_project_issues.filter(user_assigned=request.user)
 
     paginator1 = Paginator(my_issues, 2)
@@ -1067,7 +1067,6 @@ def my_issues(request):
     page_obj2 = paginator2.get_page(page_number2)
 
     if request.GET.get("search_query1"):
-
         search_query1 = request.GET.get("search_query1")
         context["search_query1"] = str(search_query1)
 
@@ -1091,6 +1090,7 @@ def my_issues(request):
         page_obj1 = paginator1.page(paginator1.num_pages)
 
     if request.GET.get("search_query2"):
+
         search_query2 = request.GET.get("search_query2")
         context["search_query2"] = str(search_query2)
 
@@ -1116,9 +1116,8 @@ def my_issues(request):
     context["page_obj1"] = page_obj1
     context["page_obj2"] = page_obj2
 
-    # They are not used now
-    context["my_issues"] = my_issues
-    context["my_project_issues"] = my_project_issues
+    
+    
 
     return render(request, "issue_tracker/my_issues.html", context)
 
