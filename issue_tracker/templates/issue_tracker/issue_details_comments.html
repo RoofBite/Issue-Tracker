@@ -13,8 +13,9 @@
 <div class= 'col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
 <nav aria-label="breadcrumb" style="padding: 20px">
   <ol class="breadcrumb">
-    <li class="breadcrumb-item"><a href="#">Home</a></li>
-    <li class="breadcrumb-item active" aria-current="page">Overview</li>
+    <li class="card me-3"> <a class="btn btn-primary me-2" href="{% url  'issue_tracker:issue-details' issue.pk %}">Issue detail and history</a>  </li>
+   <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:issue-details-comments' issue.pk %}">Comments list</a>  </li>
+   <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:add-comment' issue.pk %}">Add comment</a>  </li>
   </ol>
 </nav>
 

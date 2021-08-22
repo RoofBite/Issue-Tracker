@@ -18,6 +18,29 @@ from lazysignup.models import LazyUser
 from .models import *
 
 
+class AddComment(ModelForm):
+    class Meta:
+        model = Comment
+        fields = ["text", "author", "issue"]
+        widgets = {
+            "author": HiddenInput(),
+            "issue": HiddenInput(),
+            "text": Textarea(attrs={"rows": 6, "cols": 27}),
+            
+        }
+    
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        self.comment_issue_pk = kwargs.pop("comment_issue_pk")
+
+        super(AddComment, self).__init__(*args, **kwargs)
+        issue = Issue.objects.get(pk=self.comment_issue_pk)
+        
+        self.fields["issue"].initial = issue
+        self.fields["author"].initial = self.request.user
+
+
+
 class AddDeveloper(ModelForm):
     demo_users_ids = LazyUser.objects.values_list("user_id", flat=True)
     # Demo users are excluded form list

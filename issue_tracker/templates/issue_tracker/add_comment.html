@@ -1,0 +1,60 @@
+{% extends "issue_tracker/base.html" %}
+{% block content %}
+
+
+<style>
+  .issue-card {
+    transition: background-color 0.2s;
+  }
+  .issue-card:hover {
+    background-color: #eeebeb;
+  }
+</style>
+<div class= 'col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
+<nav aria-label="breadcrumb" style="padding: 20px">
+  <ol class="breadcrumb">
+    <li class="card me-3"> <a class="btn btn-primary me-2" href="{% url  'issue_tracker:issue-details' issue.pk %}">Issue detail and history</a>  </li>
+   <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:issue-details-comments' issue.pk %}">Comments list</a>  </li>
+   <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:add-comment' issue.pk %}">Add comment</a>  </li>
+  </ol>
+</nav>
+
+<main
+  class="container px-4"
+> 
+
+<container class="card mt-1">
+  <div class="card card-header text-center">
+    Issue: {{issue}}
+
+  </div>
+</container>
+
+
+<container class="card mt-3">
+  <div class="card card-header">
+
+    <div class="row">
+      
+
+      <div class="col col-12 mt-2 text-center">
+
+        <form method="POST" action='' >
+        {% csrf_token %}
+
+        {{form.text}}
+        {{form.author}}
+        {{form.issue}}
+        <br>
+        <button type="submit" class="btn btn-success mt-2">Confirm</button>
+
+      </form>
+      </div>
+     
+    </div>
+
+  </div>
+</container>
+</div>
+</main>
+{% endblock %} 

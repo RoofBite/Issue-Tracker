@@ -17,7 +17,7 @@ from lazysignup.decorators import (
 )
 from lazysignup.models import LazyUser
 from lazysignup.utils import is_lazy_user
-from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate, CreateUserForm
+from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate, CreateUserForm, AddComment
 from .models import *
 from .decorators import group_required, group_excluded
 from django.contrib.auth.models import Group
@@ -109,6 +109,35 @@ def sign_up(request):
 
     context = {"form": form}
     return render(request, "issue_tracker/sign_up.html", context)
+
+
+@method_decorator(group_required("developer", "leader"), name="get")
+class Add_comment(CreateView):
+
+    model = Comment
+    form_class = AddComment
+    template_name = "issue_tracker/add_comment.html"
+    success_url = reverse_lazy("issue_tracker:main")
+
+
+    def get_success_url(self):
+        comment_issue_id = self.kwargs["pk"]
+        
+        return reverse(
+            "issue_tracker:issue-details-comments", kwargs={"pk": comment_issue_id}
+        )
+
+    def get_form_kwargs(self):
+        comment_issue_pk = self.kwargs["pk"]
+        kwargs = super(Add_comment, self).get_form_kwargs()
+        kwargs["request"] = self.request
+        kwargs["comment_issue_pk"] = comment_issue_pk
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(Add_comment, self).get_context_data(**kwargs)
+        context['issue'] = Issue.objects.get(pk=self.kwargs["pk"])
+        return context
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -906,7 +935,7 @@ def issue_details(request, pk):
 
         if request.user.groups.filter(name__in=("admin",)):
             issues = (
-                Issue.history.filter(pk=pk)
+                Issue.history.filter(id=pk)
                 .order_by("-update_date")
                 .select_related("project", "user_assigned")
             )

@@ -25,6 +25,11 @@ urlpatterns = [
     ),
     path("issue-details/<int:pk>/", views.issue_details, name="issue-details"),
     path("issue-details-comments/<int:pk>/", views.issue_details_comments, name="issue-details-comments"),
+    path(
+        "Add_comment/<int:pk>/",
+        login_required(views.Add_comment.as_view()),
+        name="add-comment",
+    ),
 
     path("my-projects/", views.my_projects, name="my-projects"),
     path("all-projects/", views.all_projects, name="all-projects"),

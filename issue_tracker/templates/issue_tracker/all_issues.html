@@ -109,17 +109,25 @@
     </div>
   </article>
   {% endfor %}
-<div class="card card-footer text-center">Page {{page_obj.number}}/{{page_obj.paginator.num_pages}}</div>
-<div class="d-flex justify-content-center">
-{% if page_obj.has_previous %}
-            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{ page_obj.previous_page_number }}&page2={{page_obj2.number}}">&laquo; Previous  &nbsp;  </a>
-  {% endif %}  
-  {% if page_obj.has_next %}
-  
-            <a class="btn flex-fill" href="?{% if search_query1 %}search_query1={{search_query1}}&{% endif %}{% if search_query2 %}search_query2={{search_query2}}&{% endif %}page1={{ page_obj.next_page_number }}&page2={{page_obj2.number}}">Next &raquo;</a>
-            
-  {% endif %}
-</div>  
+  <div class="card card-footer text-center">Page {{page_obj.number}}/{{page_obj.paginator.num_pages}} </div>
+
+  <div class="d-flex justify-content-center">
+    {% if page_obj.has_previous %}
+
+    <a class="btn flex-fill"
+      href="?{% if search_query %}search_query={{search_query}}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;
+      Previous &nbsp; </a>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+
+    <a class="btn flex-fill"
+      href="?{% if search_query %}search_query={{search_query}}&{% endif %}page={{ page_obj.next_page_number }}">Next
+      &raquo;</a>
+
+    {% endif %}
+
+  </div>
 </container>
 </main>
 </div>

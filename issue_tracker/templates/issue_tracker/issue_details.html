@@ -14,8 +14,8 @@
 <nav aria-label="breadcrumb" style="padding: 20px">
   <ol class="breadcrumb">
     <li class="card me-3"> <a class="btn btn-primary me-2" href="{% url  'issue_tracker:issue-details' issue.pk %}">Issue detail and history</a>  </li>
-    
-   <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:issue-details-comments' issue.pk %}">Comments</a>  </li>
+   <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:issue-details-comments' issue.pk %}">Comments list</a>  </li>
+   <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:add-comment' issue.pk %}">Add comment</a>  </li>
   </ol>
 </nav>
 
