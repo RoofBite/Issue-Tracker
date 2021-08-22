@@ -19,6 +19,7 @@ from lazysignup.models import LazyUser
 from lazysignup.utils import is_lazy_user
 from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate, CreateUserForm, AddComment
 from .models import *
+from django.contrib.auth.mixins import UserPassesTestMixin
 from .decorators import group_required, group_excluded
 from django.contrib.auth.models import Group
 
@@ -113,7 +114,16 @@ def sign_up(request):
 
 @method_decorator(group_required("developer", "leader"), name="get")
 class Add_comment(CreateView):
-
+    def get(self, request, *args, **kwargs):
+        projects = Project.objects.filter(
+            Q(leader__id=self.request.user.id) | Q(developer__id=self.request.user.id)
+        )
+        issue = Issue.objects.filter(pk=self.kwargs["pk"], project__in=projects).first()
+        if issue:
+            return super().get(request, *args, **kwargs)
+        else:
+            return HttpResponse("You have no access to this comment")
+    
     model = Comment
     form_class = AddComment
     template_name = "issue_tracker/add_comment.html"
@@ -862,7 +872,7 @@ def project_details(request, pk):
 @require_http_methods(["GET"])
 def issue_details_comments(request, pk):
 
-    if request.user.groups.filter(name__in=("a",)):
+    if request.user.groups.filter(name__in=("admin",)):
         projects = Project.objects.all()
 
     elif request.user.groups.filter(name__in=("developer", "leader")):
