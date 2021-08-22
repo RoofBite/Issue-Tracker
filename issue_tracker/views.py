@@ -461,12 +461,21 @@ class Update_issue(UpdateView):
     form_class = IssueFormUpdate
     template_name = "issue_tracker/update_issue.html"
 
+    def get(self, request, *args, **kwargs):
+        pk = self.kwargs["pk"]
+        issue = Issue.objects.filter(pk=pk,project__leader__id=self.request.user.id).first()
+        if issue:
+            return super().get(request, *args, **kwargs)
+        else: 
+            return HttpResponse("You have no access to this issue")
+
     def get_object(self):
         pk = self.kwargs["pk"]
-        issue = get_object_or_404(
-            Issue, pk=pk, project__leader__id=self.request.user.id
-        )
-        return issue
+        issue = Issue.objects.filter(pk=pk,project__leader__id=self.request.user.id).first()
+        if issue:
+            return issue
+        # else: 
+        #     return HttpResponse("You have no access to this issue")
 
     def get_success_url(self):
         issue = self.get_object()
