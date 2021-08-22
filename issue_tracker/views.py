@@ -89,7 +89,6 @@ def sign_in(request):
     else:
         return render(request, "issue_tracker/sign_in.html")
 
-
 @allow_lazy_user
 @login_required(login_url="issue_tracker:sign-in")
 def main(request):
