@@ -17,7 +17,13 @@ from lazysignup.decorators import (
 )
 from lazysignup.models import LazyUser
 from lazysignup.utils import is_lazy_user
-from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate, CreateUserForm, AddComment
+from .forms import (
+    IssueFormCreate,
+    AddDeveloper,
+    IssueFormUpdate,
+    CreateUserForm,
+    AddComment,
+)
 from .models import *
 from django.contrib.auth.mixins import UserPassesTestMixin
 from .decorators import group_required, group_excluded
@@ -90,6 +96,7 @@ def sign_in(request):
     else:
         return render(request, "issue_tracker/sign_in.html")
 
+
 @allow_lazy_user
 @login_required(login_url="issue_tracker:sign-in")
 def main(request):
@@ -123,16 +130,15 @@ class Add_comment(CreateView):
             return super().get(request, *args, **kwargs)
         else:
             return HttpResponse("You have no access to this comment")
-    
+
     model = Comment
     form_class = AddComment
     template_name = "issue_tracker/add_comment.html"
     success_url = reverse_lazy("issue_tracker:main")
 
-
     def get_success_url(self):
         comment_issue_id = self.kwargs["pk"]
-        
+
         return reverse(
             "issue_tracker:issue-details-comments", kwargs={"pk": comment_issue_id}
         )
@@ -146,7 +152,7 @@ class Add_comment(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super(Add_comment, self).get_context_data(**kwargs)
-        context['issue'] = Issue.objects.get(pk=self.kwargs["pk"])
+        context["issue"] = Issue.objects.get(pk=self.kwargs["pk"])
         return context
 
 
@@ -463,18 +469,22 @@ class Update_issue(UpdateView):
 
     def get(self, request, *args, **kwargs):
         pk = self.kwargs["pk"]
-        issue = Issue.objects.filter(pk=pk,project__leader__id=self.request.user.id).first()
+        issue = Issue.objects.filter(
+            pk=pk, project__leader__id=self.request.user.id
+        ).first()
         if issue:
             return super().get(request, *args, **kwargs)
-        else: 
+        else:
             return HttpResponse("You have no access to this issue")
 
     def get_object(self):
         pk = self.kwargs["pk"]
-        issue = Issue.objects.filter(pk=pk,project__leader__id=self.request.user.id).first()
+        issue = Issue.objects.filter(
+            pk=pk, project__leader__id=self.request.user.id
+        ).first()
         if issue:
             return issue
-        # else: 
+        # else:
         #     return HttpResponse("You have no access to this issue")
 
     def get_success_url(self):
@@ -532,7 +542,7 @@ def my_projects(request):
         projects = (
             Project.objects.filter(
                 Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
-            )
+            ).distinct()
             .select_related("leader")
             .prefetch_related("developer")
         )

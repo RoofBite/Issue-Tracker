@@ -106,15 +106,14 @@ class IssueFormUpdate(ModelForm):
 class IssueFormCreate(ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-
         super(IssueFormCreate, self).__init__(*args, **kwargs)
         self.fields["user_assigned"].queryset = User.objects.none()
         self.fields["project"].queryset = Project.objects.filter(
             Q(developer=self.request.user) | Q(leader=self.request.user)
-        ).prefetch_related("developer", "leader")
+        ).prefetch_related("developer", "leader").distinct()
         self.fields["creator"].initial = User.objects.get(id=self.request.user.id)
         self.fields["creator"].widget = HiddenInput()
-
+        
         if "project" in self.data:
             try:
                 project_id = int(self.data.get("project"))
