@@ -1,0 +1,103 @@
+{% extends "issue_tracker/base.html" %}
+{% block content %}
+
+
+<style>
+  .issue-card {
+    transition: background-color 0.2s;
+  }
+  .issue-card:hover {
+    background-color: #eeebeb;
+  }
+</style>
+<div class= 'col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4'>
+<nav aria-label="breadcrumb" style="padding: 20px">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><a href="#">Home</a></li>
+    <li class="breadcrumb-item active" aria-current="page">Overview</li>
+  </ol>
+</nav>
+
+<main
+  class="container px-4"
+> 
+
+<container class="card mt-1">
+  <div class="card card-header text-center">
+    Issue: {{issue}}
+
+  </div>
+</container>
+
+
+<container class="card mt-3">
+  <div class="card card-header">
+
+    <div class="row">
+      <div class="col col-10"></div>
+
+      <div class="col col-6">
+
+        <div class="text-center mt-2 ">Issue comments</div>
+      </div>
+      <div class="col col-6">
+        <form class="d-flex">
+          <input class="form-control mt-1 mb-1 me-2" name="search_query" value="{{search_query}}" type="search" placeholder="Search"
+            aria-label="Search">
+          <button class="btn btn-outline-success mt-1 mb-1 me-2" type="submit">Search</button>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+  {% for comment in page_obj %}
+  <article class="card mb-3 issue-card">
+    <div class="card-body text-center">
+    <section class="row">
+    <article class="col-6">
+      <h5 class="card-title ">{{comment.author}}</h5>
+      <h6 class="card-subtitle text-muted">
+        
+        <i>
+          <small class="text-muted">Created: {{comment.create_date.date}} {{comment.create_date|date:"H:i"}}</small>
+        </i>
+      </h6>
+    </article>
+     
+    <article class="col-6 text-center">
+      <h6 class="card-title">
+      Text:
+    </h6>
+    {{comment.text}}
+    </article>
+    </section>  
+    </div>
+  </article>
+  {% endfor %}
+  <div class="card card-footer text-center">Page {{page_obj.number}}/{{page_obj.paginator.num_pages}} </div>
+
+  <div class="d-flex justify-content-center">
+    {% if page_obj.has_previous %}
+
+    <a class="btn flex-fill"
+      href="?{% if search_query %}search_query={{search_query}}&{% endif %}page={{ page_obj.previous_page_number }}">&laquo;
+      Previous &nbsp; </a>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+
+    <a class="btn flex-fill"
+      href="?{% if search_query %}search_query={{search_query}}&{% endif %}page={{ page_obj.next_page_number }}">Next
+      &raquo;</a>
+
+    {% endif %}
+
+  </div>
+</container>
+</div>
+</main>
+{% endblock %} 

@@ -7,7 +7,7 @@ from simple_history.models import HistoricalRecords
 
 
 class Comment(models.Model):
-    text = models.TextField()
+    text = models.CharField(max_length=250)
     create_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
     issue = models.ForeignKey("Issue", on_delete=models.CASCADE)
@@ -39,7 +39,7 @@ class LeaderApplication(models.Model):
 
 
 class Project(models.Model):
-    name = models.TextField(null=False, default="None")
+    name = models.CharField(max_length=25,null=False, default="None")
     developer = models.ManyToManyField(User, blank=True)
     description = models.TextField(null=False)
     leader = models.ForeignKey(

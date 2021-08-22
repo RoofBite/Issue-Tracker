@@ -832,7 +832,60 @@ def project_details(request, pk):
     return HttpResponse("You are not allowed to see this project")
 
 
+@login_required(login_url="issue_tracker:sign-in")
+@group_required("leader", "developer", "admin")
+@require_http_methods(["GET"])
+def issue_details_comments(request, pk):
 
+    if request.user.groups.filter(name__in=("a",)):
+        projects = Project.objects.all()
+
+    elif request.user.groups.filter(name__in=("developer", "leader")):
+        projects = Project.objects.filter(
+            Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+        )
+
+    issue_instance = Issue.objects.filter(pk=pk, project__in=projects).first()
+
+    if issue_instance:
+        context = {}
+        comments = Comment.objects.filter(issue__pk=issue_instance.pk).order_by("-create_date").select_related("author")
+        
+        
+        paginator = Paginator(comments, 2)
+        page_number = request.GET.get("page")
+
+        try:
+            page_obj = paginator.get_page(page_number)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+
+        page_obj = paginator.get_page(page_number)
+
+        if request.GET.get("search_query"):
+            search_query = request.GET.get("search_query")
+            context["search_query"] = str(search_query)
+
+            
+            query = comments.filter(
+                Q(text__icontains=search_query)
+                | Q(create_date__startswith=search_query)
+                | Q(author__icontains=search_query)
+                | Q(issue__icontains=search_query)
+            ).order_by("-create_date")
+
+            paginator = Paginator(query, 2)
+            page_number = request.GET.get("page")
+
+        try:
+            page_obj = paginator.get_page(page_number)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+
+        context["page_obj"] = page_obj
+        context["issue"] = issue_instance
+        
+        return render(request, "issue_tracker/issue_details_comments.html", context)
 
 
 
@@ -908,7 +961,6 @@ def issue_details(request, pk):
             page_obj = paginator.page(paginator.num_pages)
 
         context["page_obj"] = page_obj
-        context["my_project_issues"] = issues
         context["issue"] = issue_instance
         context["issues"] = issues
         return render(request, "issue_tracker/issue_details.html", context)
