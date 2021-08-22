@@ -66,6 +66,11 @@
     </div>
 
 
+    {% with group0=request.user.groups.all.0.name   %}
+    {% with group1=request.user.groups.all.1.name  %}  
+    {% with group2=request.user.groups.all.2.name  %}
+    {% with groups_all=request.user.groups.all %}  
+    
 
 
 
@@ -75,10 +80,10 @@
       <p class="btn mb-3 mt-2" style="font-size:14px">
         <b>You are demo user </b>
 
-        {% if request.user.groups.all.0.name == 'developer' %}
+        {% if group0 == 'developer' %}
 
         {% else %}
-        {% if request.user.groups.all.0.name == 'leader' %}
+        {% if group0 == 'leader' %}
         {% else %}
         <a class="link-danger" href="{% url 'issue_tracker:set-demo-user' %}"><b>Click here to get developer and project
             leader permissions</b></a>
@@ -105,7 +110,7 @@
           <li><a class="dropdown-item">User:<br> {{user|make_list|slice:':6'|join:''}}</a></li>
           <li><a class="dropdown-item mb-0" >Roles:
             <p style="color: rgb(248, 37, 0)">
-            {% for group in request.user.groups.all %}
+            {% for group in groups_all %}
             {{group}}
             {% if forloop.last %} 
             
@@ -140,7 +145,7 @@
             </li>
             
 
-                {% if request.user.groups.all.0.name == 'developer' or request.user.groups.all.0.name == 'developer' %}
+                {% if group0 == 'developer' or group0 == 'developer' %}
 
                 <li class="nav-item">
                   <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
@@ -148,7 +153,7 @@
               </a>
             </li>
            
-            {% elif 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
+            {% elif 'leader' == group0 or 'leader' == group1 or 'leader' == group2    %}
                 
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:apply-project-list-all' %}">
@@ -156,7 +161,7 @@
           </a>
         </li>
 
-        {% elif 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+        {% elif 'admin' == group0 or 'admin' == group1 or 'admin' == group2    %}
         
         
         {% else %}
@@ -171,7 +176,7 @@
 
                 {% endif %}
 
-            {% if 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
+            {% if 'leader' == group0 or 'leader' == group1 or 'leader' == group2    %}
 
             
             <li class="nav-item">
@@ -179,7 +184,7 @@
             <span class="ml-2">Manage application</span>
             </a>
             </li>
-            {% elif 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+            {% elif 'admin' == group0 or 'admin' == group1 or 'admin' == group2    %}
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:manage-developers-applications-list' %}">
             <span class="ml-2">Manage application</span>
@@ -190,7 +195,7 @@
 
             
             
-            {% if 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
+            {% if 'leader' == group0 or 'leader' == group1 or 'leader' == group2    %}
 
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:manage-projects-list' %}">
@@ -199,7 +204,7 @@
               </a>
             </li>
 
-            {% elif 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+            {% elif 'admin' == group0 or 'admin' == group1 or 'admin' == group2    %}
 
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:manage-projects-list' %}">
@@ -216,7 +221,7 @@
             
 
             
-            {% for group in request.user.groups.all %}
+            {% for group in groups_all %}
             {% if 'admin' == group.name %}
 
             <li class="nav-item">
@@ -237,9 +242,9 @@
             {% endfor %}
 
             
-            {% if 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name    %}
+            {% if 'admin' == group0 or 'admin' == group1 or 'admin' == group2    %}
 
-            {% elif 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
+            {% elif 'leader' == group0 or 'leader' == group1 or 'leader' == group2    %}
 
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:my-projects' %}">
@@ -272,7 +277,7 @@
 
 
 
-            {% elif 'developer' == request.user.groups.all.0.name or 'developer' == request.user.groups.all.1.name or 'developer' == request.user.groups.all.2.name    %}
+            {% elif 'developer' == group0 or 'developer' == group1 or 'developer' == group2    %}
            
             <li class="nav-item">
               <a class="nav-link py-1" href="{% url 'issue_tracker:my-projects' %}">
@@ -315,6 +320,12 @@
       {% block content %}{% endblock %}
     </div>
   </div>
+  {% endwith %}
+ {% endwith %}
+ {% endwith %}
+  {% endwith %}
+
+
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
     integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
     crossorigin="anonymous"></script>
