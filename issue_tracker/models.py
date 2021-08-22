@@ -10,7 +10,9 @@ class Comment(models.Model):
     text = models.TextField()
     create_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-
+    issue = models.ForeignKey("Issue", on_delete=models.CASCADE)
+    def __str__(self):
+        return str(self.author) + " " + str(self.issue)
 
 class DeveloperApplication(models.Model):
     applicant = models.ForeignKey(
@@ -113,9 +115,6 @@ class Issue(models.Model):
     description = models.CharField(max_length=250, null=True)
     create_date = models.DateTimeField(auto_now_add=True)
     update_date = models.DateTimeField(null=True, blank=True)
-    comment = models.ForeignKey(
-        "Comment", on_delete=models.SET_NULL, null=True, blank=True
-    )
 
     history = HistoricalRecords()
 

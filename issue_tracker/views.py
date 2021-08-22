@@ -832,14 +832,9 @@ def project_details(request, pk):
     return HttpResponse("You are not allowed to see this project")
 
 
-# @login_required(login_url="issue_tracker:sign-in")
-# @group_required("leader", "developer")
-# @require_http_methods(["GET"])
-# def issue_details_comments(request, pk):
-#     projects = Project.objects.filter(developer__id=request.user.id)
-#     issue_instance = Issue.objects.filter(id=pk, project__in=projects).first()
 
-#     if issue_instance:
+
+
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -862,7 +857,7 @@ def issue_details(request, pk):
 
         if request.user.groups.filter(name__in=("admin",)):
             issues = (
-                Issue.history.filter(id=pk)
+                Issue.history.filter(pk=pk)
                 .order_by("-update_date")
                 .select_related("project", "user_assigned")
             )

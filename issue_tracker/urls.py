@@ -24,6 +24,8 @@ urlpatterns = [
         name="manage-project-issues-list",
     ),
     path("issue-details/<int:pk>/", views.issue_details, name="issue-details"),
+    path("issue-details-comments/<int:pk>/", views.issue_details_comments, name="issue-details-comments"),
+
     path("my-projects/", views.my_projects, name="my-projects"),
     path("all-projects/", views.all_projects, name="all-projects"),
     path(
