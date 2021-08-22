@@ -15,6 +15,7 @@ from lazysignup.decorators import (
     require_nonlazy_user,
     require_lazy_user,
 )
+from lazysignup.models import LazyUser
 from lazysignup.utils import is_lazy_user
 from .forms import IssueFormCreate, AddDeveloper, IssueFormUpdate, CreateUserForm
 from .models import *
@@ -28,7 +29,7 @@ def load_users(request):
     users = User.objects.filter(
         Q(project__id=project_id) | Q(leader_project_set__id=project_id)
     ).distinct()
-    
+
     return render(
         request,
         "issue_tracker/hr/user_assigned_dropdown_list_options.html",
@@ -151,7 +152,7 @@ def developer_application_accept(request, pk):
 
             my_group = Group.objects.get(name="developer")
             my_group.user_set.add(application.applicant)
-            
+
         else:
             return HttpResponse("This application does not exist")
 
@@ -166,17 +167,13 @@ def developer_application_accept(request, pk):
 
                 my_group = Group.objects.get(name="developer")
                 my_group.user_set.add(application.applicant)
-                
+
         else:
             return HttpResponse("This application does not exist")
 
         return redirect("issue_tracker:manage-developers-applications-list")
 
     return HttpResponse("You are not admin nor leader")
-
-
-
-
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -258,7 +255,7 @@ def leader_application_accept(request, pk):
 
         if project.leader:
             previous_leader = project.leader
-            
+
         Project.objects.filter(pk=project_pk).update(leader=application.applicant)
         application.delete()
 
@@ -268,10 +265,10 @@ def leader_application_accept(request, pk):
             # If previous_leader is not leader anymore, will be deleted from group
             if not previous_leader.leader_project_set.all():
                 leader_group.user_set.remove(previous_leader)
-                
+
         my_group = Group.objects.get(name="leader")
         my_group.user_set.add(application.applicant)
-        
+
     else:
         return HttpResponse("This application does not exist")
 
@@ -749,7 +746,7 @@ def project_developer_resign_confirm(request, pk):
     project.developer.remove(user)
 
     developer_group = Group.objects.get(name="developer")
-    
+
     # User is not developer anymore, will be deleted from group
     if not user.project_set.all():
         developer_group.user_set.remove(user)
@@ -849,9 +846,12 @@ def issue_details_comments(request, pk):
 
     if issue_instance:
         context = {}
-        comments = Comment.objects.filter(issue__pk=issue_instance.pk).order_by("-create_date").select_related("author")
-        
-        
+        comments = (
+            Comment.objects.filter(issue__pk=issue_instance.pk)
+            .order_by("-create_date")
+            .select_related("author")
+        )
+
         paginator = Paginator(comments, 2)
         page_number = request.GET.get("page")
 
@@ -866,7 +866,6 @@ def issue_details_comments(request, pk):
             search_query = request.GET.get("search_query")
             context["search_query"] = str(search_query)
 
-            
             query = comments.filter(
                 Q(text__icontains=search_query)
                 | Q(create_date__startswith=search_query)
@@ -884,10 +883,8 @@ def issue_details_comments(request, pk):
 
         context["page_obj"] = page_obj
         context["issue"] = issue_instance
-        
+
         return render(request, "issue_tracker/issue_details_comments.html", context)
-
-
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -1092,7 +1089,7 @@ def my_issues(request):
         .order_by("-create_date")
         .select_related("project", "user_assigned")
     )
-    
+
     my_issues = my_project_issues.filter(user_assigned=request.user)
 
     paginator1 = Paginator(my_issues, 2)
@@ -1162,9 +1159,6 @@ def my_issues(request):
 
     context["page_obj1"] = page_obj1
     context["page_obj2"] = page_obj2
-
-    
-    
 
     return render(request, "issue_tracker/my_issues.html", context)
 

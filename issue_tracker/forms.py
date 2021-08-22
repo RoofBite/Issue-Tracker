@@ -14,12 +14,16 @@ from django.forms import (
     DateTimeField,
 )
 from lazysignup.utils import is_lazy_user
+from lazysignup.models import LazyUser
 from .models import *
 
 
 class AddDeveloper(ModelForm):
+    demo_users_ids = LazyUser.objects.values_list("user_id", flat=True)
+    # Demo users are excluded form list
     developer = ModelMultipleChoiceField(
-        queryset=User.objects.all(), widget=CheckboxSelectMultiple()
+        queryset=User.objects.exclude(pk__in=demo_users_ids),
+        widget=CheckboxSelectMultiple(),
     )
 
     class Meta:
@@ -33,9 +37,9 @@ class AddDeveloper(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        
+
         super(AddDeveloper, self).__init__(*args, **kwargs)
-        
+
         # Defining list of users that demo user will be able to add to project
         if is_lazy_user(self.request.user):
             # id=1 stands for admin user id
@@ -66,19 +70,20 @@ class IssueFormUpdate(ModelForm):
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        
-        self.pk = kwargs.pop('pk')
+
+        self.pk = kwargs.pop("pk")
         super(IssueFormUpdate, self).__init__(*args, **kwargs)
         project_id = Issue.objects.get(pk=self.pk).project.id
-        
+
         self.fields["user_assigned"].queryset = User.objects.filter(
-                    Q(project__id=project_id) | Q(leader_project_set__id=project_id)
-                ).distinct()
+            Q(project__id=project_id) | Q(leader_project_set__id=project_id)
+        ).distinct()
+
 
 class IssueFormCreate(ModelForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")
-        
+
         super(IssueFormCreate, self).__init__(*args, **kwargs)
         self.fields["user_assigned"].queryset = User.objects.none()
         self.fields["project"].queryset = Project.objects.filter(
