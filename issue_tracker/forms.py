@@ -62,6 +62,7 @@ class AddDeveloper(ModelForm):
         self.request = kwargs.pop("request")
 
         super(AddDeveloper, self).__init__(*args, **kwargs)
+        self.fields["developer"].required = False
 
         # Defining list of users that demo user will be able to add to project
         if is_lazy_user(self.request.user):
