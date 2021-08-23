@@ -50,10 +50,10 @@
           </div>
           <div class="card-body text-center">
 
-            <p>Do you want to resign from developer position in project: {{project.name}} ?</p>
+            <p>Do you want to resign from leader position in project: {{project.name}} ?</p>
 
             <a class="btn btn-danger me-2 text-center"
-            href="{% url 'issue_tracker:project-developer-resign-confirm' project.id %}">Resign from position</a>
+            href="{% url 'issue_tracker:project-leader-resign-confirm' project.id %}">Resign from position</a>
             <a class="btn btn-success me-2 text-center"
           href="{% url 'issue_tracker:project-details-old-issues' project.id %}">Stay on position</a>
           
