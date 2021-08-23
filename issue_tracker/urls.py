@@ -30,6 +30,7 @@ urlpatterns = [
         login_required(views.Add_comment.as_view()),
         name="add-comment",
     ),
+     path("delete-comments/<int:pk>/", views.delete_comment, name="delete-comment"),
 
     path("my-projects/", views.my_projects, name="my-projects"),
     path("all-projects/", views.all_projects, name="all-projects"),

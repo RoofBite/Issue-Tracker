@@ -157,6 +157,18 @@ class Add_comment(CreateView):
 
 
 @login_required(login_url="issue_tracker:sign-in")
+@group_required("admin")
+@require_http_methods(["GET"])
+def delete_comment(request, pk):
+    comment = Comment.objects.filter(pk=pk).first()
+
+    if comment:
+        comment.delete()
+        return redirect("issue_tracker:issue-details-comments", pk=comment.issue.pk)
+    else:
+        return HttpResponse("This comment does not exist")
+
+@login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
 def developer_application_deny(request, pk):
