@@ -497,8 +497,16 @@ class Update_issue(UpdateView):
         ).first()
         if issue:
             return issue
-        # else:
-        #     return HttpResponse("You have no access to this issue")
+
+    def form_valid(self, form):
+        updated_instance = form.save(commit=False)
+        original_instance = Issue.objects.get(pk=self.kwargs["pk"])
+        original_list = [original_instance.title, original_instance.creator  ,original_instance.project , original_instance.priority, original_instance.status, original_instance.type, original_instance.description]
+        updated_list = [updated_instance.title, updated_instance.creator  ,updated_instance.project , updated_instance.priority, updated_instance.status, updated_instance.type, updated_instance.description]
+
+        if original_list==updated_list:
+            return super(Update_issue, self).form_invalid(form)
+        return super(Update_issue, self).form_valid(form)
 
     def get_success_url(self):
         issue = self.get_object()
