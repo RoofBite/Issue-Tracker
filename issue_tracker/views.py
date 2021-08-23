@@ -267,7 +267,7 @@ def manage_developers_applications_list(request):
 
         query = applications.filter(
             Q(project__name__icontains=search_query)
-            | Q(applicant__icontains=search_query)
+            | Q(applicant__username__icontains=search_query)
             | Q(project__description__icontains=search_query)
         )
 
