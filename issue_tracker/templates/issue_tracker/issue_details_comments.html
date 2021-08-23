@@ -15,7 +15,10 @@
   <ol class="breadcrumb">
     <li class="card me-3"> <a class="btn btn-primary me-2" href="{% url  'issue_tracker:issue-details' issue.pk %}">Issue detail and history</a>  </li>
    <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:issue-details-comments' issue.pk %}">Comments list</a>  </li>
+   {% if 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name  %}
+    {% else %}
    <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:add-comment' issue.pk %}">Add comment</a>  </li>
+  {% endif %}
   </ol>
 </nav>
 

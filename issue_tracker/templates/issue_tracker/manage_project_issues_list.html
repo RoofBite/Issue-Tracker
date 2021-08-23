@@ -55,8 +55,8 @@
 
 
       {% for issue in page_obj %}
-      <article class="card mb-3 issue-card" style="cursor: pointer"
-        onclick="location.href = `{% url 'issue_tracker:update-issue'  issue.id %}` ">
+      <article class="card mb-3 issue-card text-center" style="cursor: pointer"
+        onclick="location.href = `{% url 'issue_tracker:issue-details-comments'  issue.id %}` ">
         <div class="card-body">
           <h5 class="card-title">{{issue.title}}</h5>
           <h6 class="card-subtitle text-muted">
@@ -91,8 +91,14 @@
                 <path
                   d="M3.05 3.05a7 7 0 0 0 0 9.9.5.5 0 0 1-.707.707 8 8 0 0 1 0-11.314.5.5 0 0 1 .707.707zm2.122 2.122a4 4 0 0 0 0 5.656.5.5 0 1 1-.708.708 5 5 0 0 1 0-7.072.5.5 0 0 1 .708.708zm5.656-.708a.5.5 0 0 1 .708 0 5 5 0 0 1 0 7.072.5.5 0 1 1-.708-.708 4 4 0 0 0 0-5.656.5.5 0 0 1 0-.708zm2.122-2.12a.5.5 0 0 1 .707 0 8 8 0 0 1 0 11.313.5.5 0 0 1-.707-.707 7 7 0 0 0 0-9.9.5.5 0 0 1 0-.707zM10 8a2 2 0 1 1-4 0 2 2 0 0 1 4 0z" />
               </svg>
+              
               {{issue.status}}</span>
-          </div>
+              {% if 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name  %}
+              {% else %}
+              <br>
+              <a class="btn btn-success mt-2" href="{% url 'issue_tracker:update-issue'  issue.id %}">Edit</a>
+              {% endif %}
+            </div>
         </div>
       </article>
       {% endfor %}
