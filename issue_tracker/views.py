@@ -528,6 +528,9 @@ class Add_issue(CreateView):
         kwargs["request"] = self.request
         return kwargs
 
+    def get_success_url(self):
+        return reverse("issue_tracker:issue-details", args=(self.object.pk,))
+        
 
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("admin")
