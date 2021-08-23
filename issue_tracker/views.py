@@ -980,8 +980,7 @@ def issue_details_comments(request, pk):
             query = comments.filter(
                 Q(text__icontains=search_query)
                 | Q(create_date__startswith=search_query)
-                | Q(author__icontains=search_query)
-                | Q(issue__icontains=search_query)
+                | Q(author__username__icontains=search_query)
             ).order_by("-create_date")
 
             paginator = Paginator(query, 2)
