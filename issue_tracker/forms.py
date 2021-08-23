@@ -65,9 +65,9 @@ class AddDeveloper(ModelForm):
 
         # Defining list of users that demo user will be able to add to project
         if is_lazy_user(self.request.user):
-            # id=1 stands for admin user id
+            # pk=1 stands for admin user pk
             self.fields["developer"].queryset = User.objects.filter(
-                Q(id=1) | Q(id=self.request.user.id)
+                Q(pk=1) | Q(pk=self.request.user.pk)
             )
 
 
@@ -96,10 +96,10 @@ class IssueFormUpdate(ModelForm):
 
         self.pk = kwargs.pop("pk")
         super(IssueFormUpdate, self).__init__(*args, **kwargs)
-        project_id = Issue.objects.get(pk=self.pk).project.id
+        project_pk = Issue.objects.get(pk=self.pk).project.pk
 
         self.fields["user_assigned"].queryset = User.objects.filter(
-            Q(project__id=project_id) | Q(leader_project_set__id=project_id)
+            Q(project__pk=project_pk) | Q(leader_project_set__pk=project_pk)
         ).distinct()
 
 
@@ -111,14 +111,14 @@ class IssueFormCreate(ModelForm):
         self.fields["project"].queryset = Project.objects.filter(
             Q(developer=self.request.user) | Q(leader=self.request.user)
         ).prefetch_related("developer", "leader").distinct()
-        self.fields["creator"].initial = User.objects.get(id=self.request.user.id)
+        self.fields["creator"].initial = User.objects.get(pk=self.request.user.pk)
         self.fields["creator"].widget = HiddenInput()
         
         if "project" in self.data:
             try:
-                project_id = int(self.data.get("project"))
+                project_pk = int(self.data.get("project"))
                 self.fields["user_assigned"].queryset = User.objects.filter(
-                    Q(project__id=project_id) | Q(leader_project_set__id=project_id)
+                    Q(project__pk=project_pk) | Q(leader_project_set__pk=project_pk)
                 ).distinct()
             except (ValueError, TypeError):
                 pass  # invalid input from the client; ignore and fallback to empty City queryset

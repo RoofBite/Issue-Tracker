@@ -15,18 +15,18 @@
   <nav aria-label="breadcrumb" style="padding: 20px">
     <ol class="breadcrumb">
       <li class=""><a class="btn btn-primary me-2 text-center"
-          href="{% url 'issue_tracker:project-details-old-issues' project.id %}">See old project issues </a></li>
+          href="{% url 'issue_tracker:project-details-old-issues' project.pk %}">See old project issues </a></li>
           
           {% if 'developer' == request.user.groups.all.0.name or 'developer' == request.user.groups.all.1.name or 'developer' == request.user.groups.all.2.name    %}
           {% if is_user_project_developer %}
           <li class="card ms-2 me-2"><a class="btn btn-danger text-center"
-        href="{% url 'issue_tracker:project-developer-resign' project.id %}">Resign from developer position </a></li>
+        href="{% url 'issue_tracker:project-developer-resign' project.pk %}">Resign from developer position </a></li>
           {% endif %}
           {% endif %}    
 
         {% if 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name    %}
      <li class="card ms-2 me-2"><a class="btn btn-danger text-center"
-        href="{% url 'issue_tracker:project-leader-resign' project.id %}">Resign from leader position </a></li>
+        href="{% url 'issue_tracker:project-leader-resign' project.pk %}">Resign from leader position </a></li>
         {% endif %}
     </ol>
   </nav>
@@ -53,9 +53,9 @@
             <p>Do you want to resign from developer position in project: {{project.name}} ?</p>
 
             <a class="btn btn-danger me-2 text-center"
-            href="{% url 'issue_tracker:project-developer-resign-confirm' project.id %}">Resign from position</a>
+            href="{% url 'issue_tracker:project-developer-resign-confirm' project.pk %}">Resign from position</a>
             <a class="btn btn-success me-2 text-center"
-          href="{% url 'issue_tracker:project-details-old-issues' project.id %}">Stay on position</a>
+          href="{% url 'issue_tracker:project-details-old-issues' project.pk %}">Stay on position</a>
           
         </div>
   

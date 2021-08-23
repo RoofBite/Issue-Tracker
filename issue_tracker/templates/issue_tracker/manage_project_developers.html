@@ -15,11 +15,11 @@
   <nav class="text-center" aria-label="breadcrumb" style="padding: 20px">
     <ol class="breadcrumb">
       <li class="card me-3"><a class="btn btn-primary me-2 text-center"
-        href="{% url 'issue_tracker:manage-project-details' project.id %}">Project details </a></li>  
+        href="{% url 'issue_tracker:manage-project-details' project.pk %}">Project details </a></li>  
       <li class="card me-3"><a class="btn btn-primary me-3 text-center"
-        href="{% url 'issue_tracker:manage-project-developers' project.id %}">Manage developers list  </a></li>  
+        href="{% url 'issue_tracker:manage-project-developers' project.pk %}">Manage developers list  </a></li>  
       <li class="card me-3"><a class="btn btn-primary me-3 text-center"
-          href="{% url 'issue_tracker:manage-project-issues-list' project.id %}">Manage issues </a></li>  
+          href="{% url 'issue_tracker:manage-project-issues-list' project.pk %}">Manage issues </a></li>  
 
 
     </ol>

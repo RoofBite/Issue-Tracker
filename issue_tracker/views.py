@@ -31,10 +31,10 @@ from django.contrib.auth.models import Group
 
 
 def load_users(request):
-    project_id = request.GET.get("project")
+    project_pk = request.GET.get("project")
 
     users = User.objects.filter(
-        Q(project__id=project_id) | Q(leader_project_set__id=project_id)
+        Q(project__pk=project_pk) | Q(leader_project_set__pk=project_pk)
     ).distinct()
 
     return render(
@@ -55,7 +55,7 @@ def set_demo_user(request):
         my_group2 = Group.objects.get(name="developer")
         my_group2.user_set.add(request.user)
         # Creating demo projects
-        admin_user = User.objects.get(id=1, is_superuser=True)
+        admin_user = User.objects.get(pk=1, is_superuser=True)
 
         project1 = Project.objects.create(
             name="Demo Project1",
@@ -123,7 +123,7 @@ def sign_up(request):
 class Add_comment(CreateView):
     def get(self, request, *args, **kwargs):
         projects = Project.objects.filter(
-            Q(leader__id=self.request.user.id) | Q(developer__id=self.request.user.id)
+            Q(leader__pk=self.request.user.pk) | Q(developer__pk=self.request.user.pk)
         )
         issue = Issue.objects.filter(pk=self.kwargs["pk"], project__in=projects).first()
         if issue:
@@ -137,10 +137,10 @@ class Add_comment(CreateView):
     success_url = reverse_lazy("issue_tracker:main")
 
     def get_success_url(self):
-        comment_issue_id = self.kwargs["pk"]
+        comment_issue_pk = self.kwargs["pk"]
 
         return reverse(
-            "issue_tracker:issue-details-comments", kwargs={"pk": comment_issue_id}
+            "issue_tracker:issue-details-comments", kwargs={"pk": comment_issue_pk}
         )
 
     def get_form_kwargs(self):
@@ -339,7 +339,7 @@ def manage_leaders_applications_list(request):
 
     applications = (
         LeaderApplication.objects.all()
-        .order_by("id")
+        .order_by("pk")
         .select_related("project", "applicant")
     )
 
@@ -383,11 +383,11 @@ def manage_leaders_applications_list(request):
 @require_http_methods(["GET"])
 def project_apply_developer(request, pk):
     project = Project.objects.filter(pk=pk).first()
-    developer_ids = project.developer.values_list("id", flat=True)
+    developer_pks = project.developer.values_list("pk", flat=True)
     is_applied_already = DeveloperApplication.objects.filter(
         project=project, applicant=request.user
     ).first()
-    if project and not (request.user.id in developer_ids) and not is_applied_already:
+    if project and not (request.user.pk in developer_pks) and not is_applied_already:
         DeveloperApplication.objects.create(applicant=request.user, project=project)
         return redirect("issue_tracker:apply-project-list-all")
     if is_applied_already:
@@ -404,8 +404,8 @@ def project_apply_leader(request, pk):
     project = Project.objects.filter(pk=pk).first()
     user_is_not_already_leader = False
     try:
-        leader_id = project.leader.id
-        user_is_not_already_leader = request.user.id != leader_id
+        leader_pk = project.leader.pk
+        user_is_not_already_leader = request.user.pk != leader_pk
     except AttributeError:
         user_is_not_already_leader = True
 
@@ -426,7 +426,7 @@ def project_apply_leader(request, pk):
 @group_excluded("admin")
 @require_http_methods(["GET", "POST"])
 def project_apply(request, pk):
-    project = Project.objects.filter(id=pk).first()
+    project = Project.objects.filter(pk=pk).first()
     if project:
         context = {"pk": pk, "project": project}
         return render(request, "issue_tracker/project_apply.html", context)
@@ -482,7 +482,7 @@ class Update_issue(UpdateView):
     def get(self, request, *args, **kwargs):
         pk = self.kwargs["pk"]
         issue = Issue.objects.filter(
-            pk=pk, project__leader__id=self.request.user.id
+            pk=pk, project__leader__pk=self.request.user.pk
         ).first()
         if issue:
             return super().get(request, *args, **kwargs)
@@ -492,7 +492,7 @@ class Update_issue(UpdateView):
     def get_object(self):
         pk = self.kwargs["pk"]
         issue = Issue.objects.filter(
-            pk=pk, project__leader__id=self.request.user.id
+            pk=pk, project__leader__pk=self.request.user.pk
         ).first()
         if issue:
             return issue
@@ -501,9 +501,9 @@ class Update_issue(UpdateView):
 
     def get_success_url(self):
         issue = self.get_object()
-        issue_project_id = issue.project.id
+        issue_project_pk = issue.project.pk
         return reverse(
-            "issue_tracker:manage-project-issues-list", kwargs={"pk": issue_project_id}
+            "issue_tracker:manage-project-issues-list", kwargs={"pk": issue_project_pk}
         )
 
     def get_form_kwargs(self):
@@ -553,7 +553,7 @@ def my_projects(request):
     try:
         projects = (
             Project.objects.filter(
-                Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+                Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
             ).distinct()
             .select_related("leader")
             .prefetch_related("developer")
@@ -582,7 +582,7 @@ def manage_projects_list(request):
 
         try:
             projects = (
-                Project.objects.filter(leader__id=request.user.id)
+                Project.objects.filter(leader__pk=request.user.pk)
                 .select_related("leader")
                 .prefetch_related("developer", "leader")
             )
@@ -600,13 +600,13 @@ def manage_projects_list(request):
 def manage_project_details(request, pk):
 
     if request.user.groups.filter(name__in=("admin",)):
-        project_instance = Project.objects.filter(id=pk).first()
+        project_instance = Project.objects.filter(pk=pk).first()
 
     elif request.user.groups.filter(name__in=("leader",)):
-        project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
+        project_instance = Project.objects.filter(pk=pk, leader=request.user.pk).first()
 
     if project_instance:
-        project = Project.objects.get(id=pk)
+        project = Project.objects.get(pk=pk)
         context = {"project": project}
 
         return render(request, "issue_tracker/manage_project_details.html", context)
@@ -619,12 +619,12 @@ def manage_project_details(request, pk):
 def manage_project_developers(request, pk):
     if request.user.groups.filter(name__in=("admin",)):
         project_instance = (
-            Project.objects.filter(id=pk).prefetch_related("developer").first()
+            Project.objects.filter(pk=pk).prefetch_related("developer").first()
         )
 
     elif request.user.groups.filter(name__in=("leader",)):
         project_instance = (
-            Project.objects.filter(id=pk, leader=request.user.id)
+            Project.objects.filter(pk=pk, leader=request.user.pk)
             .prefetch_related("developer")
             .first()
         )
@@ -677,17 +677,17 @@ def manage_project_developers(request, pk):
 def manage_project_issues_list(request, pk):
 
     if request.user.groups.filter(name__in=("admin",)):
-        project_instance = Project.objects.filter(id=pk).first()
+        project_instance = Project.objects.filter(pk=pk).first()
 
     elif request.user.groups.filter(name__in=("leader",)):
-        project_instance = Project.objects.filter(id=pk, leader=request.user.id).first()
+        project_instance = Project.objects.filter(pk=pk, leader=request.user.pk).first()
 
     if project_instance:
         context = {}
 
-        project = Project.objects.get(id=pk)
+        project = Project.objects.get(pk=pk)
         my_project_issues = (
-            Issue.objects.filter(project__id=pk)
+            Issue.objects.filter(project__pk=pk)
             .order_by("-create_date")
             .select_related("project", "user_assigned")
         )
@@ -739,19 +739,19 @@ def manage_project_issues_list(request, pk):
 def project_details_old_issues(request, pk):
 
     if request.user.groups.filter(name__in=("admin",)):
-        project_instance = Project.objects.filter(id=pk).first()
+        project_instance = Project.objects.filter(pk=pk).first()
 
     elif request.user.groups.filter(name__in=("developer", "leader")):
         project_instance = Project.objects.filter(
-            Q(id=pk), Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+            Q(pk=pk), Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         ).first()
 
     if project_instance:
         context = {}
 
-        project = Project.objects.get(id=pk)
+        project = Project.objects.get(pk=pk)
         my_project_issues = (
-            Issue.objects.filter(project__id=pk, status__in=["RESOLVED", "CLOSED"])
+            Issue.objects.filter(project__pk=pk, status__in=["RESOLVED", "CLOSED"])
             .order_by("-create_date")
             .select_related("project", "user_assigned")
         )
@@ -876,19 +876,19 @@ def project_leader_resign_confirm(request, pk):
 def project_details(request, pk):
 
     if request.user.groups.filter(name__in=("admin",)):
-        project_instance = Project.objects.filter(id=pk).first()
+        project_instance = Project.objects.filter(pk=pk).first()
 
     elif request.user.groups.filter(name__in=("developer", "leader")):
         project_instance = Project.objects.filter(
-            Q(id=pk), Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+            Q(pk=pk), Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         ).first()
 
     if project_instance:
         context = {}
 
-        project = Project.objects.get(id=pk)
+        project = Project.objects.get(pk=pk)
         my_project_issues = (
-            Issue.objects.filter(project__id=pk)
+            Issue.objects.filter(project__pk=pk)
             .exclude(status="RESOLVED")
             .exclude(status="CLOSED")
             .order_by("-create_date")
@@ -929,10 +929,10 @@ def project_details(request, pk):
             page_obj = paginator.page(paginator.num_pages)
 
         is_user_project_developer = Project.objects.filter(
-            id=pk, developer__id=request.user.id
+            pk=pk, developer__pk=request.user.pk
         ).first()
         is_user_project_leader = Project.objects.filter(
-            id=pk, leader__id=request.user.id
+            pk=pk, leader__pk=request.user.pk
         ).first()
 
         context["is_user_project_developer"] = is_user_project_developer
@@ -955,7 +955,7 @@ def issue_details_comments(request, pk):
 
     elif request.user.groups.filter(name__in=("developer", "leader")):
         projects = Project.objects.filter(
-            Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+            Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         )
 
     issue_instance = Issue.objects.filter(pk=pk, project__in=projects).first()
@@ -1013,10 +1013,10 @@ def issue_details(request, pk):
 
     elif request.user.groups.filter(name__in=("developer", "leader")):
         projects = Project.objects.filter(
-            Q(leader__id=request.user.id) | Q(developer__id=request.user.id)
+            Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         )
 
-    issue_instance = Issue.objects.filter(id=pk, project__in=projects).first()
+    issue_instance = Issue.objects.filter(pk=pk, project__in=projects).first()
 
     if issue_instance:
         context = {}
@@ -1032,8 +1032,8 @@ def issue_details(request, pk):
             issues = (
                 Issue.history.filter(
                     Q(id=pk),
-                    Q(project__leader__id=request.user.id)
-                    | Q(project__developer__id=request.user.id),
+                    Q(project__leader__pk=request.user.pk)
+                    | Q(project__developer__pk=request.user.pk),
                 )
                 .order_by("-update_date")
                 .select_related("project", "user_assigned")
@@ -1088,8 +1088,8 @@ def reported_issues(request):
     issues = (
         Issue.objects.filter(
             Q(creator=request.user),
-            Q(project__leader__id=request.user.id)
-            | Q(project__developer__id=request.user.id),
+            Q(project__leader__pk=request.user.pk)
+            | Q(project__developer__pk=request.user.pk),
         )
         .order_by("-create_date")
         .select_related("project", "user_assigned")
@@ -1197,8 +1197,8 @@ def my_issues(request):
 
     my_project_issues = (
         Issue.objects.filter(
-            Q(project__leader__id=request.user.id)
-            | Q(project__developer__id=request.user.id)
+            Q(project__leader__pk=request.user.pk)
+            | Q(project__developer__pk=request.user.pk)
         )
         .exclude(status="RESOLVED")
         .exclude(status="CLOSED")

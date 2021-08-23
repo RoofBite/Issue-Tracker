@@ -82,7 +82,7 @@
     {% if 'admin' == request.user.groups.all.0.name or 'admin' == request.user.groups.all.1.name or 'admin' == request.user.groups.all.2.name  %}
               
               <br>
-              <a class="btn btn-danger mt-0" href="{% url 'issue_tracker:delete-comment'  comment.id %}">Delete comment</a>
+              <a class="btn btn-danger mt-0" href="{% url 'issue_tracker:delete-comment'  comment.pk %}">Delete comment</a>
               {% endif %}
     </div>
   </article>
