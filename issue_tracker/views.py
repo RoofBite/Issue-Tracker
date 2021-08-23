@@ -168,6 +168,7 @@ def delete_comment(request, pk):
     else:
         return HttpResponse("This comment does not exist")
 
+
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
@@ -516,7 +517,6 @@ class Update_issue(UpdateView):
 
 @method_decorator(group_required("developer", "leader"), name="get")
 class Add_issue(CreateView):
-
     model = Issue
     form_class = IssueFormCreate
     template_name = "issue_tracker/add_issue.html"
@@ -530,7 +530,7 @@ class Add_issue(CreateView):
 
     def get_success_url(self):
         return reverse("issue_tracker:issue-details", args=(self.object.pk,))
-        
+
 
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("admin")
@@ -557,7 +557,8 @@ def my_projects(request):
         projects = (
             Project.objects.filter(
                 Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
-            ).distinct()
+            )
+            .distinct()
             .select_related("leader")
             .prefetch_related("developer")
         )
@@ -832,8 +833,6 @@ def project_developer_resign_confirm(request, pk):
         return HttpResponse("You are not allowed to see this page")
 
 
-
-
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader")
 @require_http_methods(["GET"])
@@ -852,7 +851,7 @@ def project_leader_resign(request, pk):
 def project_leader_resign_confirm(request, pk):
     user = request.user
     project = Project.objects.filter(pk=pk, leader=user).first()
-    
+
     if project:
         Project.objects.filter(pk=pk, leader=user).update(leader=None)
         leader_group = Group.objects.get(name="leader")
@@ -864,13 +863,6 @@ def project_leader_resign_confirm(request, pk):
         return redirect("issue_tracker:my-projects")
     else:
         return HttpResponse("You are not allowed to see this page")
-
-
-
-
-
-
-
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -1078,7 +1070,6 @@ def issue_details(request, pk):
 
         context["page_obj"] = page_obj
         context["issue"] = issue_instance
-        context["issues"] = issues
         return render(request, "issue_tracker/issue_details.html", context)
 
     return HttpResponse("You are not allowed to see this issue")
