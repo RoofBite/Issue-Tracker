@@ -20,7 +20,6 @@ class TestViews(TestCase):
         self.user = User.objects.create_superuser(
             "User", "User@example.com", "Password"
         )
-        self.lazy_user, self.username = LazyUser.objects.create_lazy_user()
         self.client = Client()
         
         Group.objects.get_or_create(name="admin")
@@ -29,7 +28,6 @@ class TestViews(TestCase):
 
     # set_demo_user view tests
     def test_set_demo_user_lazy_user_GET(self):
-        self.client.force_login(user=self.lazy_user, backend=None)
         response = self.client.get(reverse("issue_tracker:set-demo-user"))
 
         self.assertEquals(response.status_code, 302)
@@ -40,17 +38,14 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 302)
 
+    # sign_in view tests
     def test_sign_in_lazy_user_GET(self):
-        self.client.force_login(user=self.lazy_user, backend=None)
         response = self.client.get(reverse("issue_tracker:sign-in"))
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "issue_tracker/sign_in.html")
     
-
-
     def test_sign_in_lazy_user_POST_existing_user(self):
-        self.client.force_login(user=self.lazy_user, backend=None)
         response = self.client.post(reverse("issue_tracker:sign-in"),
         {
                 "username": "User",
@@ -60,7 +55,7 @@ class TestViews(TestCase):
         self.assertEquals(response.status_code, 302)
 
     def test_sign_in_lazy_user_POST_non_existing_user(self):
-        self.client.force_login(user=self.lazy_user, backend=None)
+
         response = self.client.post(reverse("issue_tracker:sign-in"),
         {
                 "username": "User2",
@@ -72,5 +67,37 @@ class TestViews(TestCase):
     def test_sign_in_user_GET(self):
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(reverse("issue_tracker:sign-in"))
+
+        self.assertEquals(response.status_code, 302)
+
+    # main view test
+    def test_main_lazy_user_GET(self):
+        response = self.client.get(reverse("issue_tracker:main"))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, "issue_tracker/index.html")
+
+    # sign_up view tests
+    def test_sign_up_user_GET(self):
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:sign-up"))
+
+        self.assertEquals(response.status_code, 302)
+
+    def test_sign_up_lazy_user_GET(self):
+        response = self.client.get(reverse("issue_tracker:sign-up"))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertTemplateUsed(response, "issue_tracker/sign_up.html")
+
+    def test_sign_up_user_POST(self):
+        response = self.client.post(reverse("issue_tracker:sign-up"),
+        {
+                "username": "User2",
+                "password1": "Pa$$word3623426",
+                "password2": "Pa$$word3623426",
+                "email": "User2@example.com"
+            }
+        )
 
         self.assertEquals(response.status_code, 302)
