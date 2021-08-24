@@ -167,7 +167,7 @@ class TestView_Add_comment(TestCase):
         self.dev_application = DeveloperApplication.objects.create(applicant=self.user, project=self.project)
         self.lead_application = LeaderApplication.objects.create(applicant=self.user, project=self.project)
         self.comment = Comment.objects.create(text="Comment", author=self.user, issue=self.issue)
-        self.comment2 = Comment.objects.create(text="Comment", author=self.user, issue=self.issue)
+        self.comment2 = Comment.objects.create(text="Comment2", author=self.user, issue=self.issue)
         
     def test_add_comment_GET_non_group_user(self):
         self.client.force_login(user=self.user, backend=None)
@@ -213,4 +213,37 @@ class TestView_Add_comment(TestCase):
         )
         self.assertEquals(Comment.objects.filter(text="CommentNEW1").first().text, "CommentNEW1")
         self.assertEquals(response.status_code, 302)
-    
+
+
+class TestView_delete_comment(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+        
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(name="Project1", description="Description1", leader=self.user)
+        self.issue = Issue.objects.create(title="Issue1", creator=self.user, project=self.project)
+        self.project2 = Project.objects.create(name="Project2", description="Description1", leader=self.superuser)
+        self.issue2 = Issue.objects.create(title="Issue2", creator=self.superuser, project=self.project2)
+        self.dev_application = DeveloperApplication.objects.create(applicant=self.user, project=self.project)
+        self.lead_application = LeaderApplication.objects.create(applicant=self.user, project=self.project)
+        self.comment = Comment.objects.create(text="Comment", author=self.user, issue=self.issue)
+        self.comment2 = Comment.objects.create(text="Comment", author=self.user, issue=self.issue)
+
+    def test_delete_comment_GET_admin_group_user(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:delete-comment", args=["2"]), follow=True)
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertEquals(Comment.objects.filter(text="Comment2").first(), None)
