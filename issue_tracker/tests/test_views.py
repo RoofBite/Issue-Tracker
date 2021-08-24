@@ -12,7 +12,7 @@ from lazysignup.utils import is_lazy_user
 from django.db.models import Q
 
 
-class TestViews(TestCase):
+class TestViews_set_demo_user(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
             "Superuser", "Superuser@example.com", "Password"
@@ -26,7 +26,6 @@ class TestViews(TestCase):
         Group.objects.get_or_create(name="developer")
         Group.objects.get_or_create(name="leader")
 
-    # set_demo_user view tests
     def test_set_demo_user_lazy_user_GET(self):
         response = self.client.get(reverse("issue_tracker:set-demo-user"))
 
@@ -38,7 +37,21 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 302)
 
-    # sign_in view tests
+
+class TestViews_sign_in(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+        
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
     def test_sign_in_lazy_user_GET(self):
         response = self.client.get(reverse("issue_tracker:sign-in"))
 
@@ -70,14 +83,54 @@ class TestViews(TestCase):
 
         self.assertEquals(response.status_code, 302)
 
-    # main view test
+
+
+
+
+
+
+
+
+class TestViews_main(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+        
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
     def test_main_lazy_user_GET(self):
         response = self.client.get(reverse("issue_tracker:main"))
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "issue_tracker/index.html")
 
-    # sign_up view tests
+
+
+
+
+
+
+class TestViews_sign_up(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+        
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
     def test_sign_up_user_GET(self):
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(reverse("issue_tracker:sign-up"))
@@ -101,3 +154,7 @@ class TestViews(TestCase):
         )
 
         self.assertEquals(response.status_code, 302)
+
+
+
+
