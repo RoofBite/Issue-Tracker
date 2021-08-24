@@ -13,9 +13,9 @@ from django.db.models import Q
 class TestViewsDemoUser(TestCase):
     def setUp(self):
         
-        self.user, self.username = LazyUser.objects.create_lazy_user()
+        self.lazy_user, self.username = LazyUser.objects.create_lazy_user()
         self.client = Client()
-        self.client.force_login(user=self.user, backend=None)
+        self.client.force_login(user=self.lazy_user, backend=None)
 
     def test_main_GET(self):
         response = self.client.get(reverse("issue_tracker:main"))
