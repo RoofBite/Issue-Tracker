@@ -86,11 +86,6 @@ class TestViews_sign_in(TestCase):
 
 
 
-
-
-
-
-
 class TestViews_main(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
@@ -110,11 +105,6 @@ class TestViews_main(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertTemplateUsed(response, "issue_tracker/index.html")
-
-
-
-
-
 
 
 class TestViews_sign_up(TestCase):
@@ -156,5 +146,27 @@ class TestViews_sign_up(TestCase):
         self.assertEquals(response.status_code, 302)
 
 
+class TestView_Add_comment(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+        
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
 
+    def test_add_comment_GET_non_group_user(self):
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:add-comment", args=["1"]), follow=True)
 
+        self.assertEquals(response.status_code, 200)
+        # Decorator of Add_comment redirects to sign-in page if user cant't pass test
+        # Sign-in page for not authenticated user redirects to main which is rendered with index.html
+        self.assertTemplateUsed(response, "issue_tracker/index.html")
+
+    
