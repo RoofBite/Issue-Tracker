@@ -160,6 +160,15 @@ class TestView_Add_comment(TestCase):
         Group.objects.get_or_create(name="developer")
         Group.objects.get_or_create(name="leader")
 
+        self.project = Project.objects.create(name="Project1", description="Description1", leader=self.user)
+        self.issue = Issue.objects.create(title="Issue1", creator=self.user, project=self.project)
+        self.project2 = Project.objects.create(name="Project2", description="Description1", leader=self.superuser)
+        self.issue2 = Issue.objects.create(title="Issue2", creator=self.superuser, project=self.project2)
+        self.dev_application = DeveloperApplication.objects.create(applicant=self.user, project=self.project)
+        self.lead_application = LeaderApplication.objects.create(applicant=self.user, project=self.project)
+        self.comment = Comment.objects.create(text="Comment", author=self.user, issue=self.issue)
+        self.comment2 = Comment.objects.create(text="Comment", author=self.user, issue=self.issue)
+        
     def test_add_comment_GET_non_group_user(self):
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(reverse("issue_tracker:add-comment", args=["1"]), follow=True)
@@ -169,4 +178,39 @@ class TestView_Add_comment(TestCase):
         # Sign-in page for not authenticated user redirects to main which is rendered with index.html
         self.assertTemplateUsed(response, "issue_tracker/index.html")
 
+
+    def test_add_comment_GET_leader_group_user_has_acceess(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:add-comment", args=["1"]), follow=True)
+
+        self.assertEquals(response.status_code, 200)
+    
+    def test_add_comment_GET_leader_group_user_has_no_acceess(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:add-comment", args=["2"]), follow=True)
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, 'You have no access to this comment')
+
+    def test_add_comment_POST_leader_group_user_has_acceess(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.post(reverse("issue_tracker:add-comment", args=["1"]), 
+        {
+            "author": self.user.pk,
+            "issue": self.issue.pk,
+            "text": "CommentNEW1",
+
+        },   
+        )
+        self.assertEquals(Comment.objects.filter(text="CommentNEW1").first().text, "CommentNEW1")
+        self.assertEquals(response.status_code, 302)
     
