@@ -441,7 +441,7 @@ def apply_project_list_all(request):
 
         query = projects.filter(
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
-        )
+        ).order_by("pk")
 
         paginator = Paginator(query, 5, allow_empty_first_page=True)
         page_number = request.GET.get("page")
