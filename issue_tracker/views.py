@@ -249,13 +249,8 @@ def manage_developers_applications_list(request):
             project__leader=request.user
         ).select_related("project", "applicant")
 
-    paginator = Paginator(applications, 3)
+    paginator = Paginator(applications, 3, allow_empty_first_page=True)
     page_number = request.GET.get("page")
-
-    try:
-        page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
 
     page_obj = paginator.get_page(page_number)
 
@@ -269,12 +264,11 @@ def manage_developers_applications_list(request):
             | Q(project__description__icontains=search_query)
         )
 
-        paginator = Paginator(query, 3)
+        paginator = Paginator(query, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-    try:
+
         page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+    
 
     context["page_obj"] = page_obj
     context["applications"] = applications
@@ -342,13 +336,8 @@ def manage_leaders_applications_list(request):
         .select_related("project", "applicant")
     )
 
-    paginator = Paginator(applications, 3)
+    paginator = Paginator(applications, 3, allow_empty_first_page=True)
     page_number = request.GET.get("page")
-
-    try:
-        page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
 
     page_obj = paginator.get_page(page_number)
 
@@ -362,12 +351,11 @@ def manage_leaders_applications_list(request):
             | Q(project__description__icontains=search_query)
         )
 
-        paginator = Paginator(query, 3)
+        paginator = Paginator(query, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-    try:
+
         page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+
 
     context["page_obj"] = page_obj
     context["applications"] = applications
@@ -442,13 +430,8 @@ def apply_project_list_all(request):
         Project.objects.all().select_related("leader").prefetch_related("developer")
     )
 
-    paginator = Paginator(projects, 5)
+    paginator = Paginator(projects, 5, allow_empty_first_page=True)
     page_number = request.GET.get("page")
-
-    try:
-        page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
 
     page_obj = paginator.get_page(page_number)
 
@@ -460,12 +443,11 @@ def apply_project_list_all(request):
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
         )
 
-        paginator = Paginator(query, 5)
+        paginator = Paginator(query, 5, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-    try:
+
         page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+
 
     context["page_obj"] = page_obj
 
@@ -702,13 +684,8 @@ def manage_project_issues_list(request, pk):
             .select_related("project", "user_assigned")
         )
 
-        paginator = Paginator(my_project_issues, 3)
+        paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-
-        try:
-            page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
 
         page_obj = paginator.get_page(page_number)
 
@@ -728,12 +705,11 @@ def manage_project_issues_list(request, pk):
                 | Q(type__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 3)
+            paginator = Paginator(query, 3, allow_empty_first_page=True)
             page_number = request.GET.get("page")
-        try:
+
             page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
+
 
         context["page_obj"] = page_obj
         context["my_project_issues"] = my_project_issues
@@ -766,14 +742,10 @@ def project_details_old_issues(request, pk):
             .select_related("project", "user_assigned")
         )
 
-        paginator = Paginator(my_project_issues, 3)
+        paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
 
-        try:
-            page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
-
+        
         page_obj = paginator.get_page(page_number)
 
         if request.GET.get("search_query"):
@@ -792,12 +764,11 @@ def project_details_old_issues(request, pk):
                 | Q(type__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 3)
+            paginator = Paginator(query, 3, allow_empty_first_page=True)
             page_number = request.GET.get("page")
-        try:
+        
             page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
+        
 
         context["page_obj"] = page_obj
         context["my_project_issues"] = my_project_issues
@@ -896,13 +867,8 @@ def project_details(request, pk):
             .select_related("project", "user_assigned")
         )
 
-        paginator = Paginator(my_project_issues, 3)
+        paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-
-        try:
-            page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
 
         page_obj = paginator.get_page(page_number)
 
@@ -922,12 +888,11 @@ def project_details(request, pk):
                 | Q(type__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 3)
+            paginator = Paginator(query, 3, allow_empty_first_page=True)
             page_number = request.GET.get("page")
-        try:
+
             page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
+
 
         is_user_project_developer = Project.objects.filter(
             pk=pk, developer__pk=request.user.pk
@@ -969,13 +934,8 @@ def issue_details_comments(request, pk):
             .select_related("author")
         )
 
-        paginator = Paginator(comments, 2)
+        paginator = Paginator(comments, 2, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-
-        try:
-            page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
 
         page_obj = paginator.get_page(page_number)
 
@@ -989,13 +949,10 @@ def issue_details_comments(request, pk):
                 | Q(author__username__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 2)
+            paginator = Paginator(query, 2, allow_empty_first_page=True)
             page_number = request.GET.get("page")
 
-        try:
             page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
 
         context["page_obj"] = page_obj
         context["issue"] = issue_instance
@@ -1039,13 +996,8 @@ def issue_details(request, pk):
                 .select_related("project", "user_assigned")
             )
 
-        paginator = Paginator(issues, 3)
+        paginator = Paginator(issues, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-
-        try:
-            page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
 
         page_obj = paginator.get_page(page_number)
 
@@ -1065,13 +1017,10 @@ def issue_details(request, pk):
                 | Q(type__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 3)
+            paginator = Paginator(query, 3, allow_empty_first_page=True)
             page_number = request.GET.get("page")
 
-        try:
             page_obj = paginator.get_page(page_number)
-        except EmptyPage:
-            page_obj = paginator.page(paginator.num_pages)
 
         context["page_obj"] = page_obj
         context["issue"] = issue_instance
@@ -1095,13 +1044,8 @@ def reported_issues(request):
     )
     context = {}
 
-    paginator = Paginator(issues, 3)
+    paginator = Paginator(issues, 3, allow_empty_first_page=True)
     page_number = request.GET.get("page")
-
-    try:
-        page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
 
     page_obj = paginator.get_page(page_number)
 
@@ -1121,12 +1065,11 @@ def reported_issues(request):
             | Q(type__icontains=search_query)
         ).order_by("-create_date")
 
-        paginator = Paginator(query, 3)
+        paginator = Paginator(query, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-    try:
+
         page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+
 
     context["page_obj"] = page_obj
     context["my_project_issues"] = issues
@@ -1148,13 +1091,8 @@ def all_issues(request):
         .select_related("project", "user_assigned")
     )
 
-    paginator = Paginator(my_project_issues, 3)
+    paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
     page_number = request.GET.get("page")
-
-    try:
-        page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
 
     page_obj = paginator.get_page(page_number)
 
@@ -1174,12 +1112,11 @@ def all_issues(request):
             | Q(type__icontains=search_query)
         ).order_by("-create_date")
 
-        paginator = Paginator(query, 3)
+        paginator = Paginator(query, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
-    try:
+
         page_obj = paginator.get_page(page_number)
-    except EmptyPage:
-        page_obj = paginator.page(paginator.num_pages)
+   
 
     context["page_obj"] = page_obj
     context["my_project_issues"] = my_project_issues

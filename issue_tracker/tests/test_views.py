@@ -615,3 +615,72 @@ class TestView_leader_application_accept(TestCase):
         
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "This application does not exist")
+
+
+class TestView_manage_developers_applications_list(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.superuser
+        )
+        self.issue = Issue.objects.create(
+            title="Issue1", creator=self.user, project=self.project
+        )
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description1", leader=self.user
+        )
+        self.issue2 = Issue.objects.create(
+            title="Issue2", creator=self.superuser, project=self.project2
+        )
+        self.dev_application = DeveloperApplication.objects.create(
+            applicant=self.user, project=self.project
+        )
+
+        self.dev_application2 = DeveloperApplication.objects.create(
+            applicant=self.user, project=self.project
+        )
+        self.lead_application = LeaderApplication.objects.create(
+            applicant=self.user, project=self.project
+        )
+        self.lead_application2 = LeaderApplication.objects.create(
+            applicant=self.user, project=self.project
+        )
+        self.comment = Comment.objects.create(
+            text="Comment", author=self.user, issue=self.issue
+        )
+        self.comment2 = Comment.objects.create(
+            text="Comment", author=self.user, issue=self.issue
+        )
+
+    def test_manage_developers_applications_list_admin_group_user(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:manage-developers-applications-list"), {'search_query': 'Project'})
+        
+        self.assertEquals(response.status_code, 200)
+
+    def test_manage_developers_applications_list_admin_group_user_empty_page(self):
+        self.dev_application.delete()
+        self.dev_application2.delete()
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+        print(DeveloperApplication.objects.all())
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:manage-developers-applications-list"), {'search_query': 'Project', "page":'1'})
+        
+        self.assertEquals(response.status_code, 200)
