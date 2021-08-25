@@ -885,4 +885,44 @@ class TestView_project_apply_leader(TestCase):
             reverse("issue_tracker:project-apply-leader" , args=["3"]))
         
         self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You are leader in this project or project deos not exist.")
+
+
+class TestView_project_apply(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader = self.superuser
+        )
+
+    def test_project_apply_developer_group_user_existing_project(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
         
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply" , args=["1"]))
+        
+        self.assertEquals(response.status_code, 200)
+    
+    def test_project_apply_leader_group_user_non_existing_project(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply" , args=["2"]))
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "That project does not exist")
