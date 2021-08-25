@@ -241,13 +241,13 @@ def manage_developers_applications_list(request):
 
         applications = DeveloperApplication.objects.all().select_related(
             "project", "applicant"
-        )
+        ).order_by("pk")
 
     elif request.user.groups.filter(name__in=("leader",)):
 
         applications = DeveloperApplication.objects.filter(
             project__leader=request.user
-        ).select_related("project", "applicant")
+        ).select_related("project", "applicant").order_by("pk")
 
     paginator = Paginator(applications, 3, allow_empty_first_page=True)
     page_number = request.GET.get("page")
@@ -262,7 +262,7 @@ def manage_developers_applications_list(request):
             Q(project__name__icontains=search_query)
             | Q(applicant__username__icontains=search_query)
             | Q(project__description__icontains=search_query)
-        )
+        ).order_by("pk")
 
         paginator = Paginator(query, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
@@ -332,9 +332,9 @@ def manage_leaders_applications_list(request):
 
     applications = (
         LeaderApplication.objects.all()
-        .order_by("pk")
+        
         .select_related("project", "applicant")
-    )
+    ).order_by("pk")
 
     paginator = Paginator(applications, 3, allow_empty_first_page=True)
     page_number = request.GET.get("page")
@@ -349,7 +349,7 @@ def manage_leaders_applications_list(request):
             Q(project__name__icontains=search_query)
             | Q(applicant__username__icontains=search_query)
             | Q(project__description__icontains=search_query)
-        )
+        ).order_by("pk")
 
         paginator = Paginator(query, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")

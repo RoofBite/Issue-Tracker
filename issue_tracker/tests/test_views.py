@@ -758,4 +758,131 @@ class TestView_manage_leaders_applications_list(TestCase):
         
         self.assertEquals(response.status_code, 200)
     
+
+class TestView_project_apply_developer(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.superuser
+        )
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description1", leader=self.user
+        )
     
+    def test_project_apply_developer_leader_group_user(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply-developer" , args=["1"]))
+        
+        self.assertEquals(response.status_code, 302)
+
+    def test_project_apply_developer_leader_group_user_already_applied(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.dev_application = DeveloperApplication.objects.create(
+            applicant=self.user, project=self.project
+        )
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply-developer" , args=["1"]))
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You have already applied for being developer in this project.")
+
+    def test_project_apply_developer_developer_group_user_already_in_project(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+        self.project.developer.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply-developer" , args=["1"]))
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You are developer in this project or project deos not exist.")
+
+
+
+class TestView_project_apply_leader(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader = self.superuser
+        )
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description2"
+        )
+    
+    def test_project_apply_leader_leader_group_user(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply-leader" , args=["1"]))
+        
+        self.assertEquals(response.status_code, 302)
+
+    def test_project_apply_leader_leader_group_user_already_applied(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+        
+        self.leader_application = LeaderApplication.objects.create(
+            applicant=self.user, project=self.project
+        )
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply-leader" , args=["1"]))
+        
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You have already applied for being leader in this project.")
+        
+
+    def test_project_apply_leader_developer_group_user_project_has_no_leader(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply-leader" , args=["2"]))
+        
+        self.assertEquals(response.status_code, 302)
+    
+    def test_project_apply_leader_developer_group_user_non_existing_project(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply-leader" , args=["3"]))
+        
+        self.assertEquals(response.status_code, 200)
+        
