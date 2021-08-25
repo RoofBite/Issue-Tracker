@@ -193,7 +193,6 @@ def developer_application_deny(request, pk):
 
         return redirect("issue_tracker:manage-developers-applications-list")
 
-    return HttpResponse("You are not admin nor leader")
 
 
 @login_required(login_url="issue_tracker:sign-in")
