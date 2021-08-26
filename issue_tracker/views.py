@@ -536,20 +536,17 @@ def all_projects(request):
 @require_http_methods(["GET"])
 def my_projects(request):
     context = {}
-    try:
-        projects = (
-            Project.objects.filter(
-                Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
-            )
-            .distinct()
-            .select_related("leader")
-            .prefetch_related("developer")
-        )
-    except:
-        projects = None
 
-    if projects:
-        context = {"projects": projects}
+    projects = (
+        Project.objects.filter(
+            Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
+        )
+        .distinct()
+        .select_related("leader")
+        .prefetch_related("developer")
+    )
+
+    context = {"projects": projects}
     return render(request, "issue_tracker/my_projects.html", context)
 
 

@@ -1115,12 +1115,57 @@ class TestView_all_projects(TestCase):
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(reverse("issue_tracker:all-projects"))
 
-        print(Project.objects.all())
         self.assertEquals(response.status_code, 200)
         
 
     def test_all_projects_admin_group_user_GET_projects(self):
         group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        Project.objects.create(
+            name="Project2", description="Description2", leader=self.user
+        )
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:all-projects"))
+
+        self.assertEquals(response.status_code, 200)
+
+
+class TestView_my_projects(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_user("User", "User@example.com", "Password")
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")   
+
+
+    def test_my_projects_leader_group_user_GET_projects(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        Project.objects.create(
+            name="Project2", description="Description2", leader=self.user
+        )
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:my-projects"))
+
+        self.assertEquals(response.status_code, 200)
+    
+    def test_my_projects_leader_group_user_GET_user_not_in_projects(self):
+        group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
 
         project = Project.objects.create(
@@ -1129,11 +1174,10 @@ class TestView_all_projects(TestCase):
         project2 = Project.objects.create(
             name="Project2", description="Description2", leader=self.user
         )
+        Project.objects.filter(pk=project.pk).update(leader=None)
+        Project.objects.filter(pk=project2.pk).update(leader=None)
 
-        print(Project.objects.all())
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:all-projects"))
+        response = self.client.get(reverse("issue_tracker:my-projects"))
 
         self.assertEquals(response.status_code, 200)
-
-        
