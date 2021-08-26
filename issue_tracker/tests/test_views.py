@@ -1231,3 +1231,40 @@ class TestView_manage_projects_list(TestCase):
         self.assertEquals(response.status_code, 200)
     
     
+class TestView_manage_project_details(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_user("User", "User@example.com", "Password")
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")   
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description2", leader=self.user
+        )
+
+    def test_manage_project_details_admin_group_user_GET(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:manage-project-details", args=["1"]))
+
+        self.assertEquals(response.status_code, 200)
+    
+    def test_manage_project_details_leader_group_user_GET_not_allowed(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:manage-project-details", args=["3"]))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You are not allowed to see this project")
