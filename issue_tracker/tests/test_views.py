@@ -1091,3 +1091,49 @@ class TestView_Update_issue(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You have no access to this issue")
+
+
+
+class TestView_all_projects(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_user("User", "User@example.com", "Password")
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        
+
+    def test_all_projects_admin_group_user_GET_lack_of_projects(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:all-projects"))
+
+        print(Project.objects.all())
+        self.assertEquals(response.status_code, 200)
+        
+
+    def test_all_projects_admin_group_user_GET_projects(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        project2 = Project.objects.create(
+            name="Project2", description="Description2", leader=self.user
+        )
+
+        print(Project.objects.all())
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:all-projects"))
+
+        self.assertEquals(response.status_code, 200)
+
+        

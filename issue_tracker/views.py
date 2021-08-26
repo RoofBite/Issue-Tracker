@@ -525,13 +525,8 @@ class Add_issue(CreateView):
 @require_http_methods(["GET"])
 def all_projects(request):
     context = {}
-    try:
-        projects = Project.objects.all()
-    except:
-        projects = None
-
-    if projects:
-        context = {"projects": projects}
+    projects = Project.objects.all()
+    context = {"projects": projects}
     return render(request, "issue_tracker/all_projects.html", context)
 
 
