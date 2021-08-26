@@ -966,14 +966,13 @@ class TestView_apply_project_list_all(TestCase):
         self.assertEquals(response.status_code, 200)
 """
 
+
 class TestView_Add_issue(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
             "Superuser", "Superuser@example.com", "Password"
         )
-        self.user = User.objects.create_user(
-            "User", "User@example.com", "Password"
-        )
+        self.user = User.objects.create_user("User", "User@example.com", "Password")
         self.client = Client()
 
         Group.objects.get_or_create(name="admin")
@@ -981,15 +980,13 @@ class TestView_Add_issue(TestCase):
         Group.objects.get_or_create(name="leader")
 
         self.project = Project.objects.create(
-            name="Project1", description="Description1", leader = self.user
+            name="Project1", description="Description1", leader=self.user
         )
-
-
 
     def test_Add_issue_developer_group_user_POST(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.post(
             reverse("issue_tracker:add-issue"),
@@ -1004,6 +1001,93 @@ class TestView_Add_issue(TestCase):
                 "type": "BUG",
             },
         )
-        
+
         self.assertEquals(response.status_code, 302)
 
+
+class TestView_Update_issue(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_user("User", "User@example.com", "Password")
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        self.issue = Issue.objects.create(
+            title="Issue1",
+            creator=self.user,
+            project=self.project,
+            user_assigned=self.user,
+            priority="NONE",
+            status="NEW",
+            description="Issue description",
+            type="BUG",
+        )
+
+    def test_Update_issue_developer_group_user_POST(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.post(
+            reverse("issue_tracker:update-issue", args=["1"]),
+            {
+                "title": "Issue",
+                "creator": self.user.pk,
+                "project": self.project.pk,
+                "user_assigned": self.user.pk,
+                "priority": "LOW",
+                "status": "NEW",
+                "description": "Issue description",
+                "type": "BUG",
+            },
+        )
+
+        self.assertEquals(response.status_code, 302)
+
+    def test_Update_issue_developer_group_user_POST_same_data(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.post(
+            reverse("issue_tracker:update-issue", args=["1"]),
+            {
+                "title": "Issue1",
+                "creator": self.user.pk,
+                "project": self.project.pk,
+                "user_assigned": self.user.pk,
+                "priority": "NONE",
+                "status": "NEW",
+                "description": "Issue description",
+                "type": "BUG",
+            },
+        )
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_Update_issue_developer_group_user_GET(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:update-issue", args=["1"]))
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_Update_issue_developer_group_user_GET_non_existing_issue(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:update-issue", args=["2"]))
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You have no access to this issue")
