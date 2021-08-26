@@ -925,7 +925,7 @@ class TestView_project_apply(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "That project does not exist")
 
-"""
+
 
 class TestView_apply_project_list_all(TestCase):
     def setUp(self):
@@ -964,4 +964,46 @@ class TestView_apply_project_list_all(TestCase):
             reverse("issue_tracker:apply-project-list-all"), {'search_query': 'Project'})
         
         self.assertEquals(response.status_code, 200)
+"""
+
+class TestView_Add_issue(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_user(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader = self.user
+        )
+
+
+
+    def test_Add_issue_developer_group_user_POST(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.post(
+            reverse("issue_tracker:add-issue"),
+            {
+                "title": "Issue",
+                "creator": self.user.pk,
+                "project": self.project.pk,
+                "user_assigned": self.user.pk,
+                "priority": "NONE",
+                "status": "NEW",
+                "description": "Issue description",
+                "type": "BUG",
+            },
+        )
+        
+        self.assertEquals(response.status_code, 302)
 
