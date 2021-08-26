@@ -1181,3 +1181,6 @@ class TestView_my_projects(TestCase):
         response = self.client.get(reverse("issue_tracker:my-projects"))
 
         self.assertEquals(response.status_code, 200)
+
+
+manage_projects_list

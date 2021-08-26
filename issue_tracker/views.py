@@ -555,26 +555,17 @@ def my_projects(request):
 @require_http_methods(["GET"])
 def manage_projects_list(request):
     context = {}
-
     if request.user.groups.filter(name__in=("admin",)):
-        try:
-            projects = Project.objects.all()
-        except:
-            projects = None
-
+        projects = Project.objects.all()
+        
     elif request.user.groups.filter(name__in=("leader",)):
+        projects = (
+            Project.objects.filter(leader__pk=request.user.pk)
+            .select_related("leader")
+            .prefetch_related("developer", "leader")
+        )
 
-        try:
-            projects = (
-                Project.objects.filter(leader__pk=request.user.pk)
-                .select_related("leader")
-                .prefetch_related("developer", "leader")
-            )
-        except:
-            projects = None
-
-    if projects:
-        context = {"projects": projects}
+    context = {"projects": projects}
     return render(request, "issue_tracker/manage_projects_list.html", context)
 
 
