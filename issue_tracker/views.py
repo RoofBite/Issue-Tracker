@@ -605,7 +605,6 @@ def manage_project_developers(request, pk):
         )
 
     if project_instance:
-
         developers_before = project_instance.developer.all()
 
         form = AddDeveloper(instance=project_instance, request=request)
@@ -618,7 +617,6 @@ def manage_project_developers(request, pk):
             if form.is_valid():
                 new_project = form.save(commit=False)
                 new_project.developer.set(list(form.cleaned_data["developer"]))
-
                 developers_now = new_project.developer.all()
 
                 # Checking if user has developer position in any project
@@ -644,7 +642,7 @@ def manage_project_developers(request, pk):
                 print(form.errors)
         context = {"project": project_instance, "form": form}
         return render(request, "issue_tracker/manage_project_developers.html", context)
-
+    return HttpResponse("You are not allowed to see this project")
 
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "admin")

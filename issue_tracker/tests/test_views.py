@@ -11,7 +11,7 @@ from lazysignup.models import LazyUser
 from lazysignup.utils import is_lazy_user
 from django.db.models import Q
 
-
+"""
 class TestViews_set_demo_user(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
@@ -1268,3 +1268,98 @@ class TestView_manage_project_details(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this project")
+
+"""
+
+
+class TestView_manage_project_developers(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_user("User", "User@example.com", "Password")
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        self.project.developer.add(self.user)
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description2", leader=self.user
+        )
+
+    def test_manage_project_details_admin_group_user_POST_valid_data_user_removed_form_group(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.post(
+            reverse("issue_tracker:manage-project-developers", args=["1"]),
+            {
+                "name": "Project1",
+                "developer": [self.superuser.pk],
+                "leader": self.project.pk,
+                "description": "Description1",
+            },
+        )
+
+        self.assertEquals(response.status_code, 302)
+    
+    def test_manage_project_details_leader_group_user_POST_valid_data_user_removed_form_group(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.post(
+            reverse("issue_tracker:manage-project-developers", args=["1"]),
+            {
+                "name": "Project1",
+                "developer": [self.superuser.pk],
+                "leader": self.project.pk,
+                "description": "Description1",
+            },
+        )
+
+        self.assertEquals(response.status_code, 302)
+    
+    def test_manage_project_details_leader_group_user_POST_not_allowed(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.post(
+            reverse("issue_tracker:manage-project-developers", args=["3"]),
+            {
+                "name": "Project1",
+                "developer": [self.superuser.pk],
+                "leader": self.project.pk,
+                "description": "Description1",
+            },
+        )
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You are not allowed to see this project")
+
+
+    def test_manage_project_details_leader_group_user_POST_non_valid_data(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.post(
+            reverse("issue_tracker:manage-project-developers", args=["1"]),
+            {
+                "name": "Project1",
+                "developer": "error",
+                "leader": self.project.pk,
+                "description": "Description1",
+            },
+        )
+
+        self.assertEquals(response.status_code, 200)
+
+        
