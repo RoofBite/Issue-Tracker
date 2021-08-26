@@ -11,7 +11,7 @@ from lazysignup.models import LazyUser
 from lazysignup.utils import is_lazy_user
 from django.db.models import Q
 
-"""
+
 class TestViews_set_demo_user(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
@@ -964,7 +964,7 @@ class TestView_apply_project_list_all(TestCase):
             reverse("issue_tracker:apply-project-list-all"), {'search_query': 'Project'})
         
         self.assertEquals(response.status_code, 200)
-"""
+
 
 
 class TestView_Add_issue(TestCase):
@@ -1183,4 +1183,51 @@ class TestView_my_projects(TestCase):
         self.assertEquals(response.status_code, 200)
 
 
-manage_projects_list
+
+
+class TestView_manage_projects_list(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_user("User", "User@example.com", "Password")
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")   
+
+
+    def test_manage_projects_list_leader_group_user_GET(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        Project.objects.create(
+            name="Project2", description="Description2", leader=self.user
+        )
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:manage-projects-list"))
+
+        self.assertEquals(response.status_code, 200)
+    
+    def test_manage_projects_list_admin_group_user_GET(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        Project.objects.create(
+            name="Project2", description="Description2", leader=self.user
+        )
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:manage-projects-list"))
+
+        self.assertEquals(response.status_code, 200)
+    
+    
