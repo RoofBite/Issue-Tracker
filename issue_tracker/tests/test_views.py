@@ -2080,7 +2080,6 @@ class TestView_issue_details(TestCase):
             title="Issue2", creator=self.superuser, project=self.project2
         )
 
-
     def test_issue_details_comments_leader_group_user_GET_allowed(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
@@ -2130,6 +2129,7 @@ class TestView_issue_details(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this issue")
 
+
 class TestView_logout_page(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
@@ -2139,11 +2139,29 @@ class TestView_logout_page(TestCase):
             "User", "User@example.com", "Password"
         )
         self.client = Client()
-        
+
     def test_logout_page_GET(self):
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(
-            reverse("issue_tracker:logout-page")
-        )
+        response = self.client.get(reverse("issue_tracker:logout-page"))
 
         self.assertEquals(response.status_code, 302)
+
+
+class TestView_load_users(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+    def test_load_users_GET(self):
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:ajax_load_users"),
+            {"projects": 1},
+        )
+
+        self.assertEquals(response.status_code, 200)
