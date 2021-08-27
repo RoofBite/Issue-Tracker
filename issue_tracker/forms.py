@@ -26,7 +26,6 @@ class AddComment(ModelForm):
             "author": HiddenInput(),
             "issue": HiddenInput(),
             "text": Textarea(attrs={"rows": 6, "cols": 27}),
-            
         }
     
     def __init__(self, *args, **kwargs):
@@ -116,15 +115,10 @@ class IssueFormCreate(ModelForm):
         self.fields["creator"].widget = HiddenInput()
         
         if "project" in self.data:
-            try:
-                project_pk = int(self.data.get("project"))
-                self.fields["user_assigned"].queryset = User.objects.filter(
-                    Q(project__pk=project_pk) | Q(leader_project_set__pk=project_pk)
-                ).distinct()
-            except (ValueError, TypeError):
-                pass  # invalid input from the client; ignore and fallback to empty City queryset
-        elif self.instance.pk:
-            self.fields["user_assigned"].queryset = self.instance.project.user_set
+            project_pk = int(self.data.get("project"))
+            self.fields["user_assigned"].queryset = User.objects.filter(
+                Q(project__pk=project_pk) | Q(leader_project_set__pk=project_pk)
+            ).distinct()
 
     class Meta:
         model = Issue

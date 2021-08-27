@@ -428,7 +428,7 @@ def apply_project_list_all(request):
 
     projects = (
         Project.objects.all().select_related("leader").prefetch_related("developer")
-    )
+    ).order_by("pk")
 
     paginator = Paginator(projects, 5, allow_empty_first_page=True)
     page_number = request.GET.get("page")
