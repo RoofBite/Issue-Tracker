@@ -286,7 +286,7 @@ class TestView_delete_comment(TestCase):
         response = self.client.get(
             reverse("issue_tracker:delete-comment", args=["2"]), follow=True
         )
-        
+
         self.assertEquals(response.status_code, 200)
         self.assertEquals(Comment.objects.filter(text="Comment2").first(), None)
 
@@ -298,9 +298,10 @@ class TestView_delete_comment(TestCase):
         response = self.client.get(
             reverse("issue_tracker:delete-comment", args=["3"]), follow=True
         )
-        
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "This comment does not exist")
+
 
 class TestView_developer_application_deny(TestCase):
     def setUp(self):
@@ -354,18 +355,20 @@ class TestView_developer_application_deny(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:developer-application-deny", args=["1"]),)
-        
+            reverse("issue_tracker:developer-application-deny", args=["1"]),
+        )
+
         self.assertEquals(response.status_code, 302)
-    
+
     def test_developer_application_deny_admin_group_user_non_existing_application(self):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:developer-application-deny", args=["10"]),)
-        
+            reverse("issue_tracker:developer-application-deny", args=["10"]),
+        )
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "This application does not exist")
 
@@ -375,20 +378,25 @@ class TestView_developer_application_deny(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:developer-application-deny", args=["2"]),)
-        
+            reverse("issue_tracker:developer-application-deny", args=["2"]),
+        )
+
         self.assertEquals(response.status_code, 302)
-    
-    def test_developer_application_deny_leader_group_user_non_existing_application(self):
+
+    def test_developer_application_deny_leader_group_user_non_existing_application(
+        self,
+    ):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:developer-application-deny", args=["11"]),)
-        
+            reverse("issue_tracker:developer-application-deny", args=["11"]),
+        )
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "This application does not exist")
+
 
 class TestView_developer_application_accept(TestCase):
     def setUp(self):
@@ -442,18 +450,22 @@ class TestView_developer_application_accept(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:developer-application-accept", args=["1"]),)
-        
+            reverse("issue_tracker:developer-application-accept", args=["1"]),
+        )
+
         self.assertEquals(response.status_code, 302)
-    
-    def test_developer_application_accept_admin_group_user_non_existing_application(self):
+
+    def test_developer_application_accept_admin_group_user_non_existing_application(
+        self,
+    ):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:developer-application-accept", args=["10"]),)
-        
+            reverse("issue_tracker:developer-application-accept", args=["10"]),
+        )
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "This application does not exist")
 
@@ -463,21 +475,24 @@ class TestView_developer_application_accept(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:developer-application-accept", args=["2"]),)
-        
+            reverse("issue_tracker:developer-application-accept", args=["2"]),
+        )
+
         self.assertEquals(response.status_code, 302)
-    
-    def test_developer_application_accept_leader_group_user_non_existing_application(self):
+
+    def test_developer_application_accept_leader_group_user_non_existing_application(
+        self,
+    ):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:developer-application-accept", args=["11"]),)
-        
+            reverse("issue_tracker:developer-application-accept", args=["11"]),
+        )
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "This application does not exist")
-
 
 
 class TestView_leader_application_deny(TestCase):
@@ -532,22 +547,23 @@ class TestView_leader_application_deny(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:leader-application-deny", args=["1"]),)
-        
+            reverse("issue_tracker:leader-application-deny", args=["1"]),
+        )
+
         self.assertEquals(response.status_code, 302)
-    
+
     def test_leader_application_deny_admin_group_user_non_existing_application(self):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:leader-application-deny", args=["10"]),)
-        
+            reverse("issue_tracker:leader-application-deny", args=["10"]),
+        )
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "This application does not exist")
 
-    
 
 class TestView_leader_application_accept(TestCase):
     def setUp(self):
@@ -601,18 +617,20 @@ class TestView_leader_application_accept(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:leader-application-accept", args=["1"]),)
-        
+            reverse("issue_tracker:leader-application-accept", args=["1"]),
+        )
+
         self.assertEquals(response.status_code, 302)
-    
+
     def test_leader_application_accept_admin_group_user_non_existing_application(self):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:leader-application-accept", args=["10"]),)
-        
+            reverse("issue_tracker:leader-application-accept", args=["10"]),
+        )
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "This application does not exist")
 
@@ -669,8 +687,10 @@ class TestView_manage_developers_applications_list(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:manage-developers-applications-list"), {'search_query': 'Project'})
-        
+            reverse("issue_tracker:manage-developers-applications-list"),
+            {"search_query": "Project"},
+        )
+
         self.assertEquals(response.status_code, 200)
 
     def test_manage_developers_applications_list_leader_group_user_empty_page(self):
@@ -678,16 +698,14 @@ class TestView_manage_developers_applications_list(TestCase):
         self.dev_application2.delete()
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:manage-developers-applications-list"), {'search_query': 'Project', "page":'1'})
-        
+            reverse("issue_tracker:manage-developers-applications-list"),
+            {"search_query": "Project", "page": "1"},
+        )
+
         self.assertEquals(response.status_code, 200)
-
-
-
-
 
 
 class TestView_manage_leaders_applications_list(TestCase):
@@ -742,8 +760,10 @@ class TestView_manage_leaders_applications_list(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:manage-leaders-applications-list"), {'search_query': 'Project'})
-        
+            reverse("issue_tracker:manage-leaders-applications-list"),
+            {"search_query": "Project"},
+        )
+
         self.assertEquals(response.status_code, 200)
 
     def test_manage_developers_applications_list_admin_group_user_empty_page(self):
@@ -751,13 +771,15 @@ class TestView_manage_leaders_applications_list(TestCase):
         self.dev_application2.delete()
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:manage-leaders-applications-list"), {'search_query': 'Project', "page":'1'})
-        
+            reverse("issue_tracker:manage-leaders-applications-list"),
+            {"search_query": "Project", "page": "1"},
+        )
+
         self.assertEquals(response.status_code, 200)
-    
+
 
 class TestView_project_apply_developer(TestCase):
     def setUp(self):
@@ -779,15 +801,16 @@ class TestView_project_apply_developer(TestCase):
         self.project2 = Project.objects.create(
             name="Project2", description="Description1", leader=self.user
         )
-    
+
     def test_project_apply_developer_leader_group_user(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:project-apply-developer" , args=["1"]))
-        
+            reverse("issue_tracker:project-apply-developer", args=["1"])
+        )
+
         self.assertEquals(response.status_code, 302)
 
     def test_project_apply_developer_leader_group_user_already_applied(self):
@@ -797,13 +820,16 @@ class TestView_project_apply_developer(TestCase):
         self.dev_application = DeveloperApplication.objects.create(
             applicant=self.user, project=self.project
         )
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:project-apply-developer" , args=["1"]))
-        
+            reverse("issue_tracker:project-apply-developer", args=["1"])
+        )
+
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, "You have already applied for being developer in this project.")
+        self.assertContains(
+            response, "You have already applied for being developer in this project."
+        )
 
     def test_project_apply_developer_developer_group_user_already_in_project(self):
         group = Group.objects.get(name="developer")
@@ -812,10 +838,14 @@ class TestView_project_apply_developer(TestCase):
 
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:project-apply-developer" , args=["1"]))
-        
+            reverse("issue_tracker:project-apply-developer", args=["1"])
+        )
+
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, "You are developer in this project or project deos not exist.")
+        self.assertContains(
+            response, "You are developer in this project or project deos not exist."
+        )
+
 
 class TestView_project_apply_leader(TestCase):
     def setUp(self):
@@ -832,58 +862,65 @@ class TestView_project_apply_leader(TestCase):
         Group.objects.get_or_create(name="leader")
 
         self.project = Project.objects.create(
-            name="Project1", description="Description1", leader = self.superuser
+            name="Project1", description="Description1", leader=self.superuser
         )
         self.project2 = Project.objects.create(
             name="Project2", description="Description2"
         )
-    
+
     def test_project_apply_leader_leader_group_user(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:project-apply-leader" , args=["1"]))
-        
+            reverse("issue_tracker:project-apply-leader", args=["1"])
+        )
+
         self.assertEquals(response.status_code, 302)
 
     def test_project_apply_leader_leader_group_user_already_applied(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
-        
+
         self.leader_application = LeaderApplication.objects.create(
             applicant=self.user, project=self.project
         )
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:project-apply-leader" , args=["1"]))
-        
+            reverse("issue_tracker:project-apply-leader", args=["1"])
+        )
+
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, "You have already applied for being leader in this project.")
-        
+        self.assertContains(
+            response, "You have already applied for being leader in this project."
+        )
 
     def test_project_apply_leader_developer_group_user_project_has_no_leader(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:project-apply-leader" , args=["2"]))
-        
+            reverse("issue_tracker:project-apply-leader", args=["2"])
+        )
+
         self.assertEquals(response.status_code, 302)
-    
+
     def test_project_apply_leader_developer_group_user_non_existing_project(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:project-apply-leader" , args=["3"]))
-        
+            reverse("issue_tracker:project-apply-leader", args=["3"])
+        )
+
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, "You are leader in this project or project deos not exist.")
+        self.assertContains(
+            response, "You are leader in this project or project deos not exist."
+        )
 
 
 class TestView_project_apply(TestCase):
@@ -901,30 +938,27 @@ class TestView_project_apply(TestCase):
         Group.objects.get_or_create(name="leader")
 
         self.project = Project.objects.create(
-            name="Project1", description="Description1", leader = self.superuser
+            name="Project1", description="Description1", leader=self.superuser
         )
 
     def test_project_apply_developer_group_user_existing_project(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(
-            reverse("issue_tracker:project-apply" , args=["1"]))
-        
+        response = self.client.get(reverse("issue_tracker:project-apply", args=["1"]))
+
         self.assertEquals(response.status_code, 200)
-    
+
     def test_project_apply_leader_group_user_non_existing_project(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(
-            reverse("issue_tracker:project-apply" , args=["2"]))
-        
+        response = self.client.get(reverse("issue_tracker:project-apply", args=["2"]))
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "That project does not exist")
-
 
 
 class TestView_apply_project_list_all(TestCase):
@@ -942,29 +976,30 @@ class TestView_apply_project_list_all(TestCase):
         Group.objects.get_or_create(name="leader")
 
         self.project = Project.objects.create(
-            name="Project1", description="Description1", leader = self.superuser
+            name="Project1", description="Description1", leader=self.superuser
         )
-    
+
     def test_apply_project_list_all_leader_group_user(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:apply-project-list-all"), {'search_query': 'Project'})
-        
+            reverse("issue_tracker:apply-project-list-all"), {"search_query": "Project"}
+        )
+
         self.assertEquals(response.status_code, 200)
-    
+
     def test_apply_project_list_all_developer_group_user(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
         response = self.client.get(
-            reverse("issue_tracker:apply-project-list-all"), {'search_query': 'Project'})
-        
-        self.assertEquals(response.status_code, 200)
+            reverse("issue_tracker:apply-project-list-all"), {"search_query": "Project"}
+        )
 
+        self.assertEquals(response.status_code, 200)
 
 
 class TestView_Add_issue(TestCase):
@@ -1093,7 +1128,6 @@ class TestView_Update_issue(TestCase):
         self.assertContains(response, "You have no access to this issue")
 
 
-
 class TestView_all_projects(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
@@ -1106,8 +1140,6 @@ class TestView_all_projects(TestCase):
         Group.objects.get_or_create(name="developer")
         Group.objects.get_or_create(name="leader")
 
-        
-
     def test_all_projects_admin_group_user_GET_lack_of_projects(self):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
@@ -1116,7 +1148,6 @@ class TestView_all_projects(TestCase):
         response = self.client.get(reverse("issue_tracker:all-projects"))
 
         self.assertEquals(response.status_code, 200)
-        
 
     def test_all_projects_admin_group_user_GET_projects(self):
         group = Group.objects.get(name="admin")
@@ -1145,8 +1176,7 @@ class TestView_my_projects(TestCase):
 
         Group.objects.get_or_create(name="admin")
         Group.objects.get_or_create(name="developer")
-        Group.objects.get_or_create(name="leader")   
-
+        Group.objects.get_or_create(name="leader")
 
     def test_my_projects_leader_group_user_GET_projects(self):
         group = Group.objects.get(name="leader")
@@ -1163,7 +1193,7 @@ class TestView_my_projects(TestCase):
         response = self.client.get(reverse("issue_tracker:my-projects"))
 
         self.assertEquals(response.status_code, 200)
-    
+
     def test_my_projects_leader_group_user_GET_user_not_in_projects(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
@@ -1183,8 +1213,6 @@ class TestView_my_projects(TestCase):
         self.assertEquals(response.status_code, 200)
 
 
-
-
 class TestView_manage_projects_list(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
@@ -1195,8 +1223,7 @@ class TestView_manage_projects_list(TestCase):
 
         Group.objects.get_or_create(name="admin")
         Group.objects.get_or_create(name="developer")
-        Group.objects.get_or_create(name="leader")   
-
+        Group.objects.get_or_create(name="leader")
 
     def test_manage_projects_list_leader_group_user_GET(self):
         group = Group.objects.get(name="leader")
@@ -1213,7 +1240,7 @@ class TestView_manage_projects_list(TestCase):
         response = self.client.get(reverse("issue_tracker:manage-projects-list"))
 
         self.assertEquals(response.status_code, 200)
-    
+
     def test_manage_projects_list_admin_group_user_GET(self):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
@@ -1229,8 +1256,8 @@ class TestView_manage_projects_list(TestCase):
         response = self.client.get(reverse("issue_tracker:manage-projects-list"))
 
         self.assertEquals(response.status_code, 200)
-    
-    
+
+
 class TestView_manage_project_details(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
@@ -1241,7 +1268,7 @@ class TestView_manage_project_details(TestCase):
 
         Group.objects.get_or_create(name="admin")
         Group.objects.get_or_create(name="developer")
-        Group.objects.get_or_create(name="leader")   
+        Group.objects.get_or_create(name="leader")
 
         self.project = Project.objects.create(
             name="Project1", description="Description1", leader=self.user
@@ -1255,20 +1282,23 @@ class TestView_manage_project_details(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:manage-project-details", args=["1"]))
+        response = self.client.get(
+            reverse("issue_tracker:manage-project-details", args=["1"])
+        )
 
         self.assertEquals(response.status_code, 200)
-    
+
     def test_manage_project_details_leader_group_user_GET_not_allowed(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:manage-project-details", args=["3"]))
+        response = self.client.get(
+            reverse("issue_tracker:manage-project-details", args=["3"])
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this project")
-
 
 
 class TestView_manage_project_developers(TestCase):
@@ -1291,7 +1321,9 @@ class TestView_manage_project_developers(TestCase):
             name="Project2", description="Description2", leader=self.user
         )
 
-    def test_manage_project_details_admin_group_user_POST_valid_data_user_removed_from_group(self):
+    def test_manage_project_details_admin_group_user_POST_valid_data_user_removed_from_group(
+        self,
+    ):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
 
@@ -1307,8 +1339,10 @@ class TestView_manage_project_developers(TestCase):
         )
 
         self.assertEquals(response.status_code, 302)
-    
-    def test_manage_project_details_leader_group_user_POST_valid_data_user_removed_form_group(self):
+
+    def test_manage_project_details_leader_group_user_POST_valid_data_user_removed_form_group(
+        self,
+    ):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
 
@@ -1324,7 +1358,7 @@ class TestView_manage_project_developers(TestCase):
         )
 
         self.assertEquals(response.status_code, 302)
-    
+
     def test_manage_project_details_leader_group_user_POST_not_allowed(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
@@ -1343,7 +1377,6 @@ class TestView_manage_project_developers(TestCase):
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this project")
 
-
     def test_manage_project_details_leader_group_user_POST_non_valid_data(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
@@ -1360,7 +1393,6 @@ class TestView_manage_project_developers(TestCase):
         )
 
         self.assertEquals(response.status_code, 200)
-
 
 
 class TestView_manage_project_issues_list(TestCase):
@@ -1388,16 +1420,22 @@ class TestView_manage_project_issues_list(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:manage-project-issues-list", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:manage-project-issues-list", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
-    
+
     def test_manage_project_issues_list_admin_group_user_GET_allowed(self):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:manage-project-issues-list", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:manage-project-issues-list", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
 
@@ -1406,11 +1444,13 @@ class TestView_manage_project_issues_list(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:manage-project-issues-list", args=["2"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:manage-project-issues-list", args=["2"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this project")
-
 
 
 class TestView_project_details_old_issues(TestCase):
@@ -1445,16 +1485,22 @@ class TestView_project_details_old_issues(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-details-old-issues", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-details-old-issues", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
-    
+
     def test_project_details_old_issues_developer_group_user_GET_allowed(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-details-old-issues", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-details-old-issues", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
 
@@ -1463,7 +1509,10 @@ class TestView_project_details_old_issues(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-details-old-issues", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-details-old-issues", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
 
@@ -1472,10 +1521,14 @@ class TestView_project_details_old_issues(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-details-old-issues", args=["2"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-details-old-issues", args=["2"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this project")
+
 
 class TestView_project_developer_resign(TestCase):
     def setUp(self):
@@ -1502,20 +1555,25 @@ class TestView_project_developer_resign(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-developer-resign", args=["2"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-developer-resign", args=["2"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this page")
-    
+
     def test_project_developer_resign_developer_group_user_GET_allowed(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-developer-resign", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-developer-resign", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
-
 
 
 class TestView_project_developer_resign_confirm(TestCase):
@@ -1538,33 +1596,45 @@ class TestView_project_developer_resign_confirm(TestCase):
             name="Project2", description="Description2", leader=self.superuser
         )
 
-    def test_project_developer_resign_confirm_developer_group_user_GET_not_allowed(self):
+    def test_project_developer_resign_confirm_developer_group_user_GET_not_allowed(
+        self,
+    ):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-developer-resign-confirm", args=["2"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-developer-resign-confirm", args=["2"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this page")
-    
-    def test_project_developer_resign_confirm_developer_group_user_GET_allowed_user_removed_from_group(self):
+
+    def test_project_developer_resign_confirm_developer_group_user_GET_allowed_user_removed_from_group(
+        self,
+    ):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
 
-
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-developer-resign-confirm", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-developer-resign-confirm", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 302)
-    
+
     def test_project_developer_resign_confirm_developer_group_user_GET_allowed(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
         self.project2.developer.add(self.user)
-        
+
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-developer-resign-confirm", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-developer-resign-confirm", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 302)
 
@@ -1594,20 +1664,25 @@ class TestView_project_leader_resign(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-leader-resign", args=["2"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-leader-resign", args=["2"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this page")
-    
+
     def test_project_leader_resign_developer_group_user_GET_allowed(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-leader-resign", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-leader-resign", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
-
 
 
 class TestView_project_leader_resign_confirm(TestCase):
@@ -1634,30 +1709,40 @@ class TestView_project_leader_resign_confirm(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-leader-resign-confirm", args=["2"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-leader-resign-confirm", args=["2"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this page")
-    
-    def test_project_leader_resign_confirm_developer_group_user_GET_allowed_user_removed_from_group(self):
+
+    def test_project_leader_resign_confirm_developer_group_user_GET_allowed_user_removed_from_group(
+        self,
+    ):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
 
-
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-leader-resign-confirm", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-leader-resign-confirm", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 302)
-    
+
     def test_project_leader_resign_confirm_developer_group_user_GET_allowed(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
         Project.objects.create(
             name="Project3", description="Description3", leader=self.user
         )
-        
+
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-leader-resign-confirm", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-leader-resign-confirm", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 302)
 
@@ -1694,16 +1779,22 @@ class TestView_project_details(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-details", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-details", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
-    
+
     def test_project_details_developer_group_user_GET_allowed(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-details", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-details", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
 
@@ -1712,7 +1803,10 @@ class TestView_project_details(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-details", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-details", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
 
@@ -1721,10 +1815,14 @@ class TestView_project_details(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:project-details", args=["2"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:project-details", args=["2"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this project")
+
 
 class TestView_issue_details_comments(TestCase):
     def setUp(self):
@@ -1752,7 +1850,7 @@ class TestView_issue_details_comments(TestCase):
         self.issue2 = Issue.objects.create(
             title="Issue2", creator=self.superuser, project=self.project2
         )
-        
+
         self.comment = Comment.objects.create(
             text="Comment", author=self.user, issue=self.issue
         )
@@ -1765,16 +1863,22 @@ class TestView_issue_details_comments(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:issue-details-comments", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:issue-details-comments", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
-    
+
     def test_issue_details_comments_developer_group_user_GET_allowed(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:issue-details-comments", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:issue-details-comments", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
 
@@ -1783,7 +1887,10 @@ class TestView_issue_details_comments(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:issue-details-comments", args=["1"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:issue-details-comments", args=["1"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
 
@@ -1792,14 +1899,16 @@ class TestView_issue_details_comments(TestCase):
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:issue-details-comments", args=["2"]), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:issue-details-comments", args=["2"]),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this issue")
 
 
-
-class TestView_issue_details_comments(TestCase):
+class TestView_reported_issues(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
             "Superuser", "Superuser@example.com", "Password"
@@ -1825,26 +1934,120 @@ class TestView_issue_details_comments(TestCase):
         self.issue2 = Issue.objects.create(
             title="Issue2", creator=self.superuser, project=self.project2
         )
-        
 
     def test_reported_issues_leader_group_user_GET(self):
         group = Group.objects.get(name="leader")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:reported-issues",), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse(
+                "issue_tracker:reported-issues",
+            ),
+            {"search_query": "Project"},
+        )
 
         self.assertEquals(response.status_code, 200)
-    
+
     def test_reported_issues_developer_group_user_GET(self):
         group = Group.objects.get(name="developer")
         group.user_set.add(self.user)
 
         self.client.force_login(user=self.user, backend=None)
-        response = self.client.get(reverse("issue_tracker:reported-issues"), {'search_query': 'Project'})
+        response = self.client.get(
+            reverse("issue_tracker:reported-issues"), {"search_query": "Project"}
+        )
 
         self.assertEquals(response.status_code, 200)
 
-        
+
+class TestView_all_issues(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        self.issue = Issue.objects.create(
+            title="Issue1", creator=self.user, project=self.project
+        )
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description1", leader=self.superuser
+        )
+        self.issue2 = Issue.objects.create(
+            title="Issue2", creator=self.superuser, project=self.project2
+        )
+
+    def test_all_issues_admin_group_user_GET(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse(
+                "issue_tracker:all-issues",
+            ),
+            {"search_query": "Project"},
+        )
+
+        self.assertEquals(response.status_code, 200)
 
 
+class TestView_my_issues(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        self.issue = Issue.objects.create(
+            title="Issue1", creator=self.user, project=self.project
+        )
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description1", leader=self.superuser
+        )
+        self.issue2 = Issue.objects.create(
+            title="Issue2", creator=self.superuser, project=self.project2
+        )
+
+    def test_my_issues_leader_group_user_GET_search_query1(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:my-issues"), {"search_query1": "Project"}
+        )
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_my_issues_developer_group_user_GET_search_query2(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:my-issues"), {"search_query2": "Project"}
+        )
+
+        self.assertEquals(response.status_code, 200)

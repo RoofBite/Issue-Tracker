@@ -1124,22 +1124,13 @@ def my_issues(request):
 
     my_issues = my_project_issues.filter(user_assigned=request.user)
 
-    paginator1 = Paginator(my_issues, 2)
-    paginator2 = Paginator(my_project_issues, 2)
+    paginator1 = Paginator(my_issues, 2, allow_empty_first_page=True)
+    paginator2 = Paginator(my_project_issues, 2, allow_empty_first_page=True)
 
     page_number1 = request.GET.get("page1")
-    try:
-        page_obj1 = paginator1.get_page(page_number1)
-    except EmptyPage:
-        page_obj1 = paginator1.page(paginator1.num_pages)
-
+    page_obj1 = paginator1.get_page(page_number1)
+    
     page_number2 = request.GET.get("page2")
-
-    try:
-        page_obj2 = paginator2.get_page(page_number2)
-    except EmptyPage:
-        page_obj2 = paginator2.page(paginator2.num_pages)
-
     page_obj2 = paginator2.get_page(page_number2)
 
     if request.GET.get("search_query1"):
@@ -1158,12 +1149,11 @@ def my_issues(request):
             | Q(type__icontains=search_query1)
         ).order_by("-create_date")
 
-        paginator1 = Paginator(query1, 2)
+        paginator1 = Paginator(query1, 2, allow_empty_first_page=True)
         page_number1 = request.GET.get("page1")
-    try:
-        page_obj1 = paginator1.get_page(page_number1)
-    except EmptyPage:
-        page_obj1 = paginator1.page(paginator1.num_pages)
+    
+    page_obj1 = paginator1.get_page(page_number1)
+    
 
     if request.GET.get("search_query2"):
 
@@ -1182,12 +1172,11 @@ def my_issues(request):
             | Q(type__icontains=search_query2)
         ).order_by("-create_date")
 
-        paginator2 = Paginator(query2, 2)
+        paginator2 = Paginator(query2, 2, allow_empty_first_page=True)
         page_number2 = request.GET.get("page2")
-    try:
-        page_obj2 = paginator2.get_page(page_number2)
-    except EmptyPage:
-        page_obj2 = paginator2.page(paginator2.num_pages)
+    
+    page_obj2 = paginator2.get_page(page_number2)
+    
 
     context["page_obj1"] = page_obj1
     context["page_obj2"] = page_obj2
