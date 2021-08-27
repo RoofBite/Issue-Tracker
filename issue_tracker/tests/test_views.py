@@ -2051,3 +2051,22 @@ class TestView_my_issues(TestCase):
         )
 
         self.assertEquals(response.status_code, 200)
+
+
+class TestView_logout_page(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+        
+    def test_logout_page_GET(self):
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:logout-page")
+        )
+
+        self.assertEquals(response.status_code, 302)
