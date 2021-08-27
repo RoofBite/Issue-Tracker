@@ -938,7 +938,7 @@ def issue_details_comments(request, pk):
         context["issue"] = issue_instance
 
         return render(request, "issue_tracker/issue_details_comments.html", context)
-
+    return HttpResponse("You are not allowed to see this issue")
 
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "developer", "admin")

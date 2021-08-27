@@ -11,7 +11,7 @@ from lazysignup.models import LazyUser
 from lazysignup.utils import is_lazy_user
 from django.db.models import Q
 
-
+"""
 class TestViews_set_demo_user(TestCase):
     def setUp(self):
         self.superuser = User.objects.create_superuser(
@@ -1660,7 +1660,7 @@ class TestView_project_leader_resign_confirm(TestCase):
         response = self.client.get(reverse("issue_tracker:project-leader-resign-confirm", args=["1"]), {'search_query': 'Project'})
 
         self.assertEquals(response.status_code, 302)
-
+"""
 
 class TestView_project_details(TestCase):
     def setUp(self):
@@ -1725,3 +1725,75 @@ class TestView_project_details(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(response, "You are not allowed to see this project")
+
+class TestView_issue_details_comments(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_superuser(
+            "User", "User@example.com", "Password"
+        )
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        self.issue = Issue.objects.create(
+            title="Issue1", creator=self.user, project=self.project
+        )
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description1", leader=self.superuser
+        )
+        self.issue2 = Issue.objects.create(
+            title="Issue2", creator=self.superuser, project=self.project2
+        )
+        
+        self.comment = Comment.objects.create(
+            text="Comment", author=self.user, issue=self.issue
+        )
+        self.comment2 = Comment.objects.create(
+            text="Comment2", author=self.user, issue=self.issue
+        )
+
+    def test_issue_details_comments_leader_group_user_GET_allowed(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:issue-details-comments", args=["1"]), {'search_query': 'Project'})
+
+        self.assertEquals(response.status_code, 200)
+    
+    def test_issue_details_comments_developer_group_user_GET_allowed(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:issue-details-comments", args=["1"]), {'search_query': 'Project'})
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_issue_details_comments_admin_group_user_GET_allowed(self):
+        group = Group.objects.get(name="admin")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:issue-details-comments", args=["1"]), {'search_query': 'Project'})
+
+        self.assertEquals(response.status_code, 200)
+
+    def test_issue_details_comments_leader_group_user_GET_not_allowed(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:issue-details-comments", args=["2"]), {'search_query': 'Project'})
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You are not allowed to see this issue")
+
