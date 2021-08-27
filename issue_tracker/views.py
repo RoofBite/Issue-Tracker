@@ -648,7 +648,6 @@ def manage_project_developers(request, pk):
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_project_issues_list(request, pk):
-
     if request.user.groups.filter(name__in=("admin",)):
         project_instance = Project.objects.filter(pk=pk).first()
 
