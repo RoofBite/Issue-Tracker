@@ -1291,7 +1291,7 @@ class TestView_manage_project_developers(TestCase):
             name="Project2", description="Description2", leader=self.user
         )
 
-    def test_manage_project_details_admin_group_user_POST_valid_data_user_removed_form_group(self):
+    def test_manage_project_details_admin_group_user_POST_valid_data_user_removed_from_group(self):
         group = Group.objects.get(name="admin")
         group.user_set.add(self.user)
 
@@ -1516,4 +1516,56 @@ class TestView_project_developer_resign(TestCase):
         response = self.client.get(reverse("issue_tracker:project-developer-resign", args=["1"]), {'search_query': 'Project'})
 
         self.assertEquals(response.status_code, 200)
+
+
+
+class TestView_project_developer_resign_confirm(TestCase):
+    def setUp(self):
+        self.superuser = User.objects.create_superuser(
+            "Superuser", "Superuser@example.com", "Password"
+        )
+        self.user = User.objects.create_user("User", "User@example.com", "Password")
+        self.client = Client()
+
+        Group.objects.get_or_create(name="admin")
+        Group.objects.get_or_create(name="developer")
+        Group.objects.get_or_create(name="leader")
+
+        self.project = Project.objects.create(
+            name="Project1", description="Description1", leader=self.user
+        )
+        self.project.developer.add(self.user)
+        self.project2 = Project.objects.create(
+            name="Project2", description="Description2", leader=self.superuser
+        )
+
+    def test_project_developer_resign_confirm_developer_group_user_GET_not_allowed(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:project-developer-resign-confirm", args=["2"]), {'search_query': 'Project'})
+
+        self.assertEquals(response.status_code, 200)
+        self.assertContains(response, "You are not allowed to see this page")
+    
+    def test_project_developer_resign_confirm_developer_group_user_GET_allowed_user_removed_from_group(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+
+
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:project-developer-resign-confirm", args=["1"]), {'search_query': 'Project'})
+
+        self.assertEquals(response.status_code, 302)
+    
+    def test_project_developer_resign_confirm_developer_group_user_GET_allowed(self):
+        group = Group.objects.get(name="developer")
+        group.user_set.add(self.user)
+        self.project2.developer.add(self.user)
+        
+        self.client.force_login(user=self.user, backend=None)
+        response = self.client.get(reverse("issue_tracker:project-developer-resign-confirm", args=["1"]), {'search_query': 'Project'})
+
+        self.assertEquals(response.status_code, 302)
 
