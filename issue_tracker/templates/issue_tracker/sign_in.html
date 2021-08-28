@@ -28,8 +28,11 @@
         <div class="card text-center text-white bg-primary mb-3">
             <div class="card-header">Sign in</div>
             <div class="card-body">
-            
-
+            Recomended:
+            <br>
+            <a class="btn btn-danger mt-2" href="{% url 'issue_tracker:set-demo-user' %}">Use as demo user</a>
+            <br>
+            <br>
             <form method="POST" action="">
                 {% csrf_token %}
             
@@ -37,15 +40,13 @@
                 <input type="text" name='password' placeholder="Password">
                 <button class="btn btn-success" type="submit">Submit</button>
             </form>
-
+            <a class="link-light mt-2" href="{% url 'issue_tracker:reset_password' %}">Reset password</a>
             {% for message in messages %}
            <p>{{message}}</p>
             {% endfor %}
                 <br>
             If you don't have account: <br>
             <a class="btn btn-success mt-2" href="{% url 'issue_tracker:sign-up' %}">Sign up</a>
-             <br>
-            <a class="btn btn-danger mt-2" href="{% url 'issue_tracker:set-demo-user' %}">Use as demo user</a>
             </div>
         </div>
     </div>
