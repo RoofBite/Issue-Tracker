@@ -23,5 +23,6 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("issue_tracker.urls")),
     path("__debug__/", include(debug_toolbar.urls)),
-    path('', include('django.contrib.auth.urls'))
+    path('', include('django.contrib.auth.urls')),
+    path('accounts/', include('allauth.urls')),
 ]

@@ -40,17 +40,27 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    'django.contrib.sites',
     "debug_toolbar",
     "lazysignup",
     "simple_history",
+    # AllAuth
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
     "issue_tracker",
 ]
 
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
     "lazysignup.backends.LazySignupBackend",
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+
+SITE_ID = 1
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -156,5 +166,3 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = email
 EMAIL_HOST_PASSWORD = password
 
-
-#ALLOWED_HOSTS = ["localhost", "127.0.0.1", ip]
