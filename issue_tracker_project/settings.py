@@ -11,8 +11,21 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from .secrets import secret_key, email, password, datebase_password, datebase_user, datebase_host
+import os
+#from .secrets import secret_key, email, password, datebase_password, datebase_user, datebase_host
 
+secret_key = os.environ.get('1')
+email = os.environ.get('2')
+password1 = os.environ.get('3')
+password2 = os.environ.get('4')
+password3 = os.environ.get('5')
+password4 = os.environ.get('6')
+
+password = str(password1)+str(password2)+str(password3)+ str(password4)
+
+datebase_password = os.environ.get('7')
+datebase_user = os.environ.get('8')
+datebase_host = os.environ.get('9')
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
