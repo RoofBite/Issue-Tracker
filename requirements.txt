@@ -35,6 +35,7 @@ oauthlib==3.1.1
 pathspec==0.9.0
 pep8==1.7.1
 Pillow==8.2.0
+psycopg2==2.9.1
 pycodestyle==2.7.0
 pycparser==2.20
 PyJWT==2.1.0
