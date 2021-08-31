@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 """
 
 from pathlib import Path
-from .secrets import secret_key, email, password, ip, datebase_password
+from .secrets import secret_key, email, password, datebase_password, datebase_user, datebase_host
 
 
 
@@ -102,9 +102,9 @@ DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
         "NAME": "issue_tracker",
-        "USER": "postgres",
+        "USER": datebase_user,
         "PASSWORD": datebase_password,
-        "HOST": "localhost",
+        "HOST": datebase_host,
         "PORT": "5432",
     }
 }
