@@ -12,16 +12,16 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
-from .secrets import secret_key, email, password, datebase_password, datebase_user, datebase_host
+#from .secrets import secret_key, email, password, datebase_password, datebase_user, datebase_host
 
-secret_key = os.environ.get('a1')
+
+secret_key = str(os.environ.get('a1'))
 email = os.environ.get('a2')
 password1 = os.environ.get('a3')
 password2 = os.environ.get('a4')
 password3 = os.environ.get('a5')
-password4 = os.environ.get('a6')
 
-password = str(password1)+str(password2)+str(password3)+ str(password4)
+password = str(password1)+str(password2)+str(password3)
 
 datebase_password = os.environ.get('a7')
 datebase_user = os.environ.get('a8')
