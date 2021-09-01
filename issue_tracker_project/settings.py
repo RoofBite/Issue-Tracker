@@ -40,7 +40,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = secret_key
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['issue-tracker-roofbite.herokuapp.com', 'http://127.0.0.1']
 
@@ -202,3 +202,6 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = email
 EMAIL_HOST_PASSWORD = password
 
+
+import django_heroku
+django_heroku.settings(locals())
