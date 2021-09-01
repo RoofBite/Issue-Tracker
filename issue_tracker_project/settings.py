@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 from pathlib import Path
 import os
+import dj_database_url
 #from .secrets import secret_key, email, password, datebase_password, datebase_user, datebase_host
 
 
@@ -41,7 +42,7 @@ SECRET_KEY = secret_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['issue-tracker-roofbite.herokuapp.com', 'http://127.0.0.1']
 
 
 # Application definition
@@ -113,16 +114,29 @@ WSGI_APPLICATION = "issue_tracker_project.wsgi.application"
 
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.db.backends.postgresql",
-        "NAME": "issue_tracker",
-        "USER": datebase_user,
-        "PASSWORD": datebase_password,
-        "HOST": datebase_host,
-        "PORT": "5432",
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
+
+
+
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.postgresql",
+#         "NAME": "issue_tracker",
+#         "USER": datebase_user,
+#         "PASSWORD": datebase_password,
+#         "HOST": datebase_host,
+#         "PORT": "5432",
+#     }
+# }
+
+
+# db_from_env = dj_database_url.config(conn_max_age=600)
+# DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
