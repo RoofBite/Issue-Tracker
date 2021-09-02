@@ -15,11 +15,11 @@
   <nav class="text-center" aria-label="breadcrumb" style="padding: 20px">
     <ol class="breadcrumb">
       <li class="card me-3"><a class="btn btn-primary me-2 text-center"
-        href="{% url 'issue_tracker:manage-project-details' project.pk %}">Project details </a></li>  
+          href="{% url 'issue_tracker:manage-project-details' project.pk %}">Project details </a></li>
       <li class="card me-3"><a class="btn btn-primary me-3 text-center"
-        href="{% url 'issue_tracker:manage-project-developers' project.pk %}">Manage developers list  </a></li>  
+          href="{% url 'issue_tracker:manage-project-developers' project.pk %}">Manage developers list </a></li>
       <li class="card me-3"><a class="btn btn-primary me-3 text-center"
-          href="{% url 'issue_tracker:manage-project-issues-list' project.pk %}">Manage issues </a></li>  
+          href="{% url 'issue_tracker:manage-project-issues-list' project.pk %}">Manage issues </a></li>
 
 
     </ol>
@@ -27,7 +27,7 @@
   </nav>
 
   <main class="container px-4">
-    
+
 
     <container class="card">
       <div class="card card-header">
@@ -49,39 +49,39 @@
         <article class="card mb-3 mt-2 issue-card">
           <div class="card-body">
             <h5 class="card-title">Edit developers list</h5>
-            
+
             <form method="POST" action=''>
-            {% csrf_token %}
+              {% csrf_token %}
               {{form.name}}
               {{form.description}}
               {{form.leader}}
-              
-            <div class="mt-1">
 
-              <fieldset>
-                <legend>{{ form.developer.label }}</legend>
-                {% for user in form.developer %}
-                <label for="{{ radio.id_for_label }}">
-                  <span class="radio">{{ user.tag }}</span>
-                    
-                    {% if user.choice_label|length  == 32 %}
+              <div class="mt-1">
+
+                <fieldset>
+                  <legend>{{ form.developer.label }}</legend>
+                  {% for user in form.developer %}
+                  <label for="{{ radio.id_for_label }}">
+                    <span class="radio">{{ user.tag }}</span>
+
+                    {% if user.choice_label|length == 32 %}
 
                     {{ user.choice_label|make_list|slice:':6'|join:'' }}
-                    
+
                     {% else %}
-                    
+
                     {{ user.choice_label|make_list|slice:':24'|join:'' }}
                     {% endif %}
 
-                </label>
-                <br>
-                {% endfor %}
-            </fieldset>
+                  </label>
+                  <br>
+                  {% endfor %}
+                </fieldset>
 
-              
 
-            </div>
-            <button type="submit" class="btn btn-success mt-2">Confirm</button>
+
+              </div>
+              <button type="submit" class="btn btn-success mt-2">Save</button>
             </form>
           </div>
         </article>

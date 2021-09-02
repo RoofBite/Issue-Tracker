@@ -1,1 +1,0 @@
-web: gunicorn issue_tracker_project.wsgi

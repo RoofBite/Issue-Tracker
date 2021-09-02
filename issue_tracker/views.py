@@ -55,11 +55,11 @@ def set_demo_user(request):
         my_group2 = Group.objects.get(name="developer")
         my_group2.user_set.add(request.user)
         # Creating demo projects
-        admin_user = User.objects.get(pk=1, is_superuser=True)
+        admin_user = User.objects.get(username="roofbite", is_superuser=True)
 
         project1 = Project.objects.create(
             name="Demo Project1",
-            description="This is project made only for demo purposes",
+            description="This project is made only for demo purposes",
             leader=request.user,
         )
         project1.developer.add(request.user)
@@ -67,7 +67,7 @@ def set_demo_user(request):
 
         project2 = Project.objects.create(
             name="Demo Project2",
-            description="This is project made only for demo purposes",
+            description="This project is made only for demo purposes",
             leader=admin_user,
         )
         project2.developer.add(request.user)
