@@ -1,7 +1,7 @@
 <p><span style="font-size:1.2em">This is a fully functional <strong>issue tracker</strong> project, there are
             <strong>3
                 groups</strong> of users: <span style="color:#2ecc71"><strong>admin</strong></span>, <span
-                style="color:#c0392b"><strong>leader&nbsp;</strong></span>, and <span
+                style="color:#c0392b"><strong>leader</strong></span>, and <span
                 style="color:#3498db"><strong>developer</strong></span>.<br /><strong>Main features:</strong></span></p>
     <ul>
         <li>
