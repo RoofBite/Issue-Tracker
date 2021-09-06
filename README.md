@@ -24,7 +24,7 @@
                     <strong>old </strong>issues.</span></p>
         </li>
         <li>
-            <p><span style="font-size:1.2em">-<strong>Apply</strong> for <strong>projects </strong>and join them.</span>
+            <p><span style="font-size:1.2em"><strong>Apply</strong> for <strong>projects </strong>and join them.</span>
             </p>
         </li>
         <li>
