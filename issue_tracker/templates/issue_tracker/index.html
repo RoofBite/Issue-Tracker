@@ -1,13 +1,73 @@
 {% extends "issue_tracker/base.html" %}
 {% block content %}
-  <main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
-      <nav aria-label="breadcrumb">
-          <ol class="breadcrumb">
-              <li class="breadcrumb-item"><a href="#">Home</a></li>
-              <li class="breadcrumb-item active" aria-current="page">Overview</li>
-          </ol>
-      </nav>
-      <h1 class="h2">Dashboard</h1>
-      
-  </main>
-{% endblock %} 
+
+<main class="col-md-9 ml-sm-auto col-lg-10 px-md-4 py-4">
+    <h1 class="h2">Project description</h1>
+    <p><span style="font-size:1.2em">This is fully functional <strong>issue tracker</strong> project, there are
+            <strong>3
+                groups</strong> of users: <span style="color:#2ecc71"><strong>admin</strong></span>, <span
+                style="color:#c0392b"><strong>leader&nbsp;</strong></span>and <span
+                style="color:#3498db"><strong>developer</strong></span>.<br /><strong>Main featuers:</strong></span></p>
+    <ul>
+        <li>
+            <p><span style="font-size:1.2em">Adding <strong>new</strong> <strong>issues</strong>.</span></p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">Adding <strong>comments </strong>to issues by leader and developers in
+                    projects.</span></p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">Seeing <strong>details </strong>of issues and <strong>history of
+                        changes</strong>.</span></p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">Seeing list of <strong>all issues</strong> in projects and <strong>issues
+                        assigned to user</strong>.</span></p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">Seeing <strong>separete </strong>lists of <strong>active </strong>and
+                    <strong>old </strong>issues.</span></p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">-<strong>Apply</strong> for <strong>projects </strong>and join them.</span>
+            </p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">
+                    Option of <strong>resigning </strong>from <strong><span style="color:#3498db">developer
+                        </span></strong>and <strong><span style="color:#c0392b">leader </span></strong>position in
+                    project.</span></p>
+        </li>
+    </ul>
+    <p><span style="font-size:1.2em"><strong><span style="color:#c0392b">
+                    Leader </span>featuers:</strong></span></p>
+    <ul>
+        <li>
+            <p><span style="font-size:1.2em">Leader can <strong>manage list of developers </strong>in project.</span>
+            </p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">Leader can <strong><span style="color:#2ecc71">accept </span></strong>and
+                    <strong><span style="color:#c0392b">deny </span></strong>developers <strong>applictaions to
+                        project</strong>.</span></p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">Leader can <strong>edit </strong>reported <strong>issue</strong>.</span>
+            </p>
+        </li>
+    </ul>
+    <p><span style="font-size:1.2em"><strong><span style="color:#2ecc71">Admin </span>featuers:</strong></span></p>
+    <ul>
+        <li>
+            <p><span style="font-size:1.2em">Admin can&nbsp;<strong><span style="color:#2ecc71">accept
+                        </span></strong>and
+                    <strong><span style="color:#c0392b">deny&nbsp;</span>developers </strong>and <strong>leaders
+                    </strong>applictaions to project.</span></p>
+        </li>
+        <li>
+            <p><span style="font-size:1.2em">Admin can see <strong>list </strong>of issues in <strong>all
+                        project</strong>.</span></p>
+        </li>
+</main>
+
+{% endblock %}

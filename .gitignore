@@ -1,5 +1,6 @@
 issue_tracker_project/secrets.py
 myenv
+env
 db.sqlite3
 **/.log
 **/.pot
@@ -7,4 +8,8 @@ db.sqlite3
 **/__pycache__
 **/.coverage
 htmlcov
+
+.gitignore
+*.gif
+*.png
 

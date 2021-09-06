@@ -962,7 +962,7 @@ def issue_details(request, pk):
             issues = (
                 Issue.history.filter(id=pk)
                 .order_by("-update_date")
-                .select_related("project", "user_assigned")
+                .select_related("project", "user_assigned").distinct()
             )
 
         elif request.user.groups.filter(name__in=("developer", "leader")):
@@ -973,7 +973,7 @@ def issue_details(request, pk):
                     | Q(project__developer__pk=request.user.pk),
                 )
                 .order_by("-update_date")
-                .select_related("project", "user_assigned")
+                .select_related("project", "user_assigned").distinct()
             )
 
         paginator = Paginator(issues, 3, allow_empty_first_page=True)
