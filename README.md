@@ -1,6 +1,6 @@
 # Issue-Tracker
 ![Issue-tracker-screenshot](https://user-images.githubusercontent.com/85451799/132257394-008c47b4-1aa6-4219-9ed1-00a11ed195c4.png)
->>>>>>> e0950d5f3fe9b6bdd24254a7cdbd04aa5ccb9620
+
 <p><span style="font-size:1.2em">This is a fully functional <strong>issue tracker</strong> project, there are
             <strong>3
                 groups</strong> of users: <span style="color:#2ecc71"><strong>admin</strong></span>, <span
