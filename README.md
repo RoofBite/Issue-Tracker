@@ -18,7 +18,7 @@ docker run -p 8000:8000 issue-tracker
 - (username="roofbite", is_superuser=True) stands for superadmin user,
 change this query in forms.py and views.py for your superuser username.
 
-
+## Project description
 
 <p><span style="font-size:1.2em">This is a fully functional <strong>issue tracker</strong> project, there are
             <strong>3
