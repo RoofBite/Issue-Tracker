@@ -65,7 +65,7 @@ class AddDeveloper(ModelForm):
 
         # Defining list of users that demo user will be able to add to project
         if is_lazy_user(self.request.user):
-            # (username="roofbite", is_superuser=True) stands for admin user
+            # (username="roofbite", is_superuser=True) stands for superadmin user
             self.fields["developer"].queryset = User.objects.filter(
                 Q(username="roofbite", is_superuser=True) | Q(pk=self.request.user.pk)
             )

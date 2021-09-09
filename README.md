@@ -1,3 +1,4 @@
+# Issue-Tracker
 <p><span style="font-size:1.2em">This is a fully functional <strong>issue tracker</strong> project, there are
             <strong>3
                 groups</strong> of users: <span style="color:#2ecc71"><strong>admin</strong></span>, <span
@@ -63,3 +64,21 @@
             <p><span style="font-size:1.2em">Admin can see <strong>list </strong>of issues in <strong>all
                         projects</strong>.</span></p>
         </li>
+
+**Live version: http://issue-tracker-roofbite.herokuapp.com/sign-in/**
+
+**Dependencies can be found in requirements.txt file**
+
+## How to run project with Docker: <br>
+
+- Value of variable secret_key in settings.py is stored in enviroment variable, it should be set before starting the project.
+- Values of variables email and password in settings.py are also stored in enviroment variables, they should be properly set for password reset function to work.
+
+- Then run commands in terminal: <br>
+docker-compose build  <br>
+docker run -p 8000:8000 issue-tracker
+
+- Create superuser in project,
+- (username="roofbite", is_superuser=True) stands for superadmin user,
+change this query in forms.py and views.py for your superuser username.
+

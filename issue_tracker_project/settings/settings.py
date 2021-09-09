@@ -2,8 +2,6 @@ from pathlib import Path
 import os
 import dj_database_url
 
-# from .secrets import secret_key, email, password, datebase_password, datebase_user, datebase_host
-
 
 secret_key = str(os.environ.get("a1"))
 email = os.environ.get("a2")
@@ -12,10 +10,6 @@ password2 = os.environ.get("a4")
 password3 = os.environ.get("a5")
 
 password = str(password1) + str(password2) + str(password3)
-
-datebase_password = os.environ.get("a7")
-datebase_user = os.environ.get("a8")
-datebase_host = os.environ.get("a9")
 
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -108,21 +102,6 @@ DATABASES = {
     }
 }
 
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "issue_tracker",
-#         "USER": datebase_user,
-#         "PASSWORD": datebase_password,
-#         "HOST": datebase_host,
-#         "PORT": "5432",
-#     }
-# }
-
-
-# db_from_env = dj_database_url.config(conn_max_age=600)
-# DATABASES['default'].update(db_from_env)
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
