@@ -88,7 +88,8 @@ class IssueFormUpdate(ModelForm):
         widgets = {
             "creator": HiddenInput(),
             "project": HiddenInput(),
-            "description": Textarea(attrs={"rows": 9, "cols": 20}),
+            "description": Textarea(attrs={"rows": 6, "cols": 17}),
+            "title": TextInput(attrs={"size": "14"}),
         }
 
     def __init__(self, *args, **kwargs):
