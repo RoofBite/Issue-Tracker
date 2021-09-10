@@ -195,7 +195,6 @@ def developer_application_deny(request, pk):
         return redirect("issue_tracker:manage-developers-applications-list")
 
 
-
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
@@ -231,7 +230,6 @@ def developer_application_accept(request, pk):
         return redirect("issue_tracker:manage-developers-applications-list")
 
 
-
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
@@ -240,15 +238,19 @@ def manage_developers_applications_list(request):
 
     if request.user.groups.filter(name__in=("admin",)):
 
-        applications = DeveloperApplication.objects.all().select_related(
-            "project", "applicant"
-        ).order_by("pk")
+        applications = (
+            DeveloperApplication.objects.all()
+            .select_related("project", "applicant")
+            .order_by("pk")
+        )
 
     elif request.user.groups.filter(name__in=("leader",)):
 
-        applications = DeveloperApplication.objects.filter(
-            project__leader=request.user
-        ).select_related("project", "applicant").order_by("pk")
+        applications = (
+            DeveloperApplication.objects.filter(project__leader=request.user)
+            .select_related("project", "applicant")
+            .order_by("pk")
+        )
 
     paginator = Paginator(applications, 3, allow_empty_first_page=True)
     page_number = request.GET.get("page")
@@ -269,7 +271,6 @@ def manage_developers_applications_list(request):
         page_number = request.GET.get("page")
 
         page_obj = paginator.get_page(page_number)
-    
 
     context["page_obj"] = page_obj
     context["applications"] = applications
@@ -332,9 +333,7 @@ def manage_leaders_applications_list(request):
     context = {}
 
     applications = (
-        LeaderApplication.objects.all()
-        
-        .select_related("project", "applicant")
+        LeaderApplication.objects.all().select_related("project", "applicant")
     ).order_by("pk")
 
     paginator = Paginator(applications, 3, allow_empty_first_page=True)
@@ -356,7 +355,6 @@ def manage_leaders_applications_list(request):
         page_number = request.GET.get("page")
 
         page_obj = paginator.get_page(page_number)
-
 
     context["page_obj"] = page_obj
     context["applications"] = applications
@@ -449,7 +447,6 @@ def apply_project_list_all(request):
 
         page_obj = paginator.get_page(page_number)
 
-
     context["page_obj"] = page_obj
 
     return render(request, "issue_tracker/apply_project_list_all.html", context)
@@ -480,12 +477,31 @@ class Update_issue(UpdateView):
             return issue
 
     def form_valid(self, form):
+        # If there is no changes issue will not be updated
         updated_instance = form.save(commit=False)
         original_instance = Issue.objects.get(pk=self.kwargs["pk"])
-        original_list = [original_instance.title, original_instance.creator  ,original_instance.project , original_instance.priority, original_instance.status, original_instance.type, original_instance.description]
-        updated_list = [updated_instance.title, updated_instance.creator  ,updated_instance.project , updated_instance.priority, updated_instance.status, updated_instance.type, updated_instance.description]
+        original_list = [
+            original_instance.title,
+            original_instance.creator,
+            original_instance.project,
+            original_instance.priority,
+            original_instance.status,
+            original_instance.type,
+            original_instance.description,
+            original_instance.user_assigned
+        ]
+        updated_list = [
+            updated_instance.title,
+            updated_instance.creator,
+            updated_instance.project,
+            updated_instance.priority,
+            updated_instance.status,
+            updated_instance.type,
+            updated_instance.description,
+            updated_instance.user_assigned
+        ]
 
-        if original_list==updated_list:
+        if original_list == updated_list:
             return super(Update_issue, self).form_invalid(form)
         return super(Update_issue, self).form_valid(form)
 
@@ -519,7 +535,7 @@ class Add_issue(CreateView):
 
     def get_success_url(self):
         return reverse("issue_tracker:issue-details", args=(self.object.pk,))
-    
+
 
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("admin")
@@ -558,7 +574,7 @@ def manage_projects_list(request):
     context = {}
     if request.user.groups.filter(name__in=("admin",)):
         projects = Project.objects.all()
-        
+
     elif request.user.groups.filter(name__in=("leader",)):
         projects = (
             Project.objects.filter(leader__pk=request.user.pk)
@@ -645,6 +661,7 @@ def manage_project_developers(request, pk):
         return render(request, "issue_tracker/manage_project_developers.html", context)
     return HttpResponse("You are not allowed to see this project")
 
+
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
@@ -691,7 +708,6 @@ def manage_project_issues_list(request, pk):
 
             page_obj = paginator.get_page(page_number)
 
-
         context["page_obj"] = page_obj
         context["my_project_issues"] = my_project_issues
         context["project"] = project
@@ -726,7 +742,6 @@ def project_details_old_issues(request, pk):
         paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
         page_number = request.GET.get("page")
 
-        
         page_obj = paginator.get_page(page_number)
 
         if request.GET.get("search_query"):
@@ -747,9 +762,8 @@ def project_details_old_issues(request, pk):
 
             paginator = Paginator(query, 3, allow_empty_first_page=True)
             page_number = request.GET.get("page")
-        
+
             page_obj = paginator.get_page(page_number)
-        
 
         context["page_obj"] = page_obj
         context["my_project_issues"] = my_project_issues
@@ -874,7 +888,6 @@ def project_details(request, pk):
 
             page_obj = paginator.get_page(page_number)
 
-
         is_user_project_developer = Project.objects.filter(
             pk=pk, developer__pk=request.user.pk
         ).first()
@@ -941,6 +954,7 @@ def issue_details_comments(request, pk):
         return render(request, "issue_tracker/issue_details_comments.html", context)
     return HttpResponse("You are not allowed to see this issue")
 
+
 @login_required(login_url="issue_tracker:sign-in")
 @group_required("leader", "developer", "admin")
 @require_http_methods(["GET"])
@@ -963,7 +977,8 @@ def issue_details(request, pk):
             issues = (
                 Issue.history.filter(id=pk)
                 .order_by("-update_date")
-                .select_related("project", "user_assigned").distinct()
+                .select_related("project", "user_assigned")
+                .distinct()
             )
 
         elif request.user.groups.filter(name__in=("developer", "leader")):
@@ -974,7 +989,8 @@ def issue_details(request, pk):
                     | Q(project__developer__pk=request.user.pk),
                 )
                 .order_by("-update_date")
-                .select_related("project", "user_assigned").distinct()
+                .select_related("project", "user_assigned")
+                .distinct()
             )
 
         paginator = Paginator(issues, 3, allow_empty_first_page=True)
@@ -1051,7 +1067,6 @@ def reported_issues(request):
 
         page_obj = paginator.get_page(page_number)
 
-
     context["page_obj"] = page_obj
     context["my_project_issues"] = issues
 
@@ -1097,7 +1112,6 @@ def all_issues(request):
         page_number = request.GET.get("page")
 
         page_obj = paginator.get_page(page_number)
-   
 
     context["page_obj"] = page_obj
     context["my_project_issues"] = my_project_issues
@@ -1130,7 +1144,7 @@ def my_issues(request):
 
     page_number1 = request.GET.get("page1")
     page_obj1 = paginator1.get_page(page_number1)
-    
+
     page_number2 = request.GET.get("page2")
     page_obj2 = paginator2.get_page(page_number2)
 
@@ -1152,9 +1166,8 @@ def my_issues(request):
 
         paginator1 = Paginator(query1, 2, allow_empty_first_page=True)
         page_number1 = request.GET.get("page1")
-    
+
     page_obj1 = paginator1.get_page(page_number1)
-    
 
     if request.GET.get("search_query2"):
 
@@ -1175,9 +1188,8 @@ def my_issues(request):
 
         paginator2 = Paginator(query2, 2, allow_empty_first_page=True)
         page_number2 = request.GET.get("page2")
-    
+
     page_obj2 = paginator2.get_page(page_number2)
-    
 
     context["page_obj1"] = page_obj1
     context["page_obj2"] = page_obj2
