@@ -19,6 +19,9 @@
    {% else %}
   <li class="card me-3"> <a class="btn btn-primary" href="{% url  'issue_tracker:add-comment' issue.pk %}">Add comment</a>  </li>
  {% endif %}
+ {% if 'leader' == request.user.groups.all.0.name or 'leader' == request.user.groups.all.1.name or 'leader' == request.user.groups.all.2.name  %}
+   <li class="card me-3"><a class="btn btn-success" href="{% url 'issue_tracker:update-issue'  issue.pk %}">Edit issue</a>  </li>
+ {% endif %}
   </ol>
 </nav>
 

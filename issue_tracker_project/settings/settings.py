@@ -25,7 +25,7 @@ SECRET_KEY = secret_key
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ["issue-tracker-roofbite.herokuapp.com", "127.0.0.1"]
+ALLOWED_HOSTS = ["issue-tracker-roofbite.herokuapp.com", "127.0.0.1", "localhost"]
 
 
 # Application definition
@@ -123,6 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+
 
 
 # Internationalization
