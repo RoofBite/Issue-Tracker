@@ -23,7 +23,9 @@ WORKDIR /app
 ADD . .
 
 
-RUN python manage.py createsuperuser --noinput
+RUN python manage.py makemigrations \
+&& python manage.py migrate \
+&& python manage.py createsuperuser --noinput
 
 #Uncomment for local usage
 
