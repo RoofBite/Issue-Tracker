@@ -1,6 +1,10 @@
 # Python and Linux Version 
 FROM python:3.8-slim-buster
 
+ARG DJANGO_SUPERUSER_USERNAME=admin
+ARG DJANGO_SUPERUSER_PASSWORD=admin
+ARG DJANGO_SUPERUSER_EMAIL=admin@example.com
+
 RUN apt-get update && apt-get install -y git
 RUN apt-get update \
 && apt-get install gcc -y \
@@ -17,6 +21,9 @@ RUN set -ex \
 WORKDIR /app
 
 ADD . .
+
+
+RUN python manage.py createsuperuser --noinput
 
 #Uncomment for local usage
 

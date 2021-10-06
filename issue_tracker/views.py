@@ -55,8 +55,8 @@ def set_demo_user(request):
         my_group2 = Group.objects.get(name="developer")
         my_group2.user_set.add(request.user)
         # Creating demo projects
-        # (username="roofbite", is_superuser=True) stands for superadmin user
-        admin_user = User.objects.get(username="roofbite", is_superuser=True)
+        # (username="admin", is_superuser=True) stands for superadmin user
+        admin_user = User.objects.get(username="admin", is_superuser=True)
 
         project1 = Project.objects.create(
             name="Demo Project1",

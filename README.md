@@ -14,9 +14,13 @@
 docker-compose build  <br>
 docker run -p 8000:8000 issue-tracker
 
-- Create superuser in project,
-- (username="roofbite", is_superuser=True) stands for superadmin user,
-change this query in forms.py and views.py for your superuser username.
+Go to: http://localhost:8000/sign-in/
+
+Admin panel: http://localhost:8000/admin/
+
+    login: admin
+    password: admin
+
 
 ## Project description
 
