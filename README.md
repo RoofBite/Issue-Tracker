@@ -1,7 +1,6 @@
 # Issue-Tracker
 ![Issue-tracker-screenshot](https://user-images.githubusercontent.com/85451799/132257394-008c47b4-1aa6-4219-9ed1-00a11ed195c4.png)
 
-**Live version: http://issue-tracker-roofbite.herokuapp.com/sign-in/**
 
 **Dependencies can be found in requirements.txt file**
 
