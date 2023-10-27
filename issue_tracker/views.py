@@ -1038,6 +1038,7 @@ def reported_issues(request):
         )
         .order_by("-create_date")
         .select_related("project", "user_assigned")
+        .distinct()
     )
     context = {}
 
@@ -1081,12 +1082,11 @@ def all_issues(request):
 
     my_project_issues = (
         Issue.objects.all()
-        .exclude(status="RESOLVED")
-        .exclude(status="CLOSED")
+        .exclude(status__in=["RESOLVED", "CLOSED"])
         .order_by("-create_date")
         .select_related("project", "user_assigned")
+        .distinct()
     )
-
     paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
     page_number = request.GET.get("page")
 
@@ -1131,10 +1131,10 @@ def my_issues(request):
             Q(project__leader__pk=request.user.pk)
             | Q(project__developer__pk=request.user.pk)
         )
-        .exclude(status="RESOLVED")
-        .exclude(status="CLOSED")
+        .exclude(status__in=["RESOLVED", "CLOSED"])
         .order_by("-create_date")
         .select_related("project", "user_assigned")
+        .distinct()
     )
 
     my_issues = my_project_issues.filter(user_assigned=request.user)

@@ -20,6 +20,7 @@ Admin panel: http://localhost:8000/admin/
     login: admin
     password: admin
 
+In admin panel you need to add two groups "developer" and "leader" for project to work properly.
 
 ## Project description
 

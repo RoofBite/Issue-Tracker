@@ -33,6 +33,12 @@ RUN python manage.py collectstatic --noinput \
 EXPOSE 8000
 CMD ["gunicorn", "--bind", ":8000", "--workers", "3", "issue_tracker_project.wsgi:application"]
 
+
+#Uncomment for local usage with logging
+
+# EXPOSE 8000
+# CMD ["gunicorn"  , "--bind", ":8000", "--access-logfile" ,"-" ,"issue_tracker_project.wsgi"]
+
 #Uncomment for Heroku
 
 #CMD gunicorn issue_tracker_project.wsgi:application --bind 0.0.0.0:$PORT
