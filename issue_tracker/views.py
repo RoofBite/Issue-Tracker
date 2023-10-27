@@ -49,11 +49,24 @@ def set_demo_user(request):
     if is_lazy_user(request.user) and not request.user.groups.filter(
         name__in=("developer", "leader")
     ):
-        # Adding to groups
-        my_group1 = Group.objects.get(name="leader")
-        my_group1.user_set.add(request.user)
-        my_group2 = Group.objects.get(name="developer")
-        my_group2.user_set.add(request.user)
+        # Create groups if they do not exist
+        leader_group = Group.objects.filter(name="leader").first()
+        developer_group = Group.objects.filter(name="developer").first()
+
+        if not leader_group:
+            new_group = Group(name="leader")
+            new_group.save()
+            leader_group = Group.objects.get(name="leader")
+        
+        if not developer_group:
+            new_group = Group(name="developer")
+            new_group.save()
+            developer_group = Group.objects.get(name="developer")        
+
+        # Adding user to groups
+        leader_group.user_set.add(request.user)
+        developer_group.user_set.add(request.user)
+
         # Creating demo projects
         # (username="admin", is_superuser=True) stands for superadmin user
         admin_user = User.objects.get(username="admin", is_superuser=True)
