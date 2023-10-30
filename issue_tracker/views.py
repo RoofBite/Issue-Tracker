@@ -135,6 +135,11 @@ def sign_up(request):
 
 @method_decorator(group_required("developer", "leader"), name="get")
 class Add_comment(CreateView):
+    model = Comment
+    form_class = AddComment
+    template_name = "issue_tracker/add_comment.html"
+    success_url = reverse_lazy("issue_tracker:main")
+
     def get(self, request, *args, **kwargs):
         projects = Project.objects.filter(
             Q(leader__pk=self.request.user.pk) | Q(developer__pk=self.request.user.pk)
@@ -144,11 +149,6 @@ class Add_comment(CreateView):
             return super().get(request, *args, **kwargs)
         else:
             return HttpResponse("You have no access to this comment")
-
-    model = Comment
-    form_class = AddComment
-    template_name = "issue_tracker/add_comment.html"
-    success_url = reverse_lazy("issue_tracker:main")
 
     def get_success_url(self):
         comment_issue_pk = self.kwargs["pk"]
@@ -188,14 +188,14 @@ def delete_comment(request, pk):
 @require_http_methods(["GET"])
 def developer_application_deny(request, pk):
     application = DeveloperApplication.objects.filter(pk=pk).first()
-    if request.user.groups.filter(name="admin").exists():
+    if request.user.groups.filter(name="admin").exists() and application:
         # For admin user
         if application:
             application.delete()
         else:
             return HttpResponse("This application does not exist")
 
-        return redirect("issue_tracker:manage-developers-applications-list")
+    #return redirect("issue_tracker:manage-developers-applications-list")
 
     elif request.user.groups.filter(name="leader").exists():
         # For leader user
@@ -205,7 +205,7 @@ def developer_application_deny(request, pk):
         else:
             return HttpResponse("This application does not exist")
 
-        return redirect("issue_tracker:manage-developers-applications-list")
+    return redirect("issue_tracker:manage-developers-applications-list")
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -722,7 +722,6 @@ def manage_project_issues_list(request, pk):
             page_obj = paginator.get_page(page_number)
 
         context["page_obj"] = page_obj
-        context["my_project_issues"] = my_project_issues
         context["project"] = project
 
         return render(request, "issue_tracker/manage_project_issues_list.html", context)
@@ -779,7 +778,6 @@ def project_details_old_issues(request, pk):
             page_obj = paginator.get_page(page_number)
 
         context["page_obj"] = page_obj
-        context["my_project_issues"] = my_project_issues
         context["project"] = project
 
         return render(request, "issue_tracker/project_details_old_issues.html", context)
@@ -911,7 +909,6 @@ def project_details(request, pk):
         context["is_user_project_developer"] = is_user_project_developer
         context["is_user_project_leader"] = is_user_project_leader
         context["page_obj"] = page_obj
-        context["my_project_issues"] = my_project_issues
         context["project"] = project
 
         return render(request, "issue_tracker/project_details.html", context)
@@ -931,12 +928,12 @@ def issue_details_comments(request, pk):
             Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         )
 
-    issue_instance = Issue.objects.filter(pk=pk, project__in=projects).first()
+    issue = Issue.objects.filter(pk=pk, project__in=projects).first()
 
-    if issue_instance:
+    if issue:
         context = {}
         comments = (
-            Comment.objects.filter(issue__pk=issue_instance.pk)
+            Comment.objects.filter(issue__pk=issue.pk)
             .order_by("-create_date")
             .select_related("author")
         )
@@ -962,7 +959,7 @@ def issue_details_comments(request, pk):
             page_obj = paginator.get_page(page_number)
 
         context["page_obj"] = page_obj
-        context["issue"] = issue_instance
+        context["issue"] = issue
 
         return render(request, "issue_tracker/issue_details_comments.html", context)
     return HttpResponse("You are not allowed to see this issue")
@@ -981,9 +978,9 @@ def issue_details(request, pk):
             Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         )
 
-    issue_instance = Issue.objects.filter(pk=pk, project__in=projects).first()
+    issue = Issue.objects.filter(pk=pk, project__in=projects).first()
 
-    if issue_instance:
+    if issue:
         context = {}
 
         if request.user.groups.filter(name__in=("admin",)):
@@ -1033,7 +1030,7 @@ def issue_details(request, pk):
             page_obj = paginator.get_page(page_number)
 
         context["page_obj"] = page_obj
-        context["issue"] = issue_instance
+        context["issue"] = issue
         return render(request, "issue_tracker/issue_details.html", context)
 
     return HttpResponse("You are not allowed to see this issue")
@@ -1082,7 +1079,6 @@ def reported_issues(request):
         page_obj = paginator.get_page(page_number)
 
     context["page_obj"] = page_obj
-    context["my_project_issues"] = issues
 
     return render(request, "issue_tracker/reported-issues.html", context)
 
@@ -1127,7 +1123,6 @@ def all_issues(request):
         page_obj = paginator.get_page(page_number)
 
     context["page_obj"] = page_obj
-    context["my_project_issues"] = my_project_issues
 
     return render(request, "issue_tracker/all_issues.html", context)
 
@@ -1152,60 +1147,60 @@ def my_issues(request):
 
     my_issues = my_project_issues.filter(user_assigned=request.user)
 
-    paginator1 = Paginator(my_issues, 2, allow_empty_first_page=True)
-    paginator2 = Paginator(my_project_issues, 2, allow_empty_first_page=True)
+    paginator_my_issues = Paginator(my_issues, 2, allow_empty_first_page=True)
+    paginator_my_project_issues = Paginator(my_project_issues, 2, allow_empty_first_page=True)
 
-    page_number1 = request.GET.get("page1")
-    page_obj1 = paginator1.get_page(page_number1)
+    page_number_my_issues = request.GET.get("page1")
+    page_obj_my_issues = paginator_my_issues.get_page(page_number_my_issues)
 
-    page_number2 = request.GET.get("page2")
-    page_obj2 = paginator2.get_page(page_number2)
+    page_number_my_project_issues = request.GET.get("page2")
+    page_obj_my_project_issues = paginator_my_project_issues.get_page(page_number_my_project_issues)
 
     if request.GET.get("search_query1"):
-        search_query1 = request.GET.get("search_query1")
-        context["search_query1"] = str(search_query1)
+        search_query_my_issues = request.GET.get("search_query1")
+        context["search_query1"] = str(search_query_my_issues)
 
-        query1 = my_issues.filter(
-            Q(project__name__icontains=search_query1)
-            | Q(create_date__startswith=search_query1)
-            | Q(update_date__startswith=search_query1)
-            | Q(title__icontains=search_query1)
-            | Q(description__icontains=search_query1)
-            | Q(user_assigned__username__icontains=search_query1)
-            | Q(status__icontains=search_query1)
-            | Q(priority__icontains=search_query1)
-            | Q(type__icontains=search_query1)
+        query_my_issues = my_issues.filter(
+            Q(project__name__icontains=search_query_my_issues)
+            | Q(create_date__startswith=search_query_my_issues)
+            | Q(update_date__startswith=search_query_my_issues)
+            | Q(title__icontains=search_query_my_issues)
+            | Q(description__icontains=search_query_my_issues)
+            | Q(user_assigned__username__icontains=search_query_my_issues)
+            | Q(status__icontains=search_query_my_issues)
+            | Q(priority__icontains=search_query_my_issues)
+            | Q(type__icontains=search_query_my_issues)
         ).order_by("-create_date")
 
-        paginator1 = Paginator(query1, 2, allow_empty_first_page=True)
-        page_number1 = request.GET.get("page1")
+        paginator_my_issues = Paginator(query_my_issues, 2, allow_empty_first_page=True)
+        page_number_my_issues = request.GET.get("page1")
 
-    page_obj1 = paginator1.get_page(page_number1)
+    page_obj_my_issues = paginator_my_issues.get_page(page_number_my_issues)
 
     if request.GET.get("search_query2"):
 
-        search_query2 = request.GET.get("search_query2")
-        context["search_query2"] = str(search_query2)
+        search_query_my_project_issues = request.GET.get("search_query2")
+        context["search_query2"] = str(search_query_my_project_issues)
 
-        query2 = my_project_issues.filter(
-            Q(project__name__icontains=search_query2)
-            | Q(create_date__startswith=search_query2)
-            | Q(update_date__startswith=search_query2)
-            | Q(title__icontains=search_query2)
-            | Q(description__icontains=search_query2)
-            | Q(user_assigned__username__icontains=search_query2)
-            | Q(status__icontains=search_query2)
-            | Q(priority__icontains=search_query2)
-            | Q(type__icontains=search_query2)
+        query_my_project_issues = my_project_issues.filter(
+            Q(project__name__icontains=search_query_my_project_issues)
+            | Q(create_date__startswith=search_query_my_project_issues)
+            | Q(update_date__startswith=search_query_my_project_issues)
+            | Q(title__icontains=search_query_my_project_issues)
+            | Q(description__icontains=search_query_my_project_issues)
+            | Q(user_assigned__username__icontains=search_query_my_project_issues)
+            | Q(status__icontains=search_query_my_project_issues)
+            | Q(priority__icontains=search_query_my_project_issues)
+            | Q(type__icontains=search_query_my_project_issues)
         ).order_by("-create_date")
 
-        paginator2 = Paginator(query2, 2, allow_empty_first_page=True)
-        page_number2 = request.GET.get("page2")
+        paginator_my_project_issues = Paginator(query_my_project_issues, 2, allow_empty_first_page=True)
+        page_number_my_project_issues = request.GET.get("page2")
 
-    page_obj2 = paginator2.get_page(page_number2)
+    page_obj_my_project_issues = paginator_my_project_issues.get_page(page_number_my_project_issues)
 
-    context["page_obj1"] = page_obj1
-    context["page_obj2"] = page_obj2
+    context["page_obj1"] = page_obj_my_issues
+    context["page_obj2"] = page_obj_my_project_issues
 
     return render(request, "issue_tracker/my_issues.html", context)
 
