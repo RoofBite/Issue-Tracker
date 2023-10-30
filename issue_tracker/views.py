@@ -188,22 +188,19 @@ def delete_comment(request, pk):
 @require_http_methods(["GET"])
 def developer_application_deny(request, pk):
     application = DeveloperApplication.objects.filter(pk=pk).first()
-    if request.user.groups.filter(name="admin").exists() and application:
-        # For admin user
-        if application:
-            application.delete()
-        else:
-            return HttpResponse("This application does not exist")
+    if not application:
+        return HttpResponse("This application does not exist")
 
-    #return redirect("issue_tracker:manage-developers-applications-list")
+    if request.user.groups.filter(name="admin").exists():
+        # For admin user
+        application.delete()
 
     elif request.user.groups.filter(name="leader").exists():
         # For leader user
-        if application:
-            if application.project.leader.pk == request.user.pk:
-                application.delete()
+        if application.project.leader.pk == request.user.pk:
+            application.delete()
         else:
-            return HttpResponse("This application does not exist")
+            return HttpResponse("You have no permission to do that. You are not leader of that project.")
 
     return redirect("issue_tracker:manage-developers-applications-list")
 
@@ -213,34 +210,27 @@ def developer_application_deny(request, pk):
 @require_http_methods(["GET"])
 def developer_application_accept(request, pk):
     application = DeveloperApplication.objects.filter(pk=pk).first()
+    if not application:
+        return HttpResponse("This application does not exist")
 
     if request.user.groups.filter(name="admin").exists():
-        if application:
+        application.project.developer.add(application.applicant)
+        application.delete()
+
+        my_group = Group.objects.get(name="developer")
+        my_group.user_set.add(application.applicant)
+
+    elif request.user.groups.filter(name="leader").exists():
+        if application.project.leader.pk == request.user.pk:
             application.project.developer.add(application.applicant)
             application.delete()
 
             my_group = Group.objects.get(name="developer")
             my_group.user_set.add(application.applicant)
-
         else:
-            return HttpResponse("This application does not exist")
+            return HttpResponse("You have no permission to do that. You are not leader of that project.")
 
-        return redirect("issue_tracker:manage-developers-applications-list")
-
-    elif request.user.groups.filter(name="leader").exists():
-
-        if application:
-            if application.project.leader.pk == request.user.pk:
-                application.project.developer.add(application.applicant)
-                application.delete()
-
-                my_group = Group.objects.get(name="developer")
-                my_group.user_set.add(application.applicant)
-
-        else:
-            return HttpResponse("This application does not exist")
-
-        return redirect("issue_tracker:manage-developers-applications-list")
+    return redirect("issue_tracker:manage-developers-applications-list")
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -250,7 +240,6 @@ def manage_developers_applications_list(request):
     context = {}
 
     if request.user.groups.filter(name__in=("admin",)):
-
         applications = (
             DeveloperApplication.objects.all()
             .select_related("project", "applicant")
@@ -258,7 +247,6 @@ def manage_developers_applications_list(request):
         )
 
     elif request.user.groups.filter(name__in=("leader",)):
-
         applications = (
             DeveloperApplication.objects.filter(project__leader=request.user)
             .select_related("project", "applicant")
@@ -312,29 +300,26 @@ def leader_application_deny(request, pk):
 @require_http_methods(["GET"])
 def leader_application_accept(request, pk):
     application = LeaderApplication.objects.filter(pk=pk).first()
-
-    if application:
-        project_pk = application.project.pk
-        project = Project.objects.get(pk=application.project.pk)
-
-        if project.leader:
-            previous_leader = project.leader
-
-        Project.objects.filter(pk=project_pk).update(leader=application.applicant)
-        application.delete()
-
-        if previous_leader:
-            leader_group = Group.objects.get(name="leader")
-
-            # If previous_leader is not leader anymore, will be deleted from group
-            if not previous_leader.leader_project_set.all():
-                leader_group.user_set.remove(previous_leader)
-
-        my_group = Group.objects.get(name="leader")
-        my_group.user_set.add(application.applicant)
-
-    else:
+    if not application:
         return HttpResponse("This application does not exist")
+
+    project_pk = application.project.pk
+    project = Project.objects.get(pk=application.project.pk)
+
+    previous_leader = project.leader if project.leader else None
+
+    Project.objects.filter(pk=project_pk).update(leader=application.applicant)
+    application.delete()
+
+    if previous_leader:
+        leader_group = Group.objects.get(name="leader")
+
+        # If previous_leader is not leader anymore, will be deleted from group
+        if not previous_leader.leader_project_set.all():
+            leader_group.user_set.remove(previous_leader)
+
+    leader_group = Group.objects.get(name="leader")
+    leader_group.user_set.add(application.applicant)
 
     return redirect("issue_tracker:manage-leaders-applications-list")
 
