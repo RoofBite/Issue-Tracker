@@ -24,6 +24,7 @@ from .forms import (
     CreateUserForm,
     AddComment,
 )
+from .pagination import paginate
 from .models import *
 from django.contrib.auth.mixins import UserPassesTestMixin
 from .decorators import group_required, group_excluded
@@ -1081,16 +1082,12 @@ def all_issues(request):
         .select_related("project", "user_assigned")
         .distinct()
     )
-    paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
-    page_number = request.GET.get("page")
-
-    page_obj = paginator.get_page(page_number)
 
     if request.GET.get("search_query"):
         search_query = request.GET.get("search_query")
         context["search_query"] = str(search_query)
 
-        query = my_project_issues.filter(
+        my_project_issues = my_project_issues.filter(
             Q(project__name__icontains=search_query)
             | Q(create_date__startswith=search_query)
             | Q(update_date__startswith=search_query)
@@ -1102,12 +1099,8 @@ def all_issues(request):
             | Q(type__icontains=search_query)
         ).order_by("-create_date")
 
-        paginator = Paginator(query, 3, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
-
-        page_obj = paginator.get_page(page_number)
-
-    context["page_obj"] = page_obj
+    page_number = request.GET.get("page")
+    context["page_obj"] = paginate(my_project_issues, 3, page_number)
 
     return render(request, "issue_tracker/all_issues.html", context)
 
@@ -1131,21 +1124,12 @@ def my_issues(request):
     )
 
     my_issues = my_project_issues.filter(user_assigned=request.user)
-
-    paginator_my_issues = Paginator(my_issues, 2, allow_empty_first_page=True)
-    paginator_my_project_issues = Paginator(my_project_issues, 2, allow_empty_first_page=True)
-
-    page_number_my_issues = request.GET.get("page1")
-    page_obj_my_issues = paginator_my_issues.get_page(page_number_my_issues)
-
-    page_number_my_project_issues = request.GET.get("page2")
-    page_obj_my_project_issues = paginator_my_project_issues.get_page(page_number_my_project_issues)
-
+    
     if request.GET.get("search_query1"):
         search_query_my_issues = request.GET.get("search_query1")
         context["search_query1"] = str(search_query_my_issues)
 
-        query_my_issues = my_issues.filter(
+        my_issues = my_issues.filter(
             Q(project__name__icontains=search_query_my_issues)
             | Q(create_date__startswith=search_query_my_issues)
             | Q(update_date__startswith=search_query_my_issues)
@@ -1157,17 +1141,15 @@ def my_issues(request):
             | Q(type__icontains=search_query_my_issues)
         ).order_by("-create_date")
 
-        paginator_my_issues = Paginator(query_my_issues, 2, allow_empty_first_page=True)
-        page_number_my_issues = request.GET.get("page1")
+    # Pagination
+    page_number_my_issues = request.GET.get("page1")
 
-    page_obj_my_issues = paginator_my_issues.get_page(page_number_my_issues)
 
     if request.GET.get("search_query2"):
-
         search_query_my_project_issues = request.GET.get("search_query2")
         context["search_query2"] = str(search_query_my_project_issues)
 
-        query_my_project_issues = my_project_issues.filter(
+        my_project_issues = my_project_issues.filter(
             Q(project__name__icontains=search_query_my_project_issues)
             | Q(create_date__startswith=search_query_my_project_issues)
             | Q(update_date__startswith=search_query_my_project_issues)
@@ -1179,13 +1161,10 @@ def my_issues(request):
             | Q(type__icontains=search_query_my_project_issues)
         ).order_by("-create_date")
 
-        paginator_my_project_issues = Paginator(query_my_project_issues, 2, allow_empty_first_page=True)
-        page_number_my_project_issues = request.GET.get("page2")
+    page_number_my_project_issues = request.GET.get("page2")
 
-    page_obj_my_project_issues = paginator_my_project_issues.get_page(page_number_my_project_issues)
-
-    context["page_obj1"] = page_obj_my_issues
-    context["page_obj2"] = page_obj_my_project_issues
+    context["page_obj1"] = paginate(my_issues,2, page_number_my_issues)
+    context["page_obj2"] = paginate(my_project_issues,2, page_number_my_project_issues)
 
     return render(request, "issue_tracker/my_issues.html", context)
 
