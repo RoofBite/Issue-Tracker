@@ -22,7 +22,9 @@ class TestViews_set_demo_user(TestCase):
         )
         self.client = Client()
 
-        Group.objects.get_or_create(name="admin")
+        self.admin = User.objects.create_superuser(
+            "admin", "admin@example.com", "Password"
+        )
         Group.objects.get_or_create(name="developer")
         Group.objects.get_or_create(name="leader")
 

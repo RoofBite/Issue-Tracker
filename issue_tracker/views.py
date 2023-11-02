@@ -72,6 +72,14 @@ def set_demo_user(request):
         # (username="admin", is_superuser=True) stands for superadmin user
         admin_user = User.objects.get(username="admin", is_superuser=True)
 
+
+        # admin_user, created = User.objects.get_or_create(username="admin",
+        #      defaults={'is_superuser': True, 'is_staff': True})
+
+        # if created:
+        #     admin_user.set_password(settings.password)
+        #     admin_user.save()
+
         project1 = Project.objects.create(
             name="Demo Project1",
             description="This project is made only for demo purposes",
@@ -1038,16 +1046,11 @@ def reported_issues(request):
     )
     context = {}
 
-    paginator = Paginator(issues, 3, allow_empty_first_page=True)
-    page_number = request.GET.get("page")
-
-    page_obj = paginator.get_page(page_number)
-
     if request.GET.get("search_query"):
         search_query = request.GET.get("search_query")
         context["search_query"] = str(search_query)
 
-        query = issues.filter(
+        issues = issues.filter(
             Q(project__name__icontains=search_query)
             | Q(create_date__startswith=search_query)
             | Q(update_date__startswith=search_query)
@@ -1059,12 +1062,12 @@ def reported_issues(request):
             | Q(type__icontains=search_query)
         ).order_by("-create_date")
 
-        paginator = Paginator(query, 3, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
+    # paginator = Paginator(issues, 3, allow_empty_first_page=True)
+    # page_number = request.GET.get("page")
 
-        page_obj = paginator.get_page(page_number)
-
-    context["page_obj"] = page_obj
+    # page_obj = paginator.get_page(page_number)
+    page_number = request.GET.get("page")
+    context["page_obj"] = paginate(issues, 3, page_number)
 
     return render(request, "issue_tracker/reported-issues.html", context)
 
