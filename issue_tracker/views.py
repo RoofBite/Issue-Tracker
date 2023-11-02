@@ -72,14 +72,6 @@ def set_demo_user(request):
         # (username="admin", is_superuser=True) stands for superadmin user
         admin_user = User.objects.get(username="admin", is_superuser=True)
 
-
-        # admin_user, created = User.objects.get_or_create(username="admin",
-        #      defaults={'is_superuser': True, 'is_staff': True})
-
-        # if created:
-        #     admin_user.set_password(settings.password)
-        #     admin_user.save()
-
         project1 = Project.objects.create(
             name="Demo Project1",
             description="This project is made only for demo purposes",
@@ -963,30 +955,41 @@ def issue_details_comments(request, pk):
 @group_required("leader", "developer", "admin")
 @require_http_methods(["GET"])
 def issue_details(request, pk):
+    issue_query = Issue.objects.filter(pk=pk)
 
-    if request.user.groups.filter(name__in=("admin",)):
+    if not issue_query.exists():
+        return HttpResponse("Issue with this ID does not exist")
+
+    user_groups = request.user.groups.values_list('name', flat=True)
+    
+    is_admin_user = "admin" in user_groups
+    is_developer_or_leader_user = "developer" in user_groups or "leader" in user_groups
+
+    if is_admin_user:
         projects = Project.objects.all()
 
-    elif request.user.groups.filter(name__in=("developer", "leader")):
+    elif is_developer_or_leader_user:
         projects = Project.objects.filter(
             Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         )
-
+    else:
+        return HttpResponse("You are not allowed to see this issue")
+    
     issue = Issue.objects.filter(pk=pk, project__in=projects).first()
 
     if issue:
         context = {}
 
-        if request.user.groups.filter(name__in=("admin",)):
-            issues = (
+        if is_admin_user:
+            issue_history = (
                 Issue.history.filter(id=pk)
                 .order_by("-update_date")
                 .select_related("project", "user_assigned")
                 .distinct()
             )
 
-        elif request.user.groups.filter(name__in=("developer", "leader")):
-            issues = (
+        elif is_developer_or_leader_user:
+            issue_history = (
                 Issue.history.filter(
                     Q(id=pk),
                     Q(project__leader__pk=request.user.pk)
@@ -996,17 +999,14 @@ def issue_details(request, pk):
                 .select_related("project", "user_assigned")
                 .distinct()
             )
-
-        paginator = Paginator(issues, 3, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
-
-        page_obj = paginator.get_page(page_number)
+        else:
+            return HttpResponse("You are not allowed to see this issue")
 
         if request.GET.get("search_query"):
             search_query = request.GET.get("search_query")
             context["search_query"] = str(search_query)
 
-            query = issues.filter(
+            issue_history = issue_history.filter(
                 Q(project__name__icontains=search_query)
                 | Q(create_date__startswith=search_query)
                 | Q(update_date__startswith=search_query)
@@ -1016,18 +1016,16 @@ def issue_details(request, pk):
                 | Q(status__icontains=search_query)
                 | Q(priority__icontains=search_query)
                 | Q(type__icontains=search_query)
-            ).order_by("-create_date")
+            ).distinct().order_by("-create_date")
 
-            paginator = Paginator(query, 3, allow_empty_first_page=True)
-            page_number = request.GET.get("page")
-
-            page_obj = paginator.get_page(page_number)
-
-        context["page_obj"] = page_obj
+        page_number = request.GET.get("page")
+        context["page_obj"] = paginate(issue_history, 3, page_number)
         context["issue"] = issue
         return render(request, "issue_tracker/issue_details.html", context)
 
     return HttpResponse("You are not allowed to see this issue")
+
+    
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -1062,10 +1060,6 @@ def reported_issues(request):
             | Q(type__icontains=search_query)
         ).order_by("-create_date")
 
-    # paginator = Paginator(issues, 3, allow_empty_first_page=True)
-    # page_number = request.GET.get("page")
-
-    # page_obj = paginator.get_page(page_number)
     page_number = request.GET.get("page")
     context["page_obj"] = paginate(issues, 3, page_number)
 
