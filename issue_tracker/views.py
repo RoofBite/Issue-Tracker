@@ -214,14 +214,18 @@ def developer_application_accept(request, pk):
     if not application:
         return HttpResponse("This application does not exist")
 
-    if request.user.groups.filter(name="admin").exists():
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_developer_or_leader_user = "developer" in user_groups or "leader" in user_groups
+
+    if is_admin_user:
         application.project.developer.add(application.applicant)
         application.delete()
 
         my_group = Group.objects.get(name="developer")
         my_group.user_set.add(application.applicant)
 
-    elif request.user.groups.filter(name="leader").exists():
+    elif is_developer_or_leader_user:
         if application.project.leader.pk == request.user.pk:
             application.project.developer.add(application.applicant)
             application.delete()
@@ -240,42 +244,38 @@ def developer_application_accept(request, pk):
 def manage_developers_applications_list(request):
     context = {}
 
-    if request.user.groups.filter(name__in=("admin",)):
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_developer_or_leader_user = "developer" in user_groups or "leader" in user_groups
+
+    if is_admin_user:
         applications = (
             DeveloperApplication.objects.all()
             .select_related("project", "applicant")
             .order_by("pk")
         )
 
-    elif request.user.groups.filter(name__in=("leader",)):
+    elif is_developer_or_leader_user:
         applications = (
             DeveloperApplication.objects.filter(project__leader=request.user)
             .select_related("project", "applicant")
             .order_by("pk")
         )
-
-    paginator = Paginator(applications, 3, allow_empty_first_page=True)
-    page_number = request.GET.get("page")
-
-    page_obj = paginator.get_page(page_number)
-
+    else:
+        return HttpResponse("You have no permission to do that.")
+    
     if request.GET.get("search_query"):
         search_query = request.GET.get("search_query")
         context["search_query"] = str(search_query)
 
-        query = applications.filter(
+        applications = applications.filter(
             Q(project__name__icontains=search_query)
             | Q(applicant__username__icontains=search_query)
             | Q(project__description__icontains=search_query)
         ).order_by("pk")
 
-        paginator = Paginator(query, 3, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
-
-        page_obj = paginator.get_page(page_number)
-
-    context["page_obj"] = page_obj
-    context["applications"] = applications
+    page_number = request.GET.get("page")
+    context["page_obj"] = paginate(applications, 3, page_number)
 
     return render(
         request, "issue_tracker/manage_developers_applications_list.html", context
@@ -905,7 +905,6 @@ def project_details(request, pk):
 @group_required("leader", "developer", "admin")
 @require_http_methods(["GET"])
 def issue_details_comments(request, pk):
-
     if request.user.groups.filter(name__in=("admin",)):
         projects = Project.objects.all()
 
