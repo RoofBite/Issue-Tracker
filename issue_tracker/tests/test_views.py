@@ -1139,7 +1139,7 @@ class TestView_Update_issue(TestCase):
         response = self.client.get(reverse("issue_tracker:update-issue", args=["2"]))
 
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, "You have no access to this issue")
+        self.assertContains(response, "Only project leader can edit issues.")
 
 
 class TestView_all_projects(TestCase):
