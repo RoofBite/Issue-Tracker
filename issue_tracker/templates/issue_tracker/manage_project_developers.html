@@ -81,6 +81,16 @@
 
 
               </div>
+            </div>
+            {% if messages %}
+              <div class="messages">
+                  {% for message in messages %}
+                    <div class="alert alert-success" role="alert">
+                      {{ message }}
+                  </div>
+                  {% endfor %}
+              </div>
+            {% endif %}
               <button type="submit" class="btn btn-success mt-2">Save</button>
             </form>
           </div>

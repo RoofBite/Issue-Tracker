@@ -3,6 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 from django.db.models import Q
+from django.contrib import messages
 from ..forms import AddDeveloper
 from ..pagination import paginate
 from ..models import *
@@ -198,6 +199,9 @@ def manage_project_developers(request, pk):
                         developer_group.user_set.add(user)
 
                 new_project.save()
+
+                messages.success(request, 'Developers have been successfully updated.')
+
                 return redirect(request.path)
             else:
                 print(form.errors)
