@@ -381,24 +381,23 @@ def project_apply_developer(request, pk):
 @require_http_methods(["GET"])
 def project_apply_leader(request, pk):
     project = Project.objects.filter(pk=pk).first()
-    user_is_not_already_leader = False
-    try:
-        leader_pk = project.leader.pk
-        user_is_not_already_leader = request.user.pk != leader_pk
-    except AttributeError:
-        user_is_not_already_leader = True
+    if not project:
+        return HttpResponse("Project does not exist.", status=404)
+    
+    is_user_already_leader = (project.leader == request.user)
 
-    is_applied_already = LeaderApplication.objects.filter(
+    has_applied_already = LeaderApplication.objects.filter(
         project=project, applicant=request.user
-    ).first()
-    if project and user_is_not_already_leader and not is_applied_already:
-        LeaderApplication.objects.create(applicant=request.user, project=project)
-        return redirect("issue_tracker:apply-project-list-all")
-    if is_applied_already:
+    ).exists()
+    if has_applied_already:
         return HttpResponse(
-            "You have already applied for being leader in this project."
+            "You have already applied to be a leader in this project."
         )
-    return HttpResponse("You are leader in this project or project deos not exist.")
+    if is_user_already_leader:
+        return HttpResponse("You are already a leader in this project.")
+    
+    LeaderApplication.objects.create(applicant=request.user, project=project)
+    return redirect("issue_tracker:apply-project-list-all") 
 
 
 @login_required(login_url="issue_tracker:sign-in")
@@ -409,7 +408,7 @@ def project_apply(request, pk):
     if project:
         context = {"pk": pk, "project": project}
         return render(request, "issue_tracker/project_apply.html", context)
-    return HttpResponse("That project does not exist")
+    return HttpResponse("Project does not exist.")
 
 
 @login_required(login_url="issue_tracker:sign-in")

@@ -830,7 +830,7 @@ class TestView_project_apply_developer(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(
-            response, "You have already applied for being developer in this project."
+            response, "You have already applied to be a developer in this project."
         )
 
     def test_project_apply_developer_developer_group_user_already_in_project(self):
@@ -845,7 +845,7 @@ class TestView_project_apply_developer(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(
-            response, "You are developer in this project or project deos not exist."
+            response, "You are already a developer in this project."
         )
 
 
@@ -896,7 +896,7 @@ class TestView_project_apply_leader(TestCase):
 
         self.assertEquals(response.status_code, 200)
         self.assertContains(
-            response, "You have already applied for being leader in this project."
+            response, "You have already applied to be a leader in this project."
         )
 
     def test_project_apply_leader_developer_group_user_project_has_no_leader(self):
@@ -919,9 +919,21 @@ class TestView_project_apply_leader(TestCase):
             reverse("issue_tracker:project-apply-leader", args=["3"])
         )
 
+        self.assertEquals(response.status_code, 404)
+        self.assertContains(response, "Project does not exist.", status_code=404)
+
+    def test_project_apply_leader_user_is_already_leader(self):
+        group = Group.objects.get(name="leader")
+        group.user_set.add(self.superuser)
+
+        self.client.force_login(user=self.superuser, backend=None)
+        response = self.client.get(
+            reverse("issue_tracker:project-apply-leader", args=[self.project.pk])
+        )
+
         self.assertEquals(response.status_code, 200)
         self.assertContains(
-            response, "You are leader in this project or project deos not exist."
+            response, "You are already a leader in this project."
         )
 
 
@@ -960,7 +972,7 @@ class TestView_project_apply(TestCase):
         response = self.client.get(reverse("issue_tracker:project-apply", args=["2"]))
 
         self.assertEquals(response.status_code, 200)
-        self.assertContains(response, "That project does not exist")
+        self.assertContains(response, "Project does not exist.")
 
 
 class TestView_apply_project_list_all(TestCase):
