@@ -421,25 +421,17 @@ def apply_project_list_all(request):
         Project.objects.all().select_related("leader").prefetch_related("developer")
     ).order_by("pk")
 
-    paginator = Paginator(projects, 5, allow_empty_first_page=True)
-    page_number = request.GET.get("page")
-
-    page_obj = paginator.get_page(page_number)
-
     if request.GET.get("search_query"):
         search_query = request.GET.get("search_query")
         context["search_query"] = str(search_query)
 
-        query = projects.filter(
+        projects = projects.filter(
             Q(name__icontains=search_query) | Q(description__icontains=search_query)
         ).order_by("pk")
 
-        paginator = Paginator(query, 5, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
 
-        page_obj = paginator.get_page(page_number)
-
-    context["page_obj"] = page_obj
+    page_number = request.GET.get("page")
+    context["page_obj"] = paginate(projects, 5, page_number)
 
     return render(request, "issue_tracker/apply_project_list_all.html", context)
 
