@@ -556,10 +556,15 @@ def my_projects(request):
 @require_http_methods(["GET"])
 def manage_projects_list(request):
     context = {}
-    if request.user.groups.filter(name__in=("admin",)):
+
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_leader_user = "leader" in user_groups
+
+    if is_admin_user:
         projects = Project.objects.all()
 
-    elif request.user.groups.filter(name__in=("leader",)):
+    elif is_leader_user:
         projects = (
             Project.objects.filter(leader__pk=request.user.pk)
             .select_related("leader")
@@ -574,11 +579,14 @@ def manage_projects_list(request):
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_project_details(request, pk):
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_leader_user = "leader" in user_groups
 
-    if request.user.groups.filter(name__in=("admin",)):
+    if is_admin_user:
         project_instance = Project.objects.filter(pk=pk).first()
 
-    elif request.user.groups.filter(name__in=("leader",)):
+    elif is_leader_user:
         project_instance = Project.objects.filter(pk=pk, leader=request.user.pk).first()
 
     if project_instance:
@@ -593,12 +601,16 @@ def manage_project_details(request, pk):
 @group_required("leader", "admin")
 @require_http_methods(["GET", "POST"])
 def manage_project_developers(request, pk):
-    if request.user.groups.filter(name__in=("admin",)):
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_leader_user = "leader" in user_groups
+
+    if is_admin_user:
         project_instance = (
             Project.objects.filter(pk=pk).prefetch_related("developer").first()
         )
 
-    elif request.user.groups.filter(name__in=("leader",)):
+    elif is_leader_user:
         project_instance = (
             Project.objects.filter(pk=pk, leader=request.user.pk)
             .prefetch_related("developer")
@@ -623,9 +635,7 @@ def manage_project_developers(request, pk):
                 # Checking if user has developer position in any project
 
                 # Deference between two sets, which developers have changed on the list
-                changed_developers = set(list(developers_now)) ^ set(
-                    list(developers_before)
-                )
+                changed_developers = set(developers_now) ^ set(developers_before)
 
                 developer_group = Group.objects.get(name="developer")
 
@@ -650,10 +660,13 @@ def manage_project_developers(request, pk):
 @group_required("leader", "admin")
 @require_http_methods(["GET"])
 def manage_project_issues_list(request, pk):
-    if request.user.groups.filter(name__in=("admin",)):
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_leader_user = "leader" in user_groups
+    if is_admin_user:
         project_instance = Project.objects.filter(pk=pk).first()
 
-    elif request.user.groups.filter(name__in=("leader",)):
+    elif is_leader_user:
         project_instance = Project.objects.filter(pk=pk, leader=request.user.pk).first()
 
     if project_instance:
@@ -703,11 +716,14 @@ def manage_project_issues_list(request, pk):
 @group_required("leader", "developer", "admin")
 @require_http_methods(["GET"])
 def project_details_old_issues(request, pk):
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_developer_or_leader_user = "developer" in user_groups or "leader" in user_groups
 
-    if request.user.groups.filter(name__in=("admin",)):
+    if is_admin_user:
         project_instance = Project.objects.filter(pk=pk).first()
 
-    elif request.user.groups.filter(name__in=("developer", "leader")):
+    elif is_developer_or_leader_user:
         project_instance = Project.objects.filter(
             Q(pk=pk), Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         ).first()
@@ -823,11 +839,14 @@ def project_leader_resign_confirm(request, pk):
 @group_required("leader", "developer", "admin")
 @require_http_methods(["GET"])
 def project_details(request, pk):
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_developer_or_leader_user = "developer" in user_groups or "leader" in user_groups
 
-    if request.user.groups.filter(name__in=("admin",)):
+    if is_admin_user:
         project_instance = Project.objects.filter(pk=pk).first()
 
-    elif request.user.groups.filter(name__in=("developer", "leader")):
+    elif is_developer_or_leader_user:
         project_instance = Project.objects.filter(
             Q(pk=pk), Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         ).first()
@@ -890,10 +909,14 @@ def project_details(request, pk):
 @group_required("leader", "developer", "admin")
 @require_http_methods(["GET"])
 def issue_details_comments(request, pk):
-    if request.user.groups.filter(name__in=("admin",)):
+    user_groups = request.user.groups.values_list('name', flat=True)
+    is_admin_user = "admin" in user_groups
+    is_developer_or_leader_user = "developer" in user_groups or "leader" in user_groups
+
+    if is_admin_user:
         projects = Project.objects.all()
 
-    elif request.user.groups.filter(name__in=("developer", "leader")):
+    elif is_developer_or_leader_user:
         projects = Project.objects.filter(
             Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         )
@@ -945,7 +968,6 @@ def issue_details(request, pk):
         return HttpResponse("Issue with this ID does not exist")
 
     user_groups = request.user.groups.values_list('name', flat=True)
-    
     is_admin_user = "admin" in user_groups
     is_developer_or_leader_user = "developer" in user_groups or "leader" in user_groups
 
