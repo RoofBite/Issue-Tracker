@@ -335,28 +335,19 @@ def manage_leaders_applications_list(request):
         LeaderApplication.objects.all().select_related("project", "applicant")
     ).order_by("pk")
 
-    paginator = Paginator(applications, 3, allow_empty_first_page=True)
-    page_number = request.GET.get("page")
-
-    page_obj = paginator.get_page(page_number)
-
     if request.GET.get("search_query"):
         search_query = request.GET.get("search_query")
         context["search_query"] = str(search_query)
 
-        query = applications.filter(
+        applications = applications.filter(
             Q(project__name__icontains=search_query)
             | Q(applicant__username__icontains=search_query)
             | Q(project__description__icontains=search_query)
         ).order_by("pk")
 
-        paginator = Paginator(query, 3, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
 
-        page_obj = paginator.get_page(page_number)
-
-    context["page_obj"] = page_obj
-    context["applications"] = applications
+    page_number = request.GET.get("page")
+    context["page_obj"] = paginate(applications, 3, page_number)
 
     return render(
         request, "issue_tracker/manage_leaders_applications_list.html", context
@@ -369,13 +360,13 @@ def manage_leaders_applications_list(request):
 def project_apply_developer(request, pk):
     project = Project.objects.filter(pk=pk).first()
     developer_pks = project.developer.values_list("pk", flat=True)
-    is_applied_already = DeveloperApplication.objects.filter(
+    has_applied_already = DeveloperApplication.objects.filter(
         project=project, applicant=request.user
     ).first()
-    if project and not (request.user.pk in developer_pks) and not is_applied_already:
+    if project and not (request.user.pk in developer_pks) and not has_applied_already:
         DeveloperApplication.objects.create(applicant=request.user, project=project)
         return redirect("issue_tracker:apply-project-list-all")
-    if is_applied_already:
+    if has_applied_already:
         return HttpResponse(
             "You have already applied for being developer in this project."
         )
