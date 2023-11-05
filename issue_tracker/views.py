@@ -836,8 +836,11 @@ def project_details(request, pk):
             Q(pk=pk), Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         ).first()
 
-    is_user_project_developer = Project.objects.filter(pk=pk, developer__pk=request.user.pk).exists()
-    is_user_project_leader = Project.objects.filter(pk=pk, leader__pk=request.user.pk).exists()
+    # Fetch the project with related leader and developer details
+    project = Project.objects.filter(pk=pk).prefetch_related('developer', 'leader').first()
+
+    is_user_project_developer = project and request.user in project.developer.all()
+    is_user_project_leader = project and project.leader_id == request.user.pk
 
     if project_instance:
         context = {}
