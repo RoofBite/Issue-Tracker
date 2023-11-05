@@ -359,18 +359,21 @@ def manage_leaders_applications_list(request):
 @require_http_methods(["GET"])
 def project_apply_developer(request, pk):
     project = Project.objects.filter(pk=pk).first()
+    if not project:
+        return HttpResponse("Project does not exist.")
     developer_pks = project.developer.values_list("pk", flat=True)
     has_applied_already = DeveloperApplication.objects.filter(
         project=project, applicant=request.user
-    ).first()
-    if project and not (request.user.pk in developer_pks) and not has_applied_already:
-        DeveloperApplication.objects.create(applicant=request.user, project=project)
-        return redirect("issue_tracker:apply-project-list-all")
+    ).exists()
     if has_applied_already:
         return HttpResponse(
-            "You have already applied for being developer in this project."
+            "You have already applied to be a developer in this project."
         )
-    return HttpResponse("You are developer in this project or project deos not exist.")
+    if (request.user.pk in developer_pks):
+        return HttpResponse("You are already a developer in this project.")
+
+    DeveloperApplication.objects.create(applicant=request.user, project=project)
+    return redirect("issue_tracker:apply-project-list-all")
 
 
 @login_required(login_url="issue_tracker:sign-in")
