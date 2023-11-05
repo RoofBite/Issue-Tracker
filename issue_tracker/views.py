@@ -641,7 +641,7 @@ def manage_project_developers(request, pk):
 
                 for user in changed_developers:
                     # User is not developer anymore, will be deleted from group
-                    if not user.project_set.all():
+                    if not user.project_set.exists():
                         developer_group.user_set.remove(user)
                     # User is developer, will be added to group
                     else:
@@ -679,16 +679,11 @@ def manage_project_issues_list(request, pk):
             .select_related("project", "user_assigned")
         )
 
-        paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
-
-        page_obj = paginator.get_page(page_number)
-
         if request.GET.get("search_query"):
             search_query = request.GET.get("search_query")
             context["search_query"] = str(search_query)
 
-            query = my_project_issues.filter(
+            my_project_issues = my_project_issues.filter(
                 Q(project__name__icontains=search_query)
                 | Q(create_date__startswith=search_query)
                 | Q(update_date__startswith=search_query)
@@ -700,12 +695,11 @@ def manage_project_issues_list(request, pk):
                 | Q(type__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 3, allow_empty_first_page=True)
-            page_number = request.GET.get("page")
+        page_number = request.GET.get("page")
 
-            page_obj = paginator.get_page(page_number)
 
-        context["page_obj"] = page_obj
+
+        context["page_obj"] = paginate(my_project_issues, 3, page_number)
         context["project"] = project
 
         return render(request, "issue_tracker/manage_project_issues_list.html", context)
@@ -738,16 +732,11 @@ def project_details_old_issues(request, pk):
             .select_related("project", "user_assigned")
         )
 
-        paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
-
-        page_obj = paginator.get_page(page_number)
-
         if request.GET.get("search_query"):
             search_query = request.GET.get("search_query")
             context["search_query"] = str(search_query)
 
-            query = my_project_issues.filter(
+            my_project_issues = my_project_issues.filter(
                 Q(project__name__icontains=search_query)
                 | Q(create_date__startswith=search_query)
                 | Q(update_date__startswith=search_query)
@@ -759,12 +748,8 @@ def project_details_old_issues(request, pk):
                 | Q(type__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 3, allow_empty_first_page=True)
-            page_number = request.GET.get("page")
-
-            page_obj = paginator.get_page(page_number)
-
-        context["page_obj"] = page_obj
+        page_number = request.GET.get("page")
+        context["page_obj"] = paginate(my_project_issues,3, page_number)
         context["project"] = project
 
         return render(request, "issue_tracker/project_details_old_issues.html", context)
@@ -795,7 +780,7 @@ def project_developer_resign_confirm(request, pk):
         developer_group = Group.objects.get(name="developer")
 
         # User is not developer anymore, will be deleted from group
-        if not user.project_set.all():
+        if not user.project_set.exists():
             developer_group.user_set.remove(user)
             return redirect("issue_tracker:main")
         return redirect("issue_tracker:my-projects")
@@ -842,7 +827,7 @@ def project_details(request, pk):
     user_groups = request.user.groups.values_list('name', flat=True)
     is_admin_user = "admin" in user_groups
     is_developer_or_leader_user = "developer" in user_groups or "leader" in user_groups
-
+    
     if is_admin_user:
         project_instance = Project.objects.filter(pk=pk).first()
 
@@ -850,6 +835,9 @@ def project_details(request, pk):
         project_instance = Project.objects.filter(
             Q(pk=pk), Q(leader__pk=request.user.pk) | Q(developer__pk=request.user.pk)
         ).first()
+
+    is_user_project_developer = Project.objects.filter(pk=pk, developer__pk=request.user.pk).exists()
+    is_user_project_leader = Project.objects.filter(pk=pk, leader__pk=request.user.pk).exists()
 
     if project_instance:
         context = {}
@@ -863,16 +851,11 @@ def project_details(request, pk):
             .select_related("project", "user_assigned")
         )
 
-        paginator = Paginator(my_project_issues, 3, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
-
-        page_obj = paginator.get_page(page_number)
-
         if request.GET.get("search_query"):
             search_query = request.GET.get("search_query")
             context["search_query"] = str(search_query)
 
-            query = my_project_issues.filter(
+            my_project_issues = my_project_issues.filter(
                 Q(project__name__icontains=search_query)
                 | Q(create_date__startswith=search_query)
                 | Q(update_date__startswith=search_query)
@@ -884,21 +867,11 @@ def project_details(request, pk):
                 | Q(type__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 3, allow_empty_first_page=True)
-            page_number = request.GET.get("page")
 
-            page_obj = paginator.get_page(page_number)
-
-        is_user_project_developer = Project.objects.filter(
-            pk=pk, developer__pk=request.user.pk
-        ).first()
-        is_user_project_leader = Project.objects.filter(
-            pk=pk, leader__pk=request.user.pk
-        ).first()
-
+        page_number = request.GET.get("page")
         context["is_user_project_developer"] = is_user_project_developer
         context["is_user_project_leader"] = is_user_project_leader
-        context["page_obj"] = page_obj
+        context["page_obj"] = paginate(my_project_issues,3, page_number)
         context["project"] = project
 
         return render(request, "issue_tracker/project_details.html", context)
@@ -931,27 +904,18 @@ def issue_details_comments(request, pk):
             .select_related("author")
         )
 
-        paginator = Paginator(comments, 2, allow_empty_first_page=True)
-        page_number = request.GET.get("page")
-
-        page_obj = paginator.get_page(page_number)
-
         if request.GET.get("search_query"):
             search_query = request.GET.get("search_query")
             context["search_query"] = str(search_query)
 
-            query = comments.filter(
+            comments = comments.filter(
                 Q(text__icontains=search_query)
                 | Q(create_date__startswith=search_query)
                 | Q(author__username__icontains=search_query)
             ).order_by("-create_date")
 
-            paginator = Paginator(query, 2, allow_empty_first_page=True)
-            page_number = request.GET.get("page")
-
-            page_obj = paginator.get_page(page_number)
-
-        context["page_obj"] = page_obj
+        page_number = request.GET.get("page")
+        context["page_obj"] = paginate(comments, 2, page_number)
         context["issue"] = issue
 
         return render(request, "issue_tracker/issue_details_comments.html", context)
@@ -1144,7 +1108,6 @@ def my_issues(request):
             | Q(type__icontains=search_query_my_issues)
         ).order_by("-create_date")
 
-    # Pagination
     page_number_my_issues = request.GET.get("page1")
 
 

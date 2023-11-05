@@ -7,7 +7,7 @@
 
 **Project is in refactor process. Refactor state:**
 
-- IN PROGRESS - Pagination should be moved from the views to a separate function.
+- DONE - Pagination should be moved from the views to a separate function.
 - IN PROGRESS - Simplifying if's logic 
 - TO DO - The views.py file should be broken down into separate files for each category of view.
 - TO DO - HTTP response errors should be stored in variables for easy reuse.
