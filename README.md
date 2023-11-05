@@ -2,6 +2,8 @@
 ![Issue-tracker-screenshot](https://user-images.githubusercontent.com/85451799/132257394-008c47b4-1aa6-4219-9ed1-00a11ed195c4.png)
 
 
+##   Project is hosted on to AWS EC2 instance with EBS storage: https://bit.ly/roofbite-issue-tracker   <br>
+
 
 **Project is in refactor process. Refactor state:**
 
